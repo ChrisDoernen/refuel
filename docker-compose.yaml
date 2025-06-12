@@ -1,0 +1,13 @@
+services:
+  app:
+    image: thenativeweb/eventsourcingdb:1.0.2
+    ports:
+      - "3000:3000"
+    command:
+      - "run"
+      - "--api-token=${EVENTSOURCINGDB_API_TOKEN}"
+      - "--data-directory-temporary"
+      - "--http-enabled"
+      - "--https-enabled=false"
+      - "--with-ui"
+      

@@ -1,0 +1,7 @@
+<Project>
+  
+  <PropertyGroup>
+    <NoWarn>1591,CS8669,xUnit1045,xUnit1044</NoWarn>
+  </PropertyGroup>
+  
+</Project>
