@@ -1,13 +1,14 @@
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace EventSourcingDbClient.Tests;
 
 public class WriteEventsTests(
   ITestOutputHelper testOutputHelper,
   EventSourcingDbFixture fixture
-) : IClassFixture<EventSourcingDbFixture>
+) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
   private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
 

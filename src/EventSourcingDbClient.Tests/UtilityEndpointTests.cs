@@ -1,12 +1,13 @@
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace EventSourcingDbClient.Tests;
 
 public class UtilityEndpointTests(
   ITestOutputHelper testOutputHelper,
   EventSourcingDbFixture fixture
-) : IClassFixture<EventSourcingDbFixture>
+) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
   private readonly IEventSourcingDbClient _client = fixture.Get<IEventSourcingDbClient>(testOutputHelper);
 
