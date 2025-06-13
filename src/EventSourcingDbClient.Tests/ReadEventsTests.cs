@@ -37,11 +37,11 @@ public class ReadEventsTests(
   public async Task ReadEventsRecursively()
   {
     var testEventCandidate = new EventCandidate(
-      Subject: "/test/42",
+      Subject: "/test/43/foo",
       Data: new TestEventV1(Guid.CreateVersion7())
     );
     var otherTestEventCandidate = new EventCandidate(
-      Subject: "/test",
+      Subject: "/test/34/bar",
       Data: new OtherTestEventV1(Guid.CreateVersion7())
     );
 

@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
       {
         var options = s.GetRequiredService<IOptions<EventSourcingDbClientOptions>>().Value;
 
-        client.BaseAddress = new Uri(options.Url);
+        client.BaseAddress = new UriBuilder(options.Url) { Path = "api/v1/" }.Uri;
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiToken}");
       }
     );
