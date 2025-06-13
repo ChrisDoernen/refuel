@@ -41,14 +41,14 @@ public class ReadEventsTests(
       Data: new TestEventV1(Guid.CreateVersion7())
     );
     var otherTestEventCandidate = new EventCandidate(
-      Subject: "/test/34/bar",
+      Subject: "/test/43/bar",
       Data: new OtherTestEventV1(Guid.CreateVersion7())
     );
 
     await _eventStore.StoreEvents([testEventCandidate, otherTestEventCandidate]);
 
     var events = await _eventStore.GetEvents(
-      "/test",
+      "/test/43",
       new ReadEventsOptions
       {
         Recursive = true

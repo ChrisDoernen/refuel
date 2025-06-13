@@ -32,7 +32,7 @@ public class RegisterTankCommandHandler(
     );
 
     var candidate = new EventCandidate(
-      Subject: $"tanks/{evnt.Id}",
+      Subject: $"/tanks/{evnt.Id}",
       Data: evnt
     );
 

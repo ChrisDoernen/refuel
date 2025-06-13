@@ -19,6 +19,7 @@ public record Tank
     {
       FuelExtractedEventV1 fuelExtractedEvent => Apply(fuelExtractedEvent),
       RefilledEventV1 refilledEvent => Apply(refilledEvent),
+      TankRegisteredEventV1 tankRegisteredEvent => Apply(tankRegisteredEvent),
       _ => throw new InvalidOperationException("Unknown event for tank"),
     };
   }

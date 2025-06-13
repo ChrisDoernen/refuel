@@ -9,4 +9,4 @@ public record TankRegisteredEventV1(
   string Club,
   string Description,
   int InitialFuelLevel
-): ITankRelated;
+) : ITankRelated, IEventData;

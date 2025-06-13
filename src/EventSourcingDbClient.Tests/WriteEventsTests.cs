@@ -31,7 +31,10 @@ public class WriteEventsTests(
       )
     );
 
-    var events = await _eventStore.StoreEvents([eventCandidate]);
+    var events = await _eventStore.StoreEvents(
+      [eventCandidate],
+      [new IsSubjectPristine(eventCandidate.Subject)]
+    );
 
     events.Count().Should().Be(1);
   }

@@ -21,7 +21,7 @@ public class GetTankQueryHandler(
     logger.LogInformation("Get tank query");
 
     var events = await eventStore.GetEvents(
-      $"tanks/{query.Id}",
+      $"/tanks/{query.Id}",
       new ReadEventsOptions
       {
         Recursive = true
@@ -30,6 +30,7 @@ public class GetTankQueryHandler(
     );
 
     return await events
+      .Select(e => e.Payload.Data)
       .Cast<ITankRelated>()
       .AggregateAsync(
         new Tank(),

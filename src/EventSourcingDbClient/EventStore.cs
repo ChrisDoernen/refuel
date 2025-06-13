@@ -65,7 +65,7 @@ public class EventStore(
     var httpContent = JsonContent.Create(
       content,
       new MediaTypeHeaderValue("application/json"),
-      options: JsonSerialization.Options
+      JsonSerialization.Options
     );
 
     var response = await _client.PostAsync(
@@ -73,7 +73,7 @@ public class EventStore(
       httpContent,
       cancellationToken
     );
-    response.EnsureSuccessStatusCode();
+    await EnsureSuccess("Failed to write events", response, cancellationToken);
 
     var evnts = await response.Content.ReadFromJsonAsync<IEnumerable<Event>>(cancellationToken);
     if (evnts is null)
@@ -82,6 +82,20 @@ public class EventStore(
     }
 
     return evnts;
+  }
+
+  private static async Task EnsureSuccess(
+    string context,
+    HttpResponseMessage response,
+    CancellationToken cancellationToken
+  )
+  {
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new Exception(
+        $"{context} {response.StatusCode}: {await response.Content.ReadAsStringAsync(cancellationToken)}"
+      );
+    }
   }
 
   public async Task<IAsyncEnumerable<Event>> GetEvents(

@@ -1,10 +1,12 @@
-﻿namespace EventSourcingDbClient;
+﻿using System.Text.Json.Serialization;
+
+namespace EventSourcingDbClient;
 
 public abstract class Precondition(
   string type
 )
 {
-  public string Type = type;
+  public string Type => type;
 }
 
 public class IsSubjectPristine(
@@ -13,7 +15,7 @@ public class IsSubjectPristine(
 {
   public object Payload => new
   {
-    subject
+    Subject = subject
   };
 }
 
@@ -24,7 +26,7 @@ public class IsSubjectOnEventId(
 {
   public object Payload => new
   {
-    subject,
-    eventId
+    Subject = subject,
+    EventId = eventId
   };
 }

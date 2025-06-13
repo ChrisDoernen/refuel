@@ -1,11 +1,12 @@
 ﻿using System.Text;
 using System.Text.Json;
 using FluentAssertions;
+using Shared.Testing;
 using Xunit;
 
 namespace EventSourcingDbClient.Tests;
 
-public class AsyncEnumerableDeserializationTests
+public class SerializationTests
 {
   [Fact]
   public async Task Deserialization()
@@ -32,7 +33,7 @@ public class AsyncEnumerableDeserializationTests
       }
       """;
 
-    var bytes = Encoding.UTF8.GetBytes(eventJson.Replace("\n", "")).ToArray();
+    var bytes = Encoding.UTF8.GetBytes(eventJson.Minify()).ToArray();
     var stream = new MemoryStream(bytes);
     var events = JsonSerializer.DeserializeAsyncEnumerable<Event>(
       stream,
@@ -52,5 +53,27 @@ public class AsyncEnumerableDeserializationTests
     evnt.Payload.PredecessorHash.Should().Be("0000000000000000000000000000000000000000000000000000000000000000");
     evnt.Payload.Time.Should().BeBefore(DateTime.UtcNow);
     evnt.Payload.Data.Should().BeOfType<TestEventV1>();
+  }
+
+  [Fact]
+  public void Preconditions()
+  {
+    Precondition isSubjectPristine = new IsSubjectPristine("/test/42");
+    var preconditionJson = JsonSerializer.Serialize(
+      isSubjectPristine,
+      JsonSerialization.Options
+    );
+
+    var expectedJson =
+      """
+      {
+        "payload": {
+          "subject": "/test/42"
+        },
+        "type": "isSubjectPristine"
+      }
+      """.Minify();
+
+    preconditionJson.Should().Be(expectedJson);
   }
 }
