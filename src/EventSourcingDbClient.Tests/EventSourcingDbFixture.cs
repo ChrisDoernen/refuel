@@ -37,9 +37,13 @@ public class EventSourcingDbFixture(
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");
 
-  protected override void AddServices(IServiceCollection services, IConfiguration? configuration)
+  protected override void AddServices(
+    IServiceCollection services,
+    IConfiguration? configuration
+  )
   {
     services.AddEventSourcingDb(
+      configuration!,
       options =>
       {
         options.Url = new UriBuilder(options.Url) { Port = Port }.ToString();

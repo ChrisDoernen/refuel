@@ -8,14 +8,14 @@ public static class ServiceCollectionExtensions
 {
   public static void AddEventSourcingDb(
     this IServiceCollection services,
+    IConfiguration config,
     Action<EventSourcingDbClientOptions>? configureOptions = null
   )
   {
-    services.AddOptions<EventSourcingDbClientOptions>()
-      .Configure<IConfiguration>(
-        (options, configuration) =>
-          configuration.GetSection("EventSourcing").Bind(options)
-      );
+    services
+      .AddOptions<EventSourcingDbClientOptions>()
+      .Bind(config.GetSection("EventSourcing"))
+      .ValidateOnStart();
 
     if (configureOptions is not null)
     {
