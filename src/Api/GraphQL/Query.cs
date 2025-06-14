@@ -12,6 +12,6 @@ public class Query
     CancellationToken cancellationToken
   )
   {
-    return await mediator.Send(new GetTankQuery(tankId), cancellationToken);
+    throw new NotImplementedException();
   }
 }

@@ -56,14 +56,15 @@ public class WorkflowTests(
 
     tank = await _mediator.Send(getTankQuery);
 
+    tank.Count.Should().Be(3);
     tank.CurrentState.FuelLevel.Should().Be(200);
 
-    var logFuelExtractedCommand2 = new LogFuelExtractedCommand(
+    var logTooMuchFuelExtractedCommand = new LogFuelExtractedCommand(
       TankId: tankId,
       AmountExtracted: 250
     );
-    var execute = () => _mediator.Send(logFuelExtractedCommand2);
+    var logTooMuchExtracted = () => _mediator.Send(logTooMuchFuelExtractedCommand);
 
-    await execute.Should().ThrowAsync<Exception>("Extracted amount exceeds current fuel level.");
+    await logTooMuchExtracted.Should().ThrowAsync<Exception>();
   }
 }
