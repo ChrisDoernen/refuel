@@ -48,7 +48,7 @@ public class CoreFixture(
       configuration!,
       options =>
       {
-        options.Url = new UriBuilder(options.Url) { Port = Port }.ToString();
+        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(Port) }.ToString();
         options.ApiToken = ApiToken;
       }
     );

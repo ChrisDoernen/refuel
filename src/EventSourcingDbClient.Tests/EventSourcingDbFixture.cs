@@ -18,7 +18,7 @@ public class EventSourcingDbFixture(
 
   private readonly IContainer _container = new ContainerBuilder()
     .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-    .WithPortBinding(Port)
+    .WithPortBinding(Port, true)
     .WithCommand(
       "run",
       $"--api-token={ApiToken}",
@@ -46,7 +46,7 @@ public class EventSourcingDbFixture(
       configuration!,
       options =>
       {
-        options.Url = new UriBuilder(options.Url) { Port = Port }.ToString();
+        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(Port) }.ToString();
         options.ApiToken = ApiToken;
       }
     );
