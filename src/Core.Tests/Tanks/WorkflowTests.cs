@@ -6,6 +6,7 @@ using Core.Tanks.MeterReading;
 using Core.Tanks.Querying;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
+using Core.Tanks.RequestRefilling;
 using FluentAssertions;
 using MediatR;
 using Xunit;

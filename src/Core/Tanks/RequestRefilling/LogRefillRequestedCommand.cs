@@ -3,7 +3,7 @@ using EventSourcingDbClient;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Tanks.Refilling;
+namespace Core.Tanks.RequestRefilling;
 
 public record LogRefillRequestedCommand(
   Guid TankId
@@ -31,7 +31,8 @@ public class LogRefillRequestedCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      cancellationToken: cancellationToken
+      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
+      cancellationToken
     );
   }
 }

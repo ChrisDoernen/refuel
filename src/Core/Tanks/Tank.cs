@@ -4,6 +4,7 @@ using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
+using Core.Tanks.RequestRefilling;
 using EventSourcingDbClient;
 
 namespace Core.Tanks;

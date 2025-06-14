@@ -37,7 +37,7 @@ public class LogRefilledCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      [new IsSubjectOnEventId(candidate.Subject, tank.LastChange!.Id)],
+      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
       cancellationToken
     );
   }

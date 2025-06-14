@@ -36,10 +36,10 @@ public class LogFuelExtractedCommandHandler(
       Subject: $"/tanks/{command.TankId}",
       Data: fuelExtractedEvent
     );
-
     await eventStore.StoreEvents(
       [candidate],
-      cancellationToken: cancellationToken
+      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
+      cancellationToken
     );
   }
 }
