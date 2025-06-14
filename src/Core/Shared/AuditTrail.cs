@@ -54,6 +54,7 @@ public record StateChange<T>(
 
 public record Change(
   string Id,
+  string Subject,
   DateTime Time,
   IEventData Data
 )
@@ -61,6 +62,7 @@ public record Change(
   public static Change FromEvent(Event evnt) =>
     new(
       evnt.Payload.Id,
+      evnt.Payload.Subject,
       evnt.Payload.Time,
       evnt.Payload.Data
     );

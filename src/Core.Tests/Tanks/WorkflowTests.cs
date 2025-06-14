@@ -1,6 +1,8 @@
 ﻿using Core.Shared;
 using Core.Tanks;
 using Core.Tanks.FuelExtraction;
+using Core.Tanks.MeterInitialization;
+using Core.Tanks.MeterReading;
 using Core.Tanks.Querying;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
@@ -37,16 +39,32 @@ public class WorkflowTests(
     tank.Should().BeOfType<AuditTrail<Tank>>();
     tank.Count.Should().Be(1);
     tank.CurrentState.FuelLevel.Should().Be(150);
+    tank.CurrentState.Meter.Should().BeNull();
 
+    var initializeMeter = new InitializeMeterCommand(
+      TankId: tankId
+    );
+    await _mediator.Send(initializeMeter);
+    
+    tank = await _mediator.Send(getTankQuery);
+
+    tank.CurrentState.Meter!.Value.Should().Be(0);
+    
     var logFuelExtractedCommand = new LogFuelExtractedCommand(
       TankId: tankId,
       AmountExtracted: 50
     );
+    var logMeterReadCommand = new LogMeterReadCommand(
+      TankId: tankId,
+      Value: 50
+    );
     await _mediator.Send(logFuelExtractedCommand);
+    await _mediator.Send(logMeterReadCommand);
     
     tank = await _mediator.Send(getTankQuery);
 
     tank.CurrentState.FuelLevel.Should().Be(100);
+    tank.CurrentState.Meter!.Value.Should().Be(50);
 
     var logRefillRequested = new LogRefillRequestedCommand(
       TankId: tankId
@@ -66,7 +84,7 @@ public class WorkflowTests(
 
     tank = await _mediator.Send(getTankQuery);
 
-    tank.Count.Should().Be(4);
+    tank.Count.Should().Be(6);
     tank.CurrentState.FuelLevel.Should().Be(200);
     tank.CurrentState.RefillRequested.Should().Be(false);
 

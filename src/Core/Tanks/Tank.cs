@@ -1,5 +1,7 @@
 ﻿using Core.Shared;
 using Core.Tanks.FuelExtraction;
+using Core.Tanks.MeterInitialization;
+using Core.Tanks.MeterReading;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
 using EventSourcingDbClient;
@@ -25,6 +27,8 @@ public record Tank : IReplayable<Tank>
       FuelExtractedEventV1 fuelExtractedEvent => Apply(fuelExtractedEvent),
       RefillRequestedEventV1 refillRequested => Apply(refillRequested),
       RefilledEventV1 refilledEvent => Apply(refilledEvent),
+      MeterInitializedEventV1 refilledEvent => Apply(refilledEvent),
+      MeterReadEventV1 refilledEvent => Apply(refilledEvent),
       _ => throw new InvalidOperationException("Unknown event for tank"),
     };
   }
@@ -42,8 +46,11 @@ public record Tank : IReplayable<Tank>
   private Tank Apply(FuelExtractedEventV1 evnt) => this with { FuelLevel = FuelLevel - evnt.AmountExtracted };
   private Tank Apply(RefillRequestedEventV1 _) => this with { RefillRequested = true };
   private Tank Apply(RefilledEventV1 evnt) => this with { FuelLevel = evnt.NewFuelLevel, RefillRequested = false };
+  private Tank Apply(MeterInitializedEventV1 _) => this with { Meter = new Meter { Value = 0 } };
+  private Tank Apply(MeterReadEventV1 evnt) => this with { Meter = Meter with { Value = evnt.Value } };
 }
 
-public record Meter(
-  int Value
-);
+public record Meter
+{
+  public int Value { get; set; }
+}

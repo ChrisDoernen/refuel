@@ -11,7 +11,7 @@ They can be run with `dotnet test`, the only prerequisites are .NET 9 SDK being 
 
 ## Business domain
 
-TL;DR  ⛽➡🧃➡🛩️
+TL;DR  ⛽→🧃→🛩️
 
 ### Introduction
 
