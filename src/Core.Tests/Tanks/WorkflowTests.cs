@@ -43,11 +43,21 @@ public class WorkflowTests(
       AmountExtracted: 50
     );
     await _mediator.Send(logFuelExtractedCommand);
-
+    
     tank = await _mediator.Send(getTankQuery);
 
     tank.CurrentState.FuelLevel.Should().Be(100);
 
+    var logRefillRequested = new LogRefillRequestedCommand(
+      TankId: tankId
+    );
+    await _mediator.Send(logRefillRequested);
+
+    tank = await _mediator.Send(getTankQuery);
+
+    tank.CurrentState.FuelLevel.Should().Be(100);
+    tank.CurrentState.RefillRequested.Should().Be(true);
+    
     var refillCommand = new LogRefilledCommand(
       TankId: tankId,
       NewFuelLevel: 200
@@ -56,8 +66,9 @@ public class WorkflowTests(
 
     tank = await _mediator.Send(getTankQuery);
 
-    tank.Count.Should().Be(3);
+    tank.Count.Should().Be(4);
     tank.CurrentState.FuelLevel.Should().Be(200);
+    tank.CurrentState.RefillRequested.Should().Be(false);
 
     var logTooMuchFuelExtractedCommand = new LogFuelExtractedCommand(
       TankId: tankId,

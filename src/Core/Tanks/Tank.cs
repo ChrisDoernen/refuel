@@ -13,16 +13,18 @@ public record Tank : IReplayable<Tank>
   public string Name { get; private init; } = null!;
   public string Description { get; private init; } = null!;
   public int Capacity { get; private init; }
+  public bool RefillRequested { get; private init; }
   public int FuelLevel { get; private init; }
   public Meter? Meter { get; private init; }
-  
+
   public Tank Apply(IEventData evnt)
   {
     return evnt switch
     {
-      FuelExtractedEventV1 fuelExtractedEvent => Apply(fuelExtractedEvent),
-      RefilledEventV1 refilledEvent => Apply(refilledEvent),
       TankRegisteredEventV1 tankRegisteredEvent => Apply(tankRegisteredEvent),
+      FuelExtractedEventV1 fuelExtractedEvent => Apply(fuelExtractedEvent),
+      RefillRequestedEventV1 refillRequested => Apply(refillRequested),
+      RefilledEventV1 refilledEvent => Apply(refilledEvent),
       _ => throw new InvalidOperationException("Unknown event for tank"),
     };
   }
@@ -38,7 +40,8 @@ public record Tank : IReplayable<Tank>
   };
 
   private Tank Apply(FuelExtractedEventV1 evnt) => this with { FuelLevel = FuelLevel - evnt.AmountExtracted };
-  private Tank Apply(RefilledEventV1 evnt) => this with { FuelLevel = evnt.NewFuelLevel };
+  private Tank Apply(RefillRequestedEventV1 _) => this with { RefillRequested = true };
+  private Tank Apply(RefilledEventV1 evnt) => this with { FuelLevel = evnt.NewFuelLevel, RefillRequested = false };
 }
 
 public record Meter(
