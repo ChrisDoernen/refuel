@@ -9,7 +9,7 @@ builder.Services.AddCore();
 builder.Services.AddGraphQLServer().AddQueryType<Query>();
 // builder.Services.AddGraphQL();
 
-builder.Services.AddEventSourcingDb();
+builder.Services.AddEventSourcingDb(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 

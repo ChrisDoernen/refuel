@@ -15,7 +15,11 @@ public class ReadEventsTests(
   [Fact]
   public async Task ReadEvents()
   {
-    var eventData = new TestEventV1(Guid.CreateVersion7());
+    var eventData = new TestEventV1(
+      Guid.CreateVersion7(),
+      "Chris",
+      DateTime.UtcNow
+    );
     var eventCandidate = new EventCandidate(
       Subject: "/test/42",
       Data: eventData
@@ -36,9 +40,14 @@ public class ReadEventsTests(
   [Fact]
   public async Task ReadEventsRecursively()
   {
+    var eventData = new TestEventV1(
+      Guid.CreateVersion7(),
+      "Chris",
+      DateTime.UtcNow
+    );
     var testEventCandidate = new EventCandidate(
       Subject: "/test/43/foo",
-      Data: new TestEventV1(Guid.CreateVersion7())
+      Data: eventData
     );
     var otherTestEventCandidate = new EventCandidate(
       Subject: "/test/43/bar",

@@ -1,6 +1,8 @@
-﻿namespace Core.Tanks.Refilling;
+﻿using EventSourcingDbClient;
 
+namespace Core.Tanks.Refilling;
+
+[EventType("com.example.refilled.v1")]
 public record RefilledEventV1(
-  Guid UserId,
   int NewFuelLevel
-) : ITankRelated;
+) : IEventData;

@@ -1,4 +1,5 @@
-﻿using EventSourcingDbClient;
+﻿using Core.Shared;
+using EventSourcingDbClient;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -6,14 +7,14 @@ namespace Core.Tanks.Querying;
 
 public record GetTankQuery(
   Guid Id
-) : IRequest<Tank>;
+) : IRequest<AuditTrail<Tank>>;
 
 public class GetTankQueryHandler(
   ILogger<GetTankQueryHandler> logger,
   IEventStore eventStore
-) : IRequestHandler<GetTankQuery, Tank>
+) : IRequestHandler<GetTankQuery, AuditTrail<Tank>>
 {
-  public async Task<Tank> Handle(
+  public async Task<AuditTrail<Tank>> Handle(
     GetTankQuery query,
     CancellationToken cancellationToken
   )
@@ -29,13 +30,10 @@ public class GetTankQueryHandler(
       cancellationToken
     );
 
-    return await events
-      .Select(e => e.Payload.Data)
-      .Cast<ITankRelated>()
-      .AggregateAsync(
-        new Tank(),
-        (tank, evnt) => tank.Apply(evnt),
-        cancellationToken
-      );
+    var changes = events.Select(Change.FromEvent);
+
+    var auditTrail = await AuditTrail<Tank>.Pristine().Replay(changes);
+
+    return auditTrail;
   }
 }

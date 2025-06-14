@@ -1,7 +1,8 @@
-﻿namespace Core.Tanks.FuelExtraction;
+﻿using EventSourcingDbClient;
 
+namespace Core.Tanks.FuelExtraction;
+
+[EventType("com.example.fuel-extracted.v1")]
 public record FuelExtractedEventV1(
-  Guid UserId,
   int AmountExtracted
-) : ITankRelated;
-
+) : IEventData;

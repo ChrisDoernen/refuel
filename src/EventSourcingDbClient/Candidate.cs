@@ -7,7 +7,7 @@
 /// </summary>
 public record EventCandidate(
   string Subject,
-  object Data
+  IEventData Data
 );
 
 internal record Candidate(

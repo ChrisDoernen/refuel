@@ -2,7 +2,9 @@
 
 [EventType("com.example.test-event.v1")]
 public record TestEventV1(
-  Guid Id
+  Guid Id,
+  string Name,
+  DateTime When
 ): IEventData;
 
 [EventType("com.example.other-test-event.v1")]

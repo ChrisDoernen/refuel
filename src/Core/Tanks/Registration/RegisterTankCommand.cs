@@ -6,9 +6,10 @@ namespace Core.Tanks.Registration;
 
 public record RegisterTankCommand(
   string Name,
-  string ClubId,
+  Guid ClubId,
   string Description,
-  int InitialFuelLevel = 0
+  int Capacity,
+  int FuelLevel = 0
 ) : IRequest<Guid>;
 
 public class RegisterTankCommandHandler(
@@ -25,10 +26,11 @@ public class RegisterTankCommandHandler(
 
     var evnt = new TankRegisteredEventV1(
       Guid.CreateVersion7(),
-      command.Name,
       command.ClubId,
+      command.Name,
       command.Description,
-      command.InitialFuelLevel
+      command.Capacity,
+      command.FuelLevel
     );
 
     var candidate = new EventCandidate(

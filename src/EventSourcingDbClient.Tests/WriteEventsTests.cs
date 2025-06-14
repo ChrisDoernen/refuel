@@ -12,20 +12,13 @@ public class WriteEventsTests(
 {
   private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
 
-  [EventType("com.example.test-event.v1")]
-  private record TestEventV1(
-    int Id,
-    string Name,
-    DateTime When
-  );
-
   [Fact]
   public async Task WriteSingleEvent()
   {
     var eventCandidate = new EventCandidate(
       Subject: "/test/42",
       Data: new TestEventV1(
-        41,
+        Guid.CreateVersion7(),
         "Chris",
         DateTime.UtcNow
       )
