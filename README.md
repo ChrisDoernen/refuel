@@ -63,4 +63,4 @@ There are not much event sourcing databases out there to exchange anyways.
 <br/>
 <br/>
 
-![image](docs/Tank.jpg)
+![image](docs/tank.jpg)
