@@ -7,7 +7,7 @@ Key aspects:
 - The business project making use of the SDK (Core, Core.Tests)
 
 Due to the short amount of time, there is no UI project and integration tests serve as POC.
-They can be run with `dotnet test`, the only prerequisites are .NET 9 SDK being installed and a running docker daemon.
+They can be run with `dotnet test src`, the only prerequisites are .NET 9 SDK being installed and a running docker daemon.
 
 ## Business domain
 
