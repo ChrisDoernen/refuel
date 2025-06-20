@@ -1,7 +1,5 @@
-﻿using Core.Tanks.Querying;
-using EventSourcingDbClient;
+﻿using EventSourcingDB;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Tanks.MeterInitialization;
 
@@ -11,8 +9,7 @@ public record InitializeMeterCommand(
 
 public class InitializeMeterCommandHandler(
   IMediator mediator,
-  IEventStore eventStore,
-  ILogger<InitializeMeterCommandHandler> logger
+  IEventStore eventStore
 ) : IRequestHandler<InitializeMeterCommand>
 {
   public async Task Handle(
@@ -20,11 +17,9 @@ public class InitializeMeterCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation("Initialize meter command");
-
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    tank.EnsureHasChanges();
+    tank.EnsureNotPristine();
     var meterInitializedEvent = new MeterInitializedEventV1();
     var candidate = new EventCandidate(
       Subject: $"/tanks/{command.TankId}/meter",

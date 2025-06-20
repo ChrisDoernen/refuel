@@ -1,7 +1,5 @@
-﻿using Core.Tanks.Querying;
-using EventSourcingDbClient;
+﻿using EventSourcingDB;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Tanks.MeterReading;
 
@@ -12,8 +10,7 @@ public record LogMeterReadCommand(
 
 public class LogMeterReadCommandHandler(
   IMediator mediator,
-  IEventStore eventStore,
-  ILogger<LogMeterReadCommandHandler> logger
+  IEventStore eventStore
 ) : IRequestHandler<LogMeterReadCommand>
 {
   public async Task Handle(
@@ -23,7 +20,7 @@ public class LogMeterReadCommandHandler(
   {
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    tank.EnsureHasChanges();
+    tank.EnsureNotPristine();
     if (command.Value < tank.CurrentState.Meter?.Value)
     {
       throw new Exception("Meter read that is lower than the current value.");

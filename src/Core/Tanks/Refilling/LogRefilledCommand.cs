@@ -1,7 +1,5 @@
-﻿using Core.Tanks.Querying;
-using EventSourcingDbClient;
+﻿using EventSourcingDB;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Tanks.Refilling;
 
@@ -12,8 +10,7 @@ public record LogRefilledCommand(
 
 public class LogRefilledCommandHandler(
   IMediator mediator,
-  IEventStore eventStore,
-  ILogger<LogRefilledCommandHandler> logger
+  IEventStore eventStore
 ) : IRequestHandler<LogRefilledCommand>
 {
   public async Task Handle(
@@ -21,8 +18,6 @@ public class LogRefilledCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation("Log refilled command");
-
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
     if (command.NewFuelLevel > tank.CurrentState.Capacity)

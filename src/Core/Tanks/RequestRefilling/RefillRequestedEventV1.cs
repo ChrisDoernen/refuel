@@ -1,4 +1,4 @@
-﻿using EventSourcingDbClient;
+﻿using EventSourcingDB;
 
 namespace Core.Tanks.RequestRefilling;
 

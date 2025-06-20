@@ -5,7 +5,7 @@ using Core.Tanks.MeterReading;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
 using Core.Tanks.RequestRefilling;
-using EventSourcingDbClient;
+using EventSourcingDB;
 
 namespace Core.Tanks;
 
@@ -36,7 +36,7 @@ public record Tank : IReplayable<Tank>
 
   private Tank Apply(TankRegisteredEventV1 evnt) => this with
   {
-    Id = evnt.Id,
+    Id = evnt.TankId,
     FuelLevel = evnt.InitialFuelLevel,
     Capacity = evnt.Capacity,
     Name = evnt.Name,

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Core.Shared.Authorization;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Core;
 
@@ -10,5 +12,9 @@ public static class ServiceCollectionExtensions
   {
     var assembly = typeof(ServiceCollectionExtensions).Assembly;
     services.AddMediatR(c => c.RegisterServicesFromAssembly(assembly));
+
+    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
+    
+    services.AddAuthorizersFromAssembly(assembly);
   }
 }

@@ -1,6 +1,7 @@
-﻿using EventSourcingDbClient;
+﻿using Core.Clubs;
+using Core.Shared.Authorization;
+using EventSourcingDB;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Tanks.Registration;
 
@@ -13,7 +14,6 @@ public record RegisterTankCommand(
 ) : IRequest<Guid>;
 
 public class RegisterTankCommandHandler(
-  ILogger<RegisterTankCommandHandler> logger,
   IEventStore eventStore
 ) : IRequestHandler<RegisterTankCommand, Guid>
 {
@@ -22,8 +22,6 @@ public class RegisterTankCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation("Register tank command");
-
     var evnt = new TankRegisteredEventV1(
       Guid.CreateVersion7(),
       command.ClubId,
@@ -34,7 +32,7 @@ public class RegisterTankCommandHandler(
     );
 
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{evnt.Id}",
+      Subject: $"/tanks/{evnt.TankId}",
       Data: evnt
     );
 
@@ -44,6 +42,14 @@ public class RegisterTankCommandHandler(
       cancellationToken
     );
 
-    return evnt.Id;
+    return evnt.TankId;
+  }
+}
+
+public class RegisterTankCommandAuthorizer : Authorizer<RegisterTankCommand>
+{
+  public override async Task BuildPolicy(RegisterTankCommand command)
+  {
+    UsePolicy(new UserIsInClubRolePolicy(new ClubRole(command.ClubId, ClubRoles.Admin)));
   }
 }

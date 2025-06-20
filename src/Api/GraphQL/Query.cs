@@ -1,5 +1,4 @@
 ﻿using Core.Tanks;
-using Core.Tanks.Querying;
 using MediatR;
 
 namespace Api.GraphQL;

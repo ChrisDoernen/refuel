@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventSourcingDbClient\EventSourcingDbClient.csproj" />
+    <ProjectReference Include="..\EventSourcingDB\EventSourcingDB.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using EventSourcingDbClient;
+using EventSourcingDB;
 
 namespace Core.Shared;
 
@@ -33,7 +33,7 @@ public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IRepl
     return this;
   }
 
-  public void EnsureHasChanges()
+  public void EnsureNotPristine()
   {
     if (_auditTrail.Count == 0)
     {
@@ -42,7 +42,6 @@ public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IRepl
   }
 
   public IEnumerator<StateChange<T>> GetEnumerator() => _auditTrail.GetEnumerator();
-
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
   public int Count => _auditTrail.Count;
 }
@@ -61,9 +60,9 @@ public record Change(
 {
   public static Change FromEvent(Event evnt) =>
     new(
-      evnt.Payload.Id,
-      evnt.Payload.Subject,
-      evnt.Payload.Time,
-      evnt.Payload.Data
+      evnt.Id,
+      evnt.Subject,
+      evnt.Time,
+      evnt.Data
     );
 }

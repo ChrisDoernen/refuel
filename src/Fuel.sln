@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{935F0F8F-DA31-432D-B906-849A6F0EB8EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDbClient", "EventSourcingDbClient\EventSourcingDbClient.csproj", "{BE17733D-6450-46C3-8F06-68A6AD7CA05B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDB", "EventSourcingDB\EventSourcingDB.csproj", "{BE17733D-6450-46C3-8F06-68A6AD7CA05B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDbClient.Tests", "EventSourcingDbClient.Tests\EventSourcingDbClient.Tests.csproj", "{3FF87095-35AF-4083-8439-0FDE54D75412}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDB.Tests", "EventSourcingDB.Tests\EventSourcingDB.Tests.csproj", "{3FF87095-35AF-4083-8439-0FDE54D75412}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{897E0919-5016-4082-B7B8-199DD18EF838}"
 EndProject

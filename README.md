@@ -1,9 +1,9 @@
 ﻿# Refuel - Tank App
 
-This is a demo project for exploring the concept of event souring and the new database system [EventSourcingDb](https://docs.eventsourcingdb.io/) from [the native web](https://www.thenativeweb.io/).
+This is a demo project for exploring the concept of event souring and the new database system [EventSourcingDB](https://docs.eventsourcingdb.io/) from [the native web](https://www.thenativeweb.io/).
 
 Key aspects:
-- A .NET client SDK project for interacting with EventSourcingDb (EventSourcingDbClient, EventSourcingDbClient.Tests) 
+- A .NET client SDK project for interacting with EventSourcingDB (EventSourcingDbClient, EventSourcingDbClient.Tests) 
 - The business project making use of the SDK (Core, Core.Tests)
 
 Due to the short amount of time, there is no UI project and integration tests serve as POC.
@@ -17,12 +17,12 @@ TL;DR  ⛽→🧃→🛩️
 
 At our local aero club, we use big tanks for storing fuel (see image at the bottom of the page).
 When refueling aircraft, we fill up smaller canisters from that big tank and move them to the hangars.
-The extraction of fuel is tracked with a list containing columns for name, date, amount of fuel extracted, meter value after extraction and remaining fuel. 
-When the remaining fuel reaches a certain level, a contact person reaches out to a company for refilling the tank. 
+The extraction of fuel is tracked with a list containing columns for name, date, amount of fuel extracted, meter value after extraction and remaining fuel level. 
+When the remaining fuel gets below a certain level, a contact person reaches out to a company for refilling the tank. 
 The refilling is tracked by starting a new list.
 
 Digitalizing this process with an app has both benefits and drawbacks and might be over-engineering. 
-However, it makes a perfect business domain for experimenting with event sourcing due to it's approachability and low complexity.
+However, it makes a perfect business domain for experimenting with event sourcing due to its approachability and low complexity.
 
 ### Domain Events
 

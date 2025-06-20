@@ -3,7 +3,6 @@ using Core.Tanks;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
-using Core.Tanks.Querying;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
 using Core.Tanks.RequestRefilling;
@@ -77,11 +76,11 @@ public class WorkflowTests(
     tank.CurrentState.FuelLevel.Should().Be(100);
     tank.CurrentState.RefillRequested.Should().Be(true);
     
-    var refillCommand = new LogRefilledCommand(
+    var logRefilledCommand = new LogRefilledCommand(
       TankId: tankId,
       NewFuelLevel: 200
     );
-    await _mediator.Send(refillCommand);
+    await _mediator.Send(logRefilledCommand);
 
     tank = await _mediator.Send(getTankQuery);
 

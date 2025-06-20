@@ -1,5 +1,4 @@
-﻿using Core.Tanks.Querying;
-using EventSourcingDbClient;
+﻿using EventSourcingDB;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +24,7 @@ public class LogFuelExtractedCommandHandler(
 
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    tank.EnsureHasChanges();
+    tank.EnsureNotPristine();
     if (tank.CurrentState.FuelLevel - command.AmountExtracted < 0)
     {
       throw new InvalidOperationException("Fuel level cannot be negative.");
