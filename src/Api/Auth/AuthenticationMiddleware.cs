@@ -39,11 +39,9 @@ public class AuthenticationMiddleware(
     var email = principal.FindFirst(ClaimTypes.Email)?.Value;
     if (email is null)
     {
-      throw new Exception("Missing claims in token");
+      throw new Exception("Missing email claim in JWT token");
     }
 
-    // return await mediator.Send(new GetUserQuery(Guid.CreateVersion7()));
-
-    throw new NotImplementedException();
+    return await mediator.Send(new GetUserByEmailQuery(email));
   }
 }

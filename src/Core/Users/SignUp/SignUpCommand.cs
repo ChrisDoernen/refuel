@@ -7,13 +7,13 @@ public record SignUpCommand(
   string Email,
   string FirstName,
   string LastName
-) : IRequest;
+) : IRequest<Guid>;
 
 public class SignUpCommandHandler(
   IEventStore eventStore
-) : IRequestHandler<SignUpCommand>
+) : IRequestHandler<SignUpCommand, Guid>
 {
-  public async Task Handle(
+  public async Task<Guid> Handle(
     SignUpCommand command,
     CancellationToken cancellationToken
   )
@@ -33,5 +33,7 @@ public class SignUpCommandHandler(
       [new IsSubjectPristine(candidate.Subject)],
       cancellationToken
     );
+
+    return userSignedUpEvent.UserId;
   }
 }

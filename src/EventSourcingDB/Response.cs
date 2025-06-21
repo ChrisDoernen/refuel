@@ -26,6 +26,9 @@ public class ErrorResponse : Response
   public Error Payload { get; set; } = null!;
 }
 
+/// <summary>
+///   This is used when projecting "in e" in GraphQL.
+/// </summary>
 public class EventProjection
 {
   public string Source { get; set; } = null!;
