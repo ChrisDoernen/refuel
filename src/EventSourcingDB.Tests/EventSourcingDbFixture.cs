@@ -10,7 +10,7 @@ using Xunit.Microsoft.DependencyInjection.Abstracts;
 namespace EventSourcingDB.Tests;
 
 public class EventSourcingDbFixture(
-  IMessageSink messageSink
+  IMessageSink _
 ) : TestBedFixture, IAsyncLifetime
 {
   private const int Port = 3000;
@@ -18,7 +18,7 @@ public class EventSourcingDbFixture(
 
   private readonly IContainer _container = new ContainerBuilder()
     .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-    .WithPortBinding(Port, true)
+    .WithPortBinding(Port, false)
     .WithCommand(
       "run",
       $"--api-token={ApiToken}",

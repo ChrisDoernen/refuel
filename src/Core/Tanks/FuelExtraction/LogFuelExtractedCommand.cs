@@ -11,8 +11,7 @@ public record LogFuelExtractedCommand(
 
 public class LogFuelExtractedCommandHandler(
   IMediator mediator,
-  IEventStore eventStore,
-  ILogger<LogFuelExtractedCommandHandler> logger
+  IEventStore eventStore
 ) : IRequestHandler<LogFuelExtractedCommand>
 {
   public async Task Handle(
@@ -20,8 +19,6 @@ public class LogFuelExtractedCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation("Fuel extracted command");
-
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
     tank.EnsureNotPristine();

@@ -23,9 +23,8 @@ public class RunEventQlQueryTests(
   [Fact]
   public async Task GetEventTypes()
   {
-    var testEventId = Guid.CreateVersion7();
     var testEvent = new TestEventV1(
-      testEventId,
+      Guid.CreateVersion7(),
       "Chris",
       DateTime.UtcNow
     );
@@ -44,7 +43,7 @@ public class RunEventQlQueryTests(
     var query =
       $"""
        FROM e IN events
-       WHERE e.type == \"{typeof(TestEventV1).GetEventType()}\"
+       WHERE e.type == '{EventType.Of(testEvent)}' AND e.data.id == '{testEvent.Id}'
        PROJECT INTO e
        """;
 

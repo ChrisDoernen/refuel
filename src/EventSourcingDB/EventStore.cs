@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Reflection;
 using System.Text.Json;
 
@@ -49,7 +50,7 @@ public class EventStore(
       candidate => new Candidate(
         Source: "https://example.com",
         Subject: candidate.Subject,
-        Type: candidate.Data.GetType().GetEventType(),
+        Type: EventType.Of(candidate.Data),
         Data: candidate.Data
       )
     );
@@ -61,8 +62,7 @@ public class EventStore(
     };
     var httpContent = JsonContent.Create(
       content,
-      new MediaTypeHeaderValue("application/json"),
-      JsonSerialization.Options
+      options: JsonSerialization.Options
     );
 
     var response = await _client.PostAsync(
@@ -72,13 +72,13 @@ public class EventStore(
     );
     await EnsureSuccess("Failed to write events", response, cancellationToken);
 
-    var evnts = await response.Content.ReadFromJsonAsync<IEnumerable<EventResponse>>(cancellationToken);
-    if (evnts is null)
+    var responses = await response.Content.ReadFromJsonAsync<IEnumerable<EventResponse>>(cancellationToken);
+    if (responses is null)
     {
       throw new HttpRequestException("Failed to write events");
     }
 
-    return evnts.Select(e => e.Payload);
+    return responses.Select(e => e.Payload);
   }
 
   private static async Task EnsureSuccess(
@@ -108,7 +108,6 @@ public class EventStore(
     };
     var httpContent = JsonContent.Create(
       content,
-      new MediaTypeHeaderValue("application/json"),
       options: JsonSerialization.Options
     );
     var request = new HttpRequestMessage(HttpMethod.Post, "read-events")
@@ -125,25 +124,22 @@ public class EventStore(
 
     var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-    var events = JsonSerializer.DeserializeAsyncEnumerable<EventResponse>(
+    var responses = JsonSerializer.DeserializeAsyncEnumerable<EventResponse>(
       stream,
       true,
       JsonSerialization.Options,
       cancellationToken
     );
 
-    return events.OfType<EventResponse>().Select(e => e.Payload);
+    return responses.OfType<EventResponse>().Select(e => e.Payload);
   }
 
-  public async Task<IAsyncEnumerable<Event>> RunEventQlQuery(
+  public async Task<IAsyncEnumerable<EventRow>> RunEventQlQuery(
     string query,
     CancellationToken cancellationToken = default
   )
   {
-    var httpContent = JsonContent.Create(
-      new { Query = query },
-      new MediaTypeHeaderValue("application/json")
-    );
+    var httpContent = JsonContent.Create(new { Query = query });
     var request = new HttpRequestMessage(HttpMethod.Post, "run-eventql-query")
     {
       Content = httpContent
@@ -158,13 +154,16 @@ public class EventStore(
 
     var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-    var events = JsonSerializer.DeserializeAsyncEnumerable<Response>(
+    // using var reader = new StreamReader(stream);
+    // string content = await reader.ReadToEndAsync(cancellationToken);
+    
+    var responses = JsonSerializer.DeserializeAsyncEnumerable<Response>(
       stream,
       true,
       JsonSerialization.Options,
       cancellationToken
     );
 
-    return events.OfType<EventResponse>().Select(e => e.Payload);
+    return responses.OfType<RowResponse>().Select(e => e.Payload);
   }
 }
