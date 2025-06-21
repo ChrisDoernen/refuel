@@ -134,7 +134,7 @@ public class EventStore(
     return responses.OfType<EventResponse>().Select(e => e.Payload);
   }
 
-  public async Task<IAsyncEnumerable<EventRow>> RunEventQlQuery(
+  public async Task<IAsyncEnumerable<EventProjection>> RunEventQlQuery(
     string query,
     CancellationToken cancellationToken = default
   )
@@ -153,9 +153,6 @@ public class EventStore(
     response.EnsureSuccessStatusCode();
 
     var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-
-    // using var reader = new StreamReader(stream);
-    // string content = await reader.ReadToEndAsync(cancellationToken);
     
     var responses = JsonSerializer.DeserializeAsyncEnumerable<Response>(
       stream,
@@ -164,6 +161,6 @@ public class EventStore(
       cancellationToken
     );
 
-    return responses.OfType<RowResponse>().Select(e => e.Payload);
+    return responses.OfType<ProjectionResponse>().Select(e => e.Payload);
   }
 }

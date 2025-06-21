@@ -5,15 +5,15 @@ namespace EventSourcingDB;
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(EventResponse), typeDiscriminator: "event")]
 [JsonDerivedType(typeof(ErrorResponse), typeDiscriminator: "error")]
-[JsonDerivedType(typeof(RowResponse), typeDiscriminator: "row")]
+[JsonDerivedType(typeof(ProjectionResponse), typeDiscriminator: "row")]
 public abstract class Response
 {
   protected string Type { get; set; } = null!;
 }
 
-public class RowResponse : Response
+public class ProjectionResponse : Response
 {
-  public EventRow Payload { get; set; } = null!;
+  public EventProjection Payload { get; set; } = null!;
 }
 
 public class EventResponse : Response
@@ -26,7 +26,7 @@ public class ErrorResponse : Response
   public Error Payload { get; set; } = null!;
 }
 
-public class EventRow
+public class EventProjection
 {
   public string Source { get; set; } = null!;
   public string Subject { get; set; } = null!;
@@ -36,8 +36,14 @@ public class EventRow
   public IEventData Data { get; set; } = null!;
 }
 
-public class Event : EventRow
+public class Event
 {
+  public string Source { get; set; } = null!;
+  public string Subject { get; set; } = null!;
+  public string Type { get; set; } = null!;
+  public string Id { get; set; } = null!;
+  public DateTime Time { get; set; }
+  public IEventData Data { get; set; } = null!;
   public string DataContentType { get; set; } = null!;
   public string SpecVersion { get; set; } = null!;
   public string PredecessorHash { get; set; } = null!;

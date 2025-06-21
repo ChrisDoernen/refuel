@@ -14,7 +14,7 @@ public interface IEventStore
     CancellationToken cancellationToken = default
   );
 
-  Task<IAsyncEnumerable<EventRow>> RunEventQlQuery(
+  Task<IAsyncEnumerable<EventProjection>> RunEventQlQuery(
     string query,
     CancellationToken cancellationToken = default
   );

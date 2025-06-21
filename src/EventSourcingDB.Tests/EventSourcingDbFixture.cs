@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
+﻿using dotenv.net;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,25 +10,33 @@ using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace EventSourcingDB.Tests;
 
-public class EventSourcingDbFixture(
-  IMessageSink _
-) : TestBedFixture, IAsyncLifetime
+public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
 {
+  private readonly string _apiToken;
   private const int Port = 3000;
-  private const string ApiToken = "secret";
+  private readonly IContainer _container;
 
-  private readonly IContainer _container = new ContainerBuilder()
-    .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-    .WithPortBinding(Port, false)
-    .WithCommand(
-      "run",
-      $"--api-token={ApiToken}",
-      "--data-directory-temporary",
-      "--http-enabled",
-      "--https-enabled=false",
-      "--with-ui"
-    )
-    .Build();
+  public EventSourcingDbFixture(IMessageSink _)
+  {
+    DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
+
+    _apiToken = Environment.GetEnvironmentVariable("EVENTSOURCINGDB_API_TOKEN") ?? "secret";
+    var randomizeHostPortEnv = Environment.GetEnvironmentVariable("RANDOMIZE_HOST_PORT");
+    var randomizeHostPort = randomizeHostPortEnv is not string || bool.Parse(randomizeHostPortEnv);
+
+    _container = new ContainerBuilder()
+      .WithImage("thenativeweb/eventsourcingdb:1.0.2")
+      .WithPortBinding(Port, randomizeHostPort)
+      .WithCommand(
+        "run",
+        $"--api-token={_apiToken}",
+        "--data-directory-temporary",
+        "--http-enabled",
+        "--https-enabled=false",
+        "--with-ui"
+      )
+      .Build();
+  }
 
   public async Task InitializeAsync()
   {
@@ -47,7 +56,7 @@ public class EventSourcingDbFixture(
       options =>
       {
         options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(Port) }.ToString();
-        options.ApiToken = ApiToken;
+        options.ApiToken = _apiToken;
       }
     );
   }
