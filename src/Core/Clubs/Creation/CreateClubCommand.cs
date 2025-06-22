@@ -1,6 +1,5 @@
 ﻿using EventSourcingDB;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Clubs.Creation;
 

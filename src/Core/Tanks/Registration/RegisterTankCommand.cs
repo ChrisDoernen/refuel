@@ -1,6 +1,4 @@
-﻿using Core.Clubs;
-using Core.Shared.Authorization;
-using EventSourcingDB;
+﻿using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.Registration;

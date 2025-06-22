@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Api.Clubs;
 
-public class ClubsQueryType : ObjectType<Query>
+public class ClubsQueryType : ObjectTypeExtension<Query>
 {
   protected override void Configure(IObjectTypeDescriptor<Query> descriptor)
   {

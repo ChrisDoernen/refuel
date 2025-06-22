@@ -1,12 +1,12 @@
-﻿using Core.Clubs;
+﻿using Api.GraphQL;
 using Core.Users;
 using MediatR;
 
 namespace Api.Users;
 
-public class UsersQueryType : ObjectType<User>
+public class UsersQueryType : ObjectTypeExtension<Query>
 {
-  protected override void Configure(IObjectTypeDescriptor<User> descriptor)
+  protected override void Configure(IObjectTypeDescriptor<Query> descriptor)
   {
     descriptor
       .Field("GetUsers")

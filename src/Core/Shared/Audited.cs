@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using EventSourcingDB;
+﻿using EventSourcingDB;
 
 namespace Core.Shared;
 
