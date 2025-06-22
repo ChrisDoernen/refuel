@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.Shared;
+using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.Refilling;
@@ -20,7 +21,7 @@ public class LogRefilledCommandHandler(
   {
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    if (command.NewFuelLevel > tank.CurrentState.Capacity)
+    if (command.NewFuelLevel > tank.Capacity)
     {
       throw new InvalidOperationException("New fuel level exceeds tank capacity.");
     }
@@ -32,7 +33,7 @@ public class LogRefilledCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
+      [tank.GetIsSubjectOnEventIdPrecondition()],
       cancellationToken
     );
   }

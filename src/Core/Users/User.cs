@@ -6,7 +6,7 @@ using EventSourcingDB;
 
 namespace Core.Users;
 
-public record User : IReplayable<User>
+public record User : Audited<User>, IReplayable<User>
 {
   public Guid Id { get; private init; }
   public string Email { get; private init; } = null!;

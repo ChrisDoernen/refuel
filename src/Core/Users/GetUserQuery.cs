@@ -6,13 +6,13 @@ namespace Core.Users;
 
 public record GetUserQuery(
   Guid UserId
-) : IRequest<AuditTrail<User>>;
+) : IRequest<User>;
 
 public class GetUserQueryHandler(
   IEventStore eventStore
-) : IRequestHandler<GetUserQuery, AuditTrail<User>>
+) : IRequestHandler<GetUserQuery, User>
 {
-  public async Task<AuditTrail<User>> Handle(
+  public async Task<User> Handle(
     GetUserQuery query,
     CancellationToken cancellationToken
   )
@@ -27,7 +27,8 @@ public class GetUserQueryHandler(
     );
 
     var changes = events.Select(Change.FromEvent);
+    var user = await AuditTrail<User>.Pristine().Replay(changes);
 
-    return await AuditTrail<User>.Pristine().Replay(changes);
+    return user.GetAudited();
   }
 }

@@ -20,8 +20,7 @@ public class LogMeterReadCommandHandler(
   {
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    tank.EnsureNotPristine();
-    if (command.Value < tank.CurrentState.Meter?.Value)
+    if (command.Value < tank.Meter?.Value)
     {
       throw new Exception("Meter read that is lower than the current value.");
     }

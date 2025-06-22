@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.Shared;
+using EventSourcingDB;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +22,7 @@ public class LogFuelExtractedCommandHandler(
   {
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
 
-    tank.EnsureNotPristine();
-    if (tank.CurrentState.FuelLevel - command.AmountExtracted < 0)
+    if (tank.FuelLevel - command.AmountExtracted < 0)
     {
       throw new InvalidOperationException("Fuel level cannot be negative.");
     }
@@ -34,7 +34,7 @@ public class LogFuelExtractedCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
+      [tank.GetIsSubjectOnEventIdPrecondition()],
       cancellationToken
     );
   }

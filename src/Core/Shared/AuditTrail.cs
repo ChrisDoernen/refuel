@@ -3,7 +3,7 @@ using EventSourcingDB;
 
 namespace Core.Shared;
 
-public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IReplayable<T>, new()
+public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : Audited<T>, IReplayable<T>, new()
 {
   private readonly List<StateChange<T>> _auditTrail = [];
   private StateChange<T>? Current => _auditTrail.LastOrDefault();
@@ -33,6 +33,8 @@ public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IRepl
     return this;
   }
 
+  public T GetAudited() => CurrentState with { AuditTrail = _auditTrail };
+
   public void EnsureNotPristine()
   {
     if (_auditTrail.Count == 0)
@@ -44,25 +46,4 @@ public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IRepl
   public IEnumerator<StateChange<T>> GetEnumerator() => _auditTrail.GetEnumerator();
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
   public int Count => _auditTrail.Count;
-}
-
-public record StateChange<T>(
-  Change Change,
-  T State
-);
-
-public record Change(
-  string Id,
-  string Subject,
-  DateTime Time,
-  IEventData Data
-)
-{
-  public static Change FromEvent(Event evnt) =>
-    new(
-      evnt.Id,
-      evnt.Subject,
-      evnt.Time,
-      evnt.Data
-    );
 }

@@ -4,7 +4,7 @@ using EventSourcingDB;
 
 namespace Core.Clubs;
 
-public record Club : IReplayable<Club>
+public record Club : Audited<Club>, IReplayable<Club>
 {
   public Guid Id { get; private set; }
   public string Name { get; private set; } = null!;

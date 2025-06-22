@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
+﻿using dotenv.net;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using EventSourcingDB;
 using Microsoft.Extensions.Configuration;
@@ -10,25 +11,36 @@ using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace Core.Tests;
 
-public class CoreFixture(
-  IMessageSink messageSink
-) : TestBedFixture, IAsyncLifetime
+public class CoreFixture : TestBedFixture, IAsyncLifetime
 {
-  private const int Port = 3000;
-  private const string ApiToken = "secret";
+  private readonly string _apiToken;
+  private readonly int _port;
+  private readonly IContainer _container;
 
-  private readonly IContainer _container = new ContainerBuilder()
-    .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-    .WithPortBinding(Port)
-    .WithCommand(
-      "run",
-      $"--api-token={ApiToken}",
-      "--data-directory-temporary",
-      "--http-enabled",
-      "--https-enabled=false",
-      "--with-ui"
-    )
-    .Build();
+  public CoreFixture(IMessageSink _)
+  {
+    DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
+
+    _apiToken = Environment.GetEnvironmentVariable("EVENTSOURCINGDB_API_TOKEN") ?? "secret";
+    var portEnv = Environment.GetEnvironmentVariable("EVENTSOURCINGDB_DEFAULT_PORT") ?? "3000";
+    _port = int.Parse(portEnv);
+    var randomizeHostPortEnv = Environment.GetEnvironmentVariable("RANDOMIZE_HOST_PORT");
+    var randomizeHostPort = randomizeHostPortEnv is not string || bool.Parse(randomizeHostPortEnv);
+
+    _container = new ContainerBuilder()
+      .WithImage("thenativeweb/eventsourcingdb:1.0.2")
+      .WithPortBinding(_port, randomizeHostPort)
+      .WithCommand(
+        "run",
+        $"--api-token={_apiToken}",
+        $"--http-port={_port}",
+        "--data-directory-temporary",
+        "--http-enabled",
+        "--https-enabled=false",
+        "--with-ui"
+      )
+      .Build();
+  }
 
   public async Task InitializeAsync()
   {
@@ -48,8 +60,8 @@ public class CoreFixture(
       configuration!,
       options =>
       {
-        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(Port) }.ToString();
-        options.ApiToken = ApiToken;
+        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(_port) }.ToString();
+        options.ApiToken = _apiToken;
       }
     );
   }

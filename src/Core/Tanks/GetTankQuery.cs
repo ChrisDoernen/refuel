@@ -6,13 +6,13 @@ namespace Core.Tanks;
 
 public record GetTankQuery(
   Guid TankId
-) : IRequest<AuditTrail<Tank>>;
+) : IRequest<Tank>;
 
 public class GetTankQueryHandler(
   IEventStore eventStore
-) : IRequestHandler<GetTankQuery, AuditTrail<Tank>>
+) : IRequestHandler<GetTankQuery, Tank>
 {
-  public async Task<AuditTrail<Tank>> Handle(
+  public async Task<Tank> Handle(
     GetTankQuery query,
     CancellationToken cancellationToken
   )
@@ -27,7 +27,8 @@ public class GetTankQueryHandler(
     );
 
     var changes = events.Select(Change.FromEvent);
+    var tank = await AuditTrail<Tank>.Pristine().Replay(changes);
 
-    return await AuditTrail<Tank>.Pristine().Replay(changes);
+    return tank.GetAudited();
   }
 }

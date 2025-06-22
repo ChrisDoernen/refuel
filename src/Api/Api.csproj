@@ -16,8 +16,4 @@
     <PackageReference Include="HotChocolate.Types.Analyzers" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Types\" />
-  </ItemGroup>
-
 </Project>

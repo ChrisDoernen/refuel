@@ -9,7 +9,7 @@ using EventSourcingDB;
 
 namespace Core.Tanks;
 
-public record Tank : IReplayable<Tank>
+public record Tank : Audited<Tank>, IReplayable<Tank>
 {
   public Guid Id { get; private init; }
   public Guid ClubId { get; private init; }

@@ -7,4 +7,4 @@ public record ClubCreatedEventV1(
   Guid Id,
   string Name,
   string? Description
-) :  IEventData;
+) : IEventData;

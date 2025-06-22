@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector"/>
+    <PackageReference Include="dotenv.net" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />

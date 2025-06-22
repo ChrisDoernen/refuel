@@ -1,5 +1,4 @@
-﻿using Core.Shared;
-using Core.Tanks;
+﻿using Core.Tanks;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
@@ -36,10 +35,10 @@ public class WorkflowTests(
     var getTankQuery = new GetTankQuery(tankId);
     var tank = await _mediator.Send(getTankQuery);
 
-    tank.Should().BeOfType<AuditTrail<Tank>>();
-    tank.Count.Should().Be(1);
-    tank.CurrentState.FuelLevel.Should().Be(150);
-    tank.CurrentState.Meter.Should().BeNull();
+    tank.Should().BeOfType<Tank>();
+    tank.AuditTrail.Count().Should().Be(1);
+    tank.FuelLevel.Should().Be(150);
+    tank.Meter.Should().BeNull();
 
     var initializeMeter = new InitializeMeterCommand(
       TankId: tankId
@@ -48,7 +47,7 @@ public class WorkflowTests(
     
     tank = await _mediator.Send(getTankQuery);
 
-    tank.CurrentState.Meter!.Value.Should().Be(0);
+    tank.Meter!.Value.Should().Be(0);
     
     var logFuelExtractedCommand = new LogFuelExtractedCommand(
       TankId: tankId,
@@ -63,8 +62,8 @@ public class WorkflowTests(
     
     tank = await _mediator.Send(getTankQuery);
 
-    tank.CurrentState.FuelLevel.Should().Be(100);
-    tank.CurrentState.Meter!.Value.Should().Be(50);
+    tank.FuelLevel.Should().Be(100);
+    tank.Meter!.Value.Should().Be(50);
 
     var logRefillRequested = new LogRefillRequestedCommand(
       TankId: tankId
@@ -73,8 +72,8 @@ public class WorkflowTests(
 
     tank = await _mediator.Send(getTankQuery);
 
-    tank.CurrentState.FuelLevel.Should().Be(100);
-    tank.CurrentState.RefillRequested.Should().Be(true);
+    tank.FuelLevel.Should().Be(100);
+    tank.RefillRequested.Should().Be(true);
     
     var logRefilledCommand = new LogRefilledCommand(
       TankId: tankId,
@@ -84,9 +83,9 @@ public class WorkflowTests(
 
     tank = await _mediator.Send(getTankQuery);
 
-    tank.Count.Should().Be(6);
-    tank.CurrentState.FuelLevel.Should().Be(200);
-    tank.CurrentState.RefillRequested.Should().Be(false);
+    tank.AuditTrail.Count().Should().Be(6);
+    tank.FuelLevel.Should().Be(200);
+    tank.RefillRequested.Should().Be(false);
 
     var logTooMuchFuelExtractedCommand = new LogFuelExtractedCommand(
       TankId: tankId,

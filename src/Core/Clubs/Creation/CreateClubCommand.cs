@@ -5,13 +5,11 @@ using Microsoft.Extensions.Logging;
 namespace Core.Clubs.Creation;
 
 public record CreateClubCommand(
-  Guid Id,
   string Name,
   string? Description
 ) : IRequest<Guid>;
 
 public class CreateClubCommandHandler(
-  ILogger<CreateClubCommandHandler> logger,
   IEventStore eventStore
 ) : IRequestHandler<CreateClubCommand, Guid>
 {
@@ -20,8 +18,6 @@ public class CreateClubCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation("Create club command");
-
     var evnt = new ClubCreatedEventV1(
       Guid.CreateVersion7(),
       command.Name,

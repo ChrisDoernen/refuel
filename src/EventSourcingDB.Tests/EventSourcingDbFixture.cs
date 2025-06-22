@@ -13,7 +13,7 @@ namespace EventSourcingDB.Tests;
 public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
 {
   private readonly string _apiToken;
-  private const int Port = 3000;
+  private readonly int _port;
   private readonly IContainer _container;
 
   public EventSourcingDbFixture(IMessageSink _)
@@ -21,15 +21,18 @@ public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
     DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
     _apiToken = Environment.GetEnvironmentVariable("EVENTSOURCINGDB_API_TOKEN") ?? "secret";
+    var portEnv = Environment.GetEnvironmentVariable("EVENTSOURCINGDB_DEFAULT_PORT") ?? "3000";
+    _port = int.Parse(portEnv);
     var randomizeHostPortEnv = Environment.GetEnvironmentVariable("RANDOMIZE_HOST_PORT");
     var randomizeHostPort = randomizeHostPortEnv is not string || bool.Parse(randomizeHostPortEnv);
 
     _container = new ContainerBuilder()
       .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-      .WithPortBinding(Port, randomizeHostPort)
+      .WithPortBinding(_port, randomizeHostPort)
       .WithCommand(
         "run",
         $"--api-token={_apiToken}",
+        $"--http-port={_port}",
         "--data-directory-temporary",
         "--http-enabled",
         "--https-enabled=false",
@@ -55,7 +58,7 @@ public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
       configuration!,
       options =>
       {
-        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(Port) }.ToString();
+        options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(_port) }.ToString();
         options.ApiToken = _apiToken;
       }
     );

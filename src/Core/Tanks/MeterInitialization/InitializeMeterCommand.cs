@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.Shared;
+using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.MeterInitialization;
@@ -18,8 +19,8 @@ public class InitializeMeterCommandHandler(
   )
   {
     var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
-
     tank.EnsureNotPristine();
+
     var meterInitializedEvent = new MeterInitializedEventV1();
     var candidate = new EventCandidate(
       Subject: $"/tanks/{command.TankId}/meter",

@@ -17,8 +17,8 @@ public class EventStore(
     var response = await _client.GetAsync("ping", cancellationToken);
     response.EnsureSuccessStatusCode();
 
-    var evnt = await response.Content.ReadFromJsonAsync<Event>(cancellationToken);
-    if (evnt is null || evnt.Type != "io.eventsourcingdb.api.ping-received")
+    var evnt = await response.Content.ReadFromJsonAsync<UtilityEndpointEvent>(cancellationToken);
+    if (evnt is null || evnt.Type != EventType.Of<PingReceivedEvent>())
     {
       throw new HttpRequestException("Failed to ping");
     }
@@ -33,8 +33,8 @@ public class EventStore(
     );
     response.EnsureSuccessStatusCode();
 
-    var evnt = await response.Content.ReadFromJsonAsync<Event>(cancellationToken);
-    if (evnt is null || evnt.Type != "io.eventsourcingdb.api.api-token-verified")
+    var evnt = await response.Content.ReadFromJsonAsync<UtilityEndpointEvent>(cancellationToken);
+    if (evnt is null || evnt.Type != EventType.Of<ApiTokenVerifiedEvent>())
     {
       throw new HttpRequestException("Failed to verify api token");
     }
@@ -153,7 +153,7 @@ public class EventStore(
     response.EnsureSuccessStatusCode();
 
     var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-    
+
     var responses = JsonSerializer.DeserializeAsyncEnumerable<Response>(
       stream,
       true,

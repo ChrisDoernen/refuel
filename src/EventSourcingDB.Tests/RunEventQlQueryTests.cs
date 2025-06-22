@@ -13,14 +13,6 @@ public class RunEventQlQueryTests(
   private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
 
   [Fact]
-  public async Task EmptyEvents()
-  {
-    var events = await _eventStore.RunEventQlQuery("FROM e IN events PROJECT INTO e");
-
-    (await events.ToListAsync()).Should().BeEmpty();
-  }
-
-  [Fact]
   public async Task GetEventTypes()
   {
     var testEvent = new TestEventV1(

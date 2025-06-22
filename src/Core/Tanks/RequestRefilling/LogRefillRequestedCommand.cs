@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.Shared;
+using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.RequestRefilling;
@@ -26,7 +27,7 @@ public class LogRefillRequestedCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      [new IsSubjectOnEventId(tank.LastChange!.Subject, tank.LastChange.Id)],
+      [tank.GetIsSubjectOnEventIdPrecondition()],
       cancellationToken
     );
   }

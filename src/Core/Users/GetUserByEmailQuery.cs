@@ -43,6 +43,6 @@ public class GetUserByEmailQueryHandler(
       cancellationToken
     );
 
-    return user.CurrentState;
+    return user;
   }
 }

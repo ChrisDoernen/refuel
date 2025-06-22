@@ -1,4 +1,5 @@
 ﻿using Core.Clubs;
+using Core.Shared;
 using EventSourcingDB;
 using MediatR;
 
@@ -21,9 +22,9 @@ public class AssignClubRoleCommandHandler(
   {
     var user = await mediator.Send(new GetUserQuery(command.UserId), cancellationToken);
 
-    if (user.CurrentState.ClubRoles.Any(r => r.Equals(command.Role)))
+    if (user.ClubRoles.Any(r => r.Equals(command.Role)))
     {
-      // Nothing to do, as the desired state already reached.
+      // Nothing to do, as the desired state is already reached.
       return;
     }
 
@@ -37,7 +38,7 @@ public class AssignClubRoleCommandHandler(
     );
     await eventStore.StoreEvents(
       [candidate],
-      [new IsSubjectOnEventId(user.LastChange!.Subject, user.LastChange.Id)],
+      [user.GetIsSubjectOnEventIdPrecondition()],
       cancellationToken
     );
   }
