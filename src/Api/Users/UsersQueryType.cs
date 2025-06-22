@@ -9,7 +9,7 @@ public class UsersQueryType : ObjectTypeExtension<Query>
   protected override void Configure(IObjectTypeDescriptor<Query> descriptor)
   {
     descriptor
-      .Field("GetUsers")
+      .Field("getUsers")
       .Resolve<IEnumerable<User>>(
         async (context, cancellationToken) =>
         {

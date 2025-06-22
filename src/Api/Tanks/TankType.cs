@@ -16,6 +16,7 @@ public class TankType : ObjectType<Tank>
     descriptor.Field(t => t.Capacity);
     descriptor.Field(t => t.RefillRequested);
     descriptor.Field(t => t.FuelLevel);
+    descriptor.Field(t => t.AuditTrail);
 
     descriptor
       .Field("Club")

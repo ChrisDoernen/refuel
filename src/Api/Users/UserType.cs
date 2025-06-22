@@ -8,5 +8,7 @@ public class UserType : ObjectType<User>
   {
     descriptor.BindFieldsExplicitly();
     descriptor.Field(c => c.Id).ID();
+    descriptor.Field(c => c.FirstName);
+    descriptor.Field(c => c.LastName);
   }
 }

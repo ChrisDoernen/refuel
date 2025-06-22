@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EventSourcingDB\EventSourcingDB.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Shared.Testing\Shared.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@ public class ClubsQueryType : ObjectTypeExtension<Query>
   protected override void Configure(IObjectTypeDescriptor<Query> descriptor)
   {
     descriptor
-      .Field("GetClubs")
+      .Field("getClubs")
       .Resolve<IEnumerable<Club>>(
         async (context, cancellationToken) =>
         {

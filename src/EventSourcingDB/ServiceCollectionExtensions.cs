@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
   {
     services
       .AddOptions<EventSourcingDbClientOptions>()
-      .Bind(config.GetSection("EventSourcing"))
+      .Bind(config.GetSection(EventSourcingDbClientOptions.SectionName))
       .ValidateOnStart();
 
     if (configureOptions is not null)

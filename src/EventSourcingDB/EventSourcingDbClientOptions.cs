@@ -4,6 +4,8 @@ namespace EventSourcingDB;
 
 public sealed class EventSourcingDbClientOptions
 {
+  public const string SectionName = "EventSourcing";
+  
   [Required, Url]
   public required string Url { get; set; }
 

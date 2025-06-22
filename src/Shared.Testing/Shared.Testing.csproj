@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Testcontainers" />
       <PackageReference Include="xunit.abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EventSourcingDB\EventSourcingDB.csproj" />
     </ItemGroup>
 
 </Project>
