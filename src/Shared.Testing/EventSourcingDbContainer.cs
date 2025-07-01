@@ -12,7 +12,7 @@ public class EventSourcingDbContainer : IAsyncDisposable
   private readonly int _port;
   private readonly IContainer _container;
 
-  public EventSourcingDbContainer(EventSourcingDbClientOptions options)
+  public EventSourcingDbContainer(EventSourcingDbOptions options)
   {
     _apiToken = options.ApiToken;
     _port = new Uri(options.Url).Port;
@@ -35,7 +35,7 @@ public class EventSourcingDbContainer : IAsyncDisposable
       .Build();
   }
 
-  public Action<EventSourcingDbClientOptions> ConfigureOptions =>
+  public Action<EventSourcingDbOptions> ConfigureOptions =>
     options =>
     {
       options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(_port) }.ToString();

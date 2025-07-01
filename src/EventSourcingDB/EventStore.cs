@@ -1,10 +1,12 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace EventSourcingDB;
 
 public class EventStore(
-  IHttpClientFactory factory
+  IHttpClientFactory factory,
+  IOptions<EventSourcingDbOptions> options
 ) : IEventStore, IEventSourcingDbClient
 {
   private readonly HttpClient _client = factory.CreateClient("eventsourcingdb");
@@ -45,7 +47,7 @@ public class EventStore(
   {
     var candidates = eventCandidates.Select(
       candidate => new Candidate(
-        Source: "https://example.com",
+        Source: options.Value.Source,
         Subject: candidate.Subject,
         Type: EventType.Of(candidate.Data),
         Data: candidate.Data

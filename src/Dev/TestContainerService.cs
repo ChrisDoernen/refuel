@@ -19,8 +19,8 @@ public class TestContainerService : IHostedService, IAsyncDisposable
     _logger = logger;
 
     var options = configuration
-      .GetSection(EventSourcingDbClientOptions.SectionName)
-      .Get<EventSourcingDbClientOptions>()!;
+      .GetSection(EventSourcingDbOptions.SectionName)
+      .Get<EventSourcingDbOptions>()!;
 
     _eventSourcingDbTestcontainer = new EventSourcingDbContainer(options);
   }

@@ -22,8 +22,8 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
     DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
     var options = Configuration!
-      .GetSection(EventSourcingDbClientOptions.SectionName)
-      .Get<EventSourcingDbClientOptions>()!;
+      .GetSection(EventSourcingDbOptions.SectionName)
+      .Get<EventSourcingDbOptions>()!;
 
     _eventSourcingDbTestcontainer = new EventSourcingDbContainer(options);
   }

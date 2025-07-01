@@ -9,12 +9,12 @@ public static class ServiceCollectionExtensions
   public static void AddEventSourcingDb(
     this IServiceCollection services,
     IConfiguration config,
-    Action<EventSourcingDbClientOptions>? configureOptions = null
+    Action<EventSourcingDbOptions>? configureOptions = null
   )
   {
     services
-      .AddOptions<EventSourcingDbClientOptions>()
-      .Bind(config.GetSection(EventSourcingDbClientOptions.SectionName))
+      .AddOptions<EventSourcingDbOptions>()
+      .Bind(config.GetSection(EventSourcingDbOptions.SectionName))
       .ValidateOnStart();
 
     if (configureOptions is not null)
@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
       "eventsourcingdb",
       (s, client) =>
       {
-        var options = s.GetRequiredService<IOptions<EventSourcingDbClientOptions>>().Value;
+        var options = s.GetRequiredService<IOptions<EventSourcingDbOptions>>().Value;
 
         client.BaseAddress = new UriBuilder(options.Url) { Path = "api/v1/" }.Uri;
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiToken}");
