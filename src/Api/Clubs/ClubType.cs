@@ -9,6 +9,7 @@ public class ClubType : ObjectType<Club>
   protected override void Configure(IObjectTypeDescriptor<Club> descriptor)
   {
     descriptor.BindFieldsExplicitly();
+
     descriptor.Field(c => c.Id).ID();
     descriptor.Field(c => c.Name);
     descriptor.Field(c => c.Description);
@@ -18,10 +19,7 @@ public class ClubType : ObjectType<Club>
       .ImplementsNode()
       .ResolveNode<Guid>(
         async (context, id) =>
-        {
-          var query = new GetClubQuery(id);
-          return await context.Service<IMediator>().Send(query, context.RequestAborted);
-        }
+          await context.Service<IMediator>().Send(new GetClubQuery(id), context.RequestAborted)
       );
 
     descriptor

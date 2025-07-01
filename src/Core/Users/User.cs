@@ -12,7 +12,7 @@ public record User : Audited<User>, IReplayable<User>
   public string Email { get; private init; } = null!;
   public string FirstName { get; private init; } = null!;
   public string LastName { get; private init; } = null!;
-  public IList<ClubRole> ClubRoles { get; private init; } = [];
+  public IEnumerable<ClubRole> ClubRoles { get; private init; } = [];
 
   public User Apply(IEventData evnt)
   {
