@@ -12,11 +12,7 @@ public class ClubsQueryType : ObjectTypeExtension<Query>
       .Field("getClubs")
       .Resolve<IEnumerable<Club>>(
         async (context, cancellationToken) =>
-        {
-          var query = new GetClubsQuery();
-
-          return await context.Service<IMediator>().Send(query, cancellationToken);
-        }
+          await context.Service<IMediator>().Send(new GetClubsQuery(), cancellationToken)
       );
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Core.Clubs;
 using Core.Tanks;
+using Core.Users;
 using MediatR;
 
 namespace Api.Clubs;
@@ -23,7 +24,7 @@ public class ClubType : ObjectType<Club>
       );
 
     descriptor
-      .Field("Tanks")
+      .Field("tanks")
       .Resolve<IEnumerable<Tank>>(
         async (context, cancellationToken) =>
         {
@@ -31,6 +32,18 @@ public class ClubType : ObjectType<Club>
           // await context.Service<IMediator>()
 
           return new List<Tank>();
+        }
+      );
+
+    descriptor
+      .Field("users")
+      .Resolve<IEnumerable<User>>(
+        async (context, cancellationToken) =>
+        {
+          var id = context.Parent<Club>().Id;
+          var query = new GetUsersInClubQuery(id);
+
+          return await context.Service<IMediator>().Send(query, cancellationToken);
         }
       );
   }

@@ -2,13 +2,13 @@
 
 namespace Core.Clubs;
 
-public class ClubRoles : IModuleRoles
+public class ClubRoles : IRoleDefinition
 {
   public static Role Default = new(
     "club.default",
     "Default",
     "Club",
-    "Default club role with basic read permissions."
+    "Default role with basic read permissions."
   );
 
   public static Role Admin = new(

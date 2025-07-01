@@ -7,7 +7,7 @@ public record GetRoleQuery(
 ) : IRequest<Role>;
 
 public class GetRoleQueryHandler(
-  IMediator mediator
+  IRoleProvider roleProvider
 ) : IRequestHandler<GetRoleQuery, Role>
 {
   public async Task<Role> Handle(
@@ -15,9 +15,6 @@ public class GetRoleQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var roles = await mediator.Send(new GetRolesQuery(), cancellationToken);
-
-    return roles.FirstOrDefault(r => r.Id.Equals(query.Id))
-           ?? throw new KeyNotFoundException($"Role with id '{query.Id}' not found.");
+    return await Task.FromResult(roleProvider.GetRole(query.Id));
   }
 }

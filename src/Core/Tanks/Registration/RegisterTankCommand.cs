@@ -1,4 +1,6 @@
-﻿using EventSourcingDB;
+﻿using Core.Clubs;
+using Core.Shared.Authorization;
+using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.Registration;
@@ -44,10 +46,10 @@ public class RegisterTankCommandHandler(
   }
 }
 
-// public class RegisterTankCommandAuthorizer : Authorizer<RegisterTankCommand>
-// {
-//   public override async Task BuildPolicy(RegisterTankCommand command)
-//   {
-//     UsePolicy(new UserIsInClubRolePolicy(new ClubRole(command.ClubId, ClubRoles.Admin)));
-//   }
-// }
+public class RegisterTankCommandAuthorizer : Authorizer<RegisterTankCommand>
+{
+  public override async Task BuildPolicy(RegisterTankCommand command)
+  {
+    UsePolicy(new UserIsInClubRolePolicy(command.ClubId, ClubRoles.Admin));
+  }
+}

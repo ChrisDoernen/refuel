@@ -18,7 +18,7 @@ public class GetClubQueryHandler(
   )
   {
     var events = await eventStore.GetEvents(
-      $"/tanks/{query.ClubId}",
+      $"/clubs/{query.ClubId}",
       new ReadEventsOptions
       {
         Recursive = true

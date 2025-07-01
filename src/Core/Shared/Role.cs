@@ -10,4 +10,4 @@ public record Role(
 /// <summary>
 ///   Marker interface for module role definitions
 /// </summary>
-public interface IModuleRoles;
+public interface IRoleDefinition;
