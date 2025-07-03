@@ -12,7 +12,6 @@ public class UserType : ObjectType<User>
     descriptor.Field(u => u.Id).ID();
     descriptor.Field(u => u.FirstName);
     descriptor.Field(u => u.LastName);
-    descriptor.Field(u => u.ClubRoles);
 
     descriptor
       .ImplementsNode()

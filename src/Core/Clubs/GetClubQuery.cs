@@ -1,6 +1,5 @@
-﻿using Core.Shared;
-using EventSourcingDB;
-using MediatR;
+﻿using MediatR;
+using MongoDB;
 
 namespace Core.Clubs;
 
@@ -9,7 +8,7 @@ public record GetClubQuery(
 ) : IRequest<Club>;
 
 public class GetClubQueryHandler(
-  IEventStore eventStore
+  IDocumentStore<Club> clubStore
 ) : IRequestHandler<GetClubQuery, Club>
 {
   public async Task<Club> Handle(
@@ -17,18 +16,6 @@ public class GetClubQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStore.GetEvents(
-      $"/clubs/{query.ClubId}",
-      new ReadEventsOptions
-      {
-        Recursive = true
-      },
-      cancellationToken
-    );
-
-    var changes = events.Select(Change.FromEvent);
-    var club = await AuditTrail<Club>.Pristine().Replay(changes);
-
-    return club.GetAudited();
+    return await clubStore.GetById(query.ClubId, cancellationToken);
   }
 }

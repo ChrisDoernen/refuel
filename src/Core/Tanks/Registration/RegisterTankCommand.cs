@@ -1,4 +1,5 @@
-﻿using Core.Clubs;
+﻿using Core.ClubMembership;
+using Core.Clubs;
 using Core.Shared.Authorization;
 using EventSourcingDB;
 using MediatR;
@@ -14,7 +15,7 @@ public record RegisterTankCommand(
 ) : IRequest<Guid>;
 
 public class RegisterTankCommandHandler(
-  IEventStore eventStore
+  IEventStoreFactory eventStoreFactory
 ) : IRequestHandler<RegisterTankCommand, Guid>
 {
   public async Task<Guid> Handle(
@@ -36,11 +37,13 @@ public class RegisterTankCommandHandler(
       Data: evnt
     );
 
-    await eventStore.StoreEvents(
-      [candidate],
-      [new IsSubjectPristine(candidate.Subject)],
-      cancellationToken
-    );
+    await eventStoreFactory
+      .ForTenant(command.ClubId)
+      .StoreEvents(
+        [candidate],
+        [new IsSubjectPristine(candidate.Subject)],
+        cancellationToken
+      );
 
     return evnt.TankId;
   }
@@ -50,6 +53,6 @@ public class RegisterTankCommandAuthorizer : Authorizer<RegisterTankCommand>
 {
   public override async Task BuildPolicy(RegisterTankCommand command)
   {
-    UsePolicy(new UserIsInClubRolePolicy(command.ClubId, ClubRoles.Admin));
+    UsePolicy(new ClubMemberHasRolePolicy(command.ClubId, ClubRoles.Admin));
   }
 }

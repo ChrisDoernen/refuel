@@ -1,9 +1,6 @@
 ﻿using dotenv.net;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Shared.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,22 +11,25 @@ namespace EventSourcingDB.Tests;
 
 public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
 {
-  private readonly EventSourcingDbContainer _eventSourcingDbTestcontainer;
+  private readonly IEnumerable<EventSourcingDbContainer> _testContainers;
 
   public EventSourcingDbFixture(IMessageSink _)
   {
     DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
-    var options = Configuration!
-      .GetSection(EventSourcingDbOptions.SectionName)
-      .Get<EventSourcingDbOptions>()!;
-
-    _eventSourcingDbTestcontainer = new EventSourcingDbContainer(options);
+    _testContainers =
+      Configuration!
+        .GetSection("EventSourcingDb:Connections")
+        .Get<IList<EventSourcingDbConnection>>()!
+        .Select(c => new EventSourcingDbContainer(c));
   }
 
   public async Task InitializeAsync()
   {
-    await _eventSourcingDbTestcontainer.Start();
+    foreach (var container in _testContainers)
+    {
+      await container.Start();
+    }
   }
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
@@ -42,7 +42,14 @@ public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
   {
     services.AddEventSourcingDb(
       configuration!,
-      _eventSourcingDbTestcontainer?.ConfigureOptions
+      connections =>
+      {
+        foreach (var container in _testContainers)
+        {
+          var tenantConnection = connections.Single(c => c.TenantId == container.TenantId);
+          container.ConfigureConnection(tenantConnection);
+        }
+      }
     );
   }
 
@@ -53,9 +60,9 @@ public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
 
   protected override async ValueTask DisposeAsyncCore()
   {
-    if (_eventSourcingDbTestcontainer != null)
+    foreach (var container in _testContainers)
     {
-      await _eventSourcingDbTestcontainer.DisposeAsync();
+      await container.DisposeAsync();
     }
   }
 

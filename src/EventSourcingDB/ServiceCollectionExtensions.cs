@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace EventSourcingDB;
 
@@ -8,30 +7,34 @@ public static class ServiceCollectionExtensions
 {
   public static void AddEventSourcingDb(
     this IServiceCollection services,
-    IConfiguration config,
-    Action<EventSourcingDbOptions>? configureOptions = null
+    IConfiguration configuration,
+    Action<IList<EventSourcingDbConnection>>? configureConnections = null
   )
   {
     services
       .AddOptions<EventSourcingDbOptions>()
-      .Bind(config.GetSection(EventSourcingDbOptions.SectionName))
+      .Bind(configuration.GetSection(EventSourcingDbOptions.SectionName))
       .ValidateOnStart();
 
-    if (configureOptions is not null)
+    var connections =
+      configuration
+        .GetSection("EventSourcingDb:Connections")
+        .Get<IList<EventSourcingDbConnection>>()
+      ?? throw new InvalidOperationException("EventSourcingDb connections are not configured.");
+
+    configureConnections?.Invoke(connections);
+
+    foreach (var connection in connections)
     {
-      services.PostConfigure(configureOptions);
+      services.AddHttpClient(
+        $"eventsourcingdb-{connection.TenantId}",
+        client =>
+        {
+          client.BaseAddress = new UriBuilder(connection.Url) { Path = "api/v1/" }.Uri;
+          client.DefaultRequestHeaders.Add("Authorization", $"Bearer {connection.ApiToken}");
+        }
+      );
     }
-
-    services.AddHttpClient(
-      "eventsourcingdb",
-      (s, client) =>
-      {
-        var options = s.GetRequiredService<IOptions<EventSourcingDbOptions>>().Value;
-
-        client.BaseAddress = new UriBuilder(options.Url) { Path = "api/v1/" }.Uri;
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiToken}");
-      }
-    );
 
     services.AddTransient<IEventStore, EventStore>();
     services.AddTransient<IEventSourcingDbClient, EventStore>();

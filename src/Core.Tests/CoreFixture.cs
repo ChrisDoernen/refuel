@@ -1,10 +1,7 @@
 ﻿using dotenv.net;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using EventSourcingDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Shared.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,22 +12,25 @@ namespace Core.Tests;
 
 public class CoreFixture : TestBedFixture, IAsyncLifetime
 {
-  private readonly EventSourcingDbContainer _eventSourcingDbTestcontainer;
+  private readonly IEnumerable<EventSourcingDbContainer> _eventSourcingDbTestContainers;
 
   public CoreFixture(IMessageSink _)
   {
     DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
-    var options = Configuration!
-      .GetSection(EventSourcingDbOptions.SectionName)
-      .Get<EventSourcingDbOptions>()!;
-
-    _eventSourcingDbTestcontainer = new EventSourcingDbContainer(options);
+    _eventSourcingDbTestContainers =
+      Configuration!
+        .GetSection("EventSourcingDb:Connections")
+        .Get<IList<EventSourcingDbConnection>>()!
+        .Select(c => new EventSourcingDbContainer(c));
   }
 
   public async Task InitializeAsync()
   {
-    await _eventSourcingDbTestcontainer.Start();
+    foreach (var container in _eventSourcingDbTestContainers)
+    {
+      await container.Start();
+    }
   }
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
@@ -44,7 +44,14 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
     services.AddCore();
     services.AddEventSourcingDb(
       configuration!,
-      _eventSourcingDbTestcontainer.ConfigureOptions
+      connections =>
+      {
+        foreach (var container in _eventSourcingDbTestContainers)
+        {
+          var tenantConnection = connections.Single(c => c.TenantId == container.TenantId);
+          container.ConfigureConnection(tenantConnection);
+        }
+      }
     );
   }
 
@@ -55,9 +62,9 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
 
   protected override async ValueTask DisposeAsyncCore()
   {
-    if (_eventSourcingDbTestcontainer != null)
+    foreach (var container in _eventSourcingDbTestContainers)
     {
-      await _eventSourcingDbTestcontainer.DisposeAsync();
+      await container.DisposeAsync();
     }
   }
 

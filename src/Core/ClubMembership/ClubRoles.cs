@@ -1,12 +1,12 @@
 ﻿using Core.Shared;
 
-namespace Core.Clubs;
+namespace Core.ClubMembership;
 
 public class ClubRoles : IRoleDefinition
 {
-  public static Role Default = new(
-    "club.default",
-    "Default",
+  public static Role Member = new(
+    "club.member",
+    "Member",
     "Club",
     "Default role with basic read permissions."
   );
@@ -18,8 +18,3 @@ public class ClubRoles : IRoleDefinition
     "Club administrator with full read and write permissions."
   );
 }
-
-public record ClubRole(
-  Guid ClubId,
-  string RoleId
-);

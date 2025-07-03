@@ -1,24 +1,28 @@
+using Core.ClubMembership;
 using Core.Shared;
 using Core.Shared.Authorization;
+using MediatR;
 
 namespace Core.Clubs;
 
-public record UserIsInClubRolePolicy(
+public record ClubMemberHasRolePolicy(
   Guid ClubId,
   Role Role
 ) : IAuthorizationPolicy;
 
 public class UserIsInClubRolePolicyHandler(
+  IMediator mediator,
   IUserAccessor userAccessor
-) : IAuthorizationHandler<UserIsInClubRolePolicy>
+) : IAuthorizationHandler<ClubMemberHasRolePolicy>
 {
   public async Task<AuthorizationResult> Handle(
-    UserIsInClubRolePolicy policy,
+    ClubMemberHasRolePolicy policy,
     CancellationToken cancellationToken
   )
   {
-    var clubRole = new ClubRole(policy.ClubId, policy.Role.Id);
-    var isUserInRole = userAccessor.User.ClubRoles.Any(r => r.Equals(clubRole));
+    var user = userAccessor.User;
+    var member = await mediator.Send(new GetClubMemberQuery(policy.ClubId, user.Id), cancellationToken);
+    var isUserInRole = member.RoleIds.Any(r => r.Equals(policy.Role.Id));
 
     var result = isUserInRole
       ? AuthorizationResult.Succeed()

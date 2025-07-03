@@ -1,41 +1,23 @@
-﻿using Core.Clubs;
-using Core.Shared;
-using Core.Users.AssignClubRole;
-using Core.Users.SignUp;
-using EventSourcingDB;
+﻿using MongoDB;
 
 namespace Core.Users;
 
-public record User : Audited<User>, IReplayable<User>
+public record User : IDocument
 {
-  public Guid Id { get; private init; }
-  public string Email { get; private init; } = null!;
-  public string FirstName { get; private init; } = null!;
-  public string LastName { get; private init; } = null!;
-  public IEnumerable<ClubRole> ClubRoles { get; private init; } = [];
+  public string Email { get; private init; }
+  public string FirstName { get; private init; }
+  public string LastName { get; private init; }
+  public DateTime SignedUpAtUtc { get; private init; }
 
-  public User Apply(IEventData evnt)
+  public User(
+    string email,
+    string firstName,
+    string lastName
+  )
   {
-    return evnt switch
-    {
-      UserSignedUpEventV1 userSignedUpEvent => Apply(userSignedUpEvent),
-      ClubRoleAssignedEventV1 clubRoleAssignedEvent => Apply(clubRoleAssignedEvent),
-      _ => throw new InvalidOperationException("Unknown event for user"),
-    };
+    Email = email;
+    FirstName = firstName;
+    LastName = lastName;
+    SignedUpAtUtc = DateTime.UtcNow;
   }
-
-  private User Apply(UserSignedUpEventV1 evnt)
-    => this with
-    {
-      Id = evnt.UserId,
-      Email = evnt.Email,
-      FirstName = evnt.FirstName,
-      LastName = evnt.LastName,
-    };
-
-  private User Apply(ClubRoleAssignedEventV1 evnt)
-    => this with
-    {
-      ClubRoles = [.. ClubRoles.Append(evnt.Role)]
-    };
 }

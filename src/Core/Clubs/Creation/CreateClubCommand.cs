@@ -1,5 +1,5 @@
-﻿using EventSourcingDB;
-using MediatR;
+﻿using MediatR;
+using MongoDB;
 
 namespace Core.Clubs.Creation;
 
@@ -9,7 +9,7 @@ public record CreateClubCommand(
 ) : IRequest<Guid>;
 
 public class CreateClubCommandHandler(
-  IEventStore eventStore
+  IDocumentStore<Club> clubStore
 ) : IRequestHandler<CreateClubCommand, Guid>
 {
   public async Task<Guid> Handle(
@@ -17,23 +17,10 @@ public class CreateClubCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var evnt = new ClubCreatedEventV1(
-      Guid.CreateVersion7(),
-      command.Name,
-      command.Description
-    );
+    var club = new Club(command.Name, command.Description);
 
-    var candidate = new EventCandidate(
-      Subject: $"/clubs/{evnt.Id}",
-      Data: evnt
-    );
+    await clubStore.CreateOne(club, cancellationToken);
 
-    await eventStore.StoreEvents(
-      [candidate],
-      [new IsSubjectPristine(candidate.Subject)],
-      cancellationToken
-    );
-
-    return evnt.Id;
+    return club.Id;
   }
 }

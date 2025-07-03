@@ -1,6 +1,5 @@
-﻿using Core.Shared;
-using EventSourcingDB;
-using MediatR;
+﻿using MediatR;
+using MongoDB;
 
 namespace Core.Users;
 
@@ -9,7 +8,7 @@ public record GetUserQuery(
 ) : IRequest<User>;
 
 public class GetUserQueryHandler(
-  IEventStore eventStore
+  IDocumentStore<User> userStore
 ) : IRequestHandler<GetUserQuery, User>
 {
   public async Task<User> Handle(
@@ -17,18 +16,6 @@ public class GetUserQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStore.GetEvents(
-      $"/users/{query.UserId}",
-      new ReadEventsOptions
-      {
-        Recursive = true
-      },
-      cancellationToken
-    );
-
-    var changes = events.Select(Change.FromEvent);
-    var user = await AuditTrail<User>.Pristine().Replay(changes);
-
-    return user.GetAudited();
+    return await userStore.GetById(query.UserId, cancellationToken);
   }
 }

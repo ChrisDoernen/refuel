@@ -1,4 +1,4 @@
-﻿using Core.Users.AssignClubRole;
+﻿using Core.ClubMembership.AssignClubRole;
 using EventSourcingDB;
 using MediatR;
 
@@ -31,7 +31,7 @@ public class GetUsersOfClubQueryHandler(
     return await events
       .Select(e => e.Data)
       .Cast<ClubRoleAssignedEventV1>()
-      .SelectAwait(async e => await mediator.Send(new GetUserQuery(e.UserId), cancellationToken))
+      .SelectAwait(async e => await mediator.Send(new GetUserQuery(e.MemberId), cancellationToken))
       .ToListAsync(cancellationToken);
   }
 }

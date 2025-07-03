@@ -1,4 +1,5 @@
-﻿using Core.Clubs;
+﻿using Core.ClubMembership;
+using Core.Clubs;
 using Core.Shared;
 using FluentAssertions;
 using MediatR;

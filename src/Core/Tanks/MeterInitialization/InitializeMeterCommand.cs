@@ -5,12 +5,13 @@ using MediatR;
 namespace Core.Tanks.MeterInitialization;
 
 public record InitializeMeterCommand(
+  Guid ClubId,
   Guid TankId
 ) : IRequest;
 
 public class InitializeMeterCommandHandler(
   IMediator mediator,
-  IEventStore eventStore
+  IEventStoreFactory eventStoreFactory
 ) : IRequestHandler<InitializeMeterCommand>
 {
   public async Task Handle(
@@ -18,7 +19,7 @@ public class InitializeMeterCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
+    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
     tank.EnsureNotPristine();
 
     var meterInitializedEvent = new MeterInitializedEventV1();
@@ -26,10 +27,12 @@ public class InitializeMeterCommandHandler(
       Subject: $"/tanks/{command.TankId}/meter",
       Data: meterInitializedEvent
     );
-    await eventStore.StoreEvents(
-      [candidate],
-      [new IsSubjectPristine(candidate.Subject)],
-      cancellationToken
-    );
+    await eventStoreFactory
+      .ForTenant(command.ClubId)
+      .StoreEvents(
+        [candidate],
+        [new IsSubjectPristine(candidate.Subject)],
+        cancellationToken
+      );
   }
 }

@@ -34,12 +34,14 @@ public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : Audit
 
   public T GetAudited() => CurrentState with { AuditTrail = _auditTrail };
 
-  public void EnsureNotPristine()
+  public AuditTrail<T> EnsureNotPristine()
   {
-    if (_auditTrail.Count == 0)
+    if (!_auditTrail.Any())
     {
-      throw new InvalidOperationException("Audit trail has no changes.");
+      throw new Exception($"Audit trail for {typeof(T).Name} was expected to have changes.");
     }
+
+    return this;
   }
 
   public IEnumerator<StateChange<T>> GetEnumerator() => _auditTrail.GetEnumerator();

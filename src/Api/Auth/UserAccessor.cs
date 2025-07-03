@@ -22,14 +22,10 @@ public class UserAccessor : IUserAccessor
       // ToDo
     }
 
-    var isMdsUserFound = _httpContextAccessor.HttpContext!.Items.TryGetValue(
-      nameof(User),
-      out var user
-    );
-
+    var isMdsUserFound = _httpContextAccessor.HttpContext!.Items.TryGetValue(nameof(User), out var user);
     if (!isMdsUserFound || user is null)
     {
-      throw new Exception($"MdsUser not found, set up {nameof(AuthenticationMiddleware)} properly");
+      throw new Exception($"User not found, set up {nameof(AuthenticationMiddleware)} properly");
     }
 
     return (User)user;

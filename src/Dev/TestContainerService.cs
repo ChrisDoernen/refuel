@@ -8,7 +8,7 @@ namespace Dev;
 
 public class TestContainerService : IHostedService, IAsyncDisposable
 {
-  private readonly EventSourcingDbContainer _eventSourcingDbTestcontainer;
+  private readonly IEnumerable<EventSourcingDbContainer> _eventSourcingDbTestcontainer;
   private readonly ILogger<TestContainerService> _logger;
 
   public TestContainerService(
@@ -18,24 +18,30 @@ public class TestContainerService : IHostedService, IAsyncDisposable
   {
     _logger = logger;
 
-    var options = configuration
-      .GetSection(EventSourcingDbOptions.SectionName)
-      .Get<EventSourcingDbOptions>()!;
-
-    _eventSourcingDbTestcontainer = new EventSourcingDbContainer(options);
+    _eventSourcingDbTestcontainer =
+      configuration!
+        .GetSection("EventSourcingDb:Connections")
+        .Get<IList<EventSourcingDbConnection>>()!
+        .Select(c => new EventSourcingDbContainer(c));
   }
 
   public async Task StartAsync(CancellationToken cancellationToken)
   {
     _logger.LogInformation("Starting test containers");
 
-    await _eventSourcingDbTestcontainer.Start(cancellationToken);
+    foreach (var container in _eventSourcingDbTestcontainer)
+    {
+      await container.Start(cancellationToken);
+    }
   }
 
   public Task StopAsync(CancellationToken _) => Task.CompletedTask;
 
   public async ValueTask DisposeAsync()
   {
-    await _eventSourcingDbTestcontainer.DisposeAsync();
+    foreach (var container in _eventSourcingDbTestcontainer)
+    {
+      await container.DisposeAsync();
+    }
   }
 }

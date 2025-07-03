@@ -1,6 +1,8 @@
-﻿using Core.Clubs;
+﻿using Core.ClubMembership;
+using Core.ClubMembership.AssignClubRole;
+using Core.ClubMembership.JoiningClubs;
+using Core.Clubs;
 using Core.Clubs.Creation;
-using Core.Users.AssignClubRole;
 using Core.Users.SignUp;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,12 +36,16 @@ public class DevDataRestoreService(
     );
     var clubId = await mediator.Send(createClubCommand, cancellationToken);
 
+    var joinClubCommand = new JoinClubCommand(
+      UserId: userId,
+      ClubId: clubId
+    );
+    await mediator.Send(joinClubCommand, cancellationToken);
+
     var assignClubRoleCommand = new AssignClubRoleCommand(
+      clubId,
       userId,
-      new ClubRole(
-        clubId,
-        ClubRoles.Admin.Id
-      )
+      ClubRoles.Admin.Id
     );
     await mediator.Send(assignClubRoleCommand, cancellationToken);
   }

@@ -23,16 +23,18 @@ public class WorkflowTests(
   [Fact]
   public async Task TankWorkflow()
   {
+    var clubId = Guid.CreateVersion7();
+
     var registerTankCommand = new RegisterTankCommand(
       Name: "Benzintank H4",
-      ClubId: Guid.CreateVersion7(),
+      ClubId: clubId,
       Description: "Großer Benzintank am Hangar 4",
       Capacity: 900,
       FuelLevel: 150
     );
     var tankId = await _mediator.Send(registerTankCommand);
 
-    var getTankQuery = new GetTankQuery(tankId);
+    var getTankQuery = new GetTankQuery(clubId, tankId);
     var tank = await _mediator.Send(getTankQuery);
 
     tank.Should().BeOfType<Tank>();
@@ -41,31 +43,35 @@ public class WorkflowTests(
     tank.Meter.Should().BeNull();
 
     var initializeMeter = new InitializeMeterCommand(
+      ClubId: clubId,
       TankId: tankId
     );
     await _mediator.Send(initializeMeter);
-    
+
     tank = await _mediator.Send(getTankQuery);
 
     tank.Meter!.Value.Should().Be(0);
-    
+
     var logFuelExtractedCommand = new LogFuelExtractedCommand(
+      ClubId: clubId,
       TankId: tankId,
       AmountExtracted: 50
     );
     var logMeterReadCommand = new LogMeterReadCommand(
+      ClubId: clubId,
       TankId: tankId,
       Value: 50
     );
     await _mediator.Send(logFuelExtractedCommand);
     await _mediator.Send(logMeterReadCommand);
-    
+
     tank = await _mediator.Send(getTankQuery);
 
     tank.FuelLevel.Should().Be(100);
     tank.Meter!.Value.Should().Be(50);
 
     var logRefillRequested = new LogRefillRequestedCommand(
+      ClubId: clubId,
       TankId: tankId
     );
     await _mediator.Send(logRefillRequested);
@@ -74,8 +80,9 @@ public class WorkflowTests(
 
     tank.FuelLevel.Should().Be(100);
     tank.RefillRequested.Should().Be(true);
-    
+
     var logRefilledCommand = new LogRefilledCommand(
+      ClubId: clubId,
       TankId: tankId,
       NewFuelLevel: 200
     );
@@ -88,6 +95,7 @@ public class WorkflowTests(
     tank.RefillRequested.Should().Be(false);
 
     var logTooMuchFuelExtractedCommand = new LogFuelExtractedCommand(
+      ClubId: clubId,
       TankId: tankId,
       AmountExtracted: 250
     );

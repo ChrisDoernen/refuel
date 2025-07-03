@@ -6,10 +6,11 @@ namespace EventSourcingDB;
 
 public class EventStore(
   IHttpClientFactory factory,
-  IOptions<EventSourcingDbOptions> options
+  IOptions<EventSourcingDbOptions> eventSourcingDbOptions,
+  Guid tenantId
 ) : IEventStore, IEventSourcingDbClient
 {
-  private readonly HttpClient _client = factory.CreateClient("eventsourcingdb");
+  private readonly HttpClient _client = factory.CreateClient($"eventsourcingdb-{tenantId}");
 
   public async Task Ping(CancellationToken cancellationToken)
   {
@@ -47,7 +48,7 @@ public class EventStore(
   {
     var candidates = eventCandidates.Select(
       candidate => new Candidate(
-        Source: options.Value.Source,
+        Source: eventSourcingDbOptions.Value.Source,
         Subject: candidate.Subject,
         Type: EventType.Of(candidate.Data),
         Data: candidate.Data

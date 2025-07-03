@@ -1,4 +1,5 @@
 using Api.Auth;
+using Api.ClubMembership;
 using Api.Clubs;
 using Api.GraphQL;
 using Api.Shared;
@@ -30,7 +31,7 @@ builder.Services.AddGraphQLServer()
   .AddType<StateChangeType<ClubType, Club>>()
   .AddType<StateChangeType<TankType, Tank>>()
   .AddType<RoleType>()
-  .AddType<ClubRoleType>()
+  .AddType<ClubMemberType>()
   .AddType<ClubType>()
   .AddType<UserType>()
   .AddType<TankType>();

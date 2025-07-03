@@ -1,6 +1,6 @@
-﻿using Core.Clubs;
+﻿using Core.ClubMembership;
+using Core.Clubs;
 using Core.Tanks;
-using Core.Users;
 using MediatR;
 
 namespace Api.Clubs;
@@ -14,7 +14,6 @@ public class ClubType : ObjectType<Club>
     descriptor.Field(c => c.Id).ID();
     descriptor.Field(c => c.Name);
     descriptor.Field(c => c.Description);
-    descriptor.Field(c => c.AuditTrail);
 
     descriptor
       .ImplementsNode()
@@ -36,12 +35,12 @@ public class ClubType : ObjectType<Club>
       );
 
     descriptor
-      .Field("users")
-      .Resolve<IEnumerable<User>>(
+      .Field("members")
+      .Resolve<IEnumerable<ClubMember>>(
         async (context, cancellationToken) =>
         {
           var id = context.Parent<Club>().Id;
-          var query = new GetUsersInClubQuery(id);
+          var query = new GetClubMembersQuery(id);
 
           return await context.Service<IMediator>().Send(query, cancellationToken);
         }

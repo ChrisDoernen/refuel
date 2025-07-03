@@ -1,28 +1,26 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using EventSourcingDB;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Shared.Testing;
 
-public class EventSourcingDbContainer : IAsyncDisposable
+public class EventSourcingDbContainer
 {
+  protected IContainer _container = null!;
+  protected readonly bool _randomizeHostPort;
+  protected int _port;
+  public string TenantId { get; }
   private readonly string _apiToken;
-  private readonly int _port;
-  private readonly IContainer _container;
 
-  public EventSourcingDbContainer(EventSourcingDbOptions options)
+  public EventSourcingDbContainer(EventSourcingDbConnection connection)
   {
-    _apiToken = options.ApiToken;
-    _port = new Uri(options.Url).Port;
-
-    var randomizeHostPortEnv = Environment.GetEnvironmentVariable("RANDOMIZE_HOST_PORT");
-    var randomizeHostPort = randomizeHostPortEnv is not string || bool.Parse(randomizeHostPortEnv);
+    TenantId = connection.TenantId;
+    _apiToken = connection.ApiToken;
+    _port = new Uri(connection.Url).Port;
 
     _container = new ContainerBuilder()
       .WithImage("thenativeweb/eventsourcingdb:1.0.2")
-      .WithPortBinding(_port, randomizeHostPort)
+      .WithPortBinding(_port, _randomizeHostPort)
       .WithCommand(
         "run",
         $"--api-token={_apiToken}",
@@ -35,19 +33,15 @@ public class EventSourcingDbContainer : IAsyncDisposable
       .Build();
   }
 
-  public Action<EventSourcingDbOptions> ConfigureOptions =>
-    options =>
+  public Action<EventSourcingDbConnection> ConfigureConnection =>
+    connection =>
     {
-      options.Url = new UriBuilder(options.Url) { Port = _container.GetMappedPublicPort(_port) }.ToString();
-      options.ApiToken = _apiToken;
+      connection.Url = new UriBuilder(connection.Url) { Port = _container.GetMappedPublicPort(_port) }.ToString();
+      connection.ApiToken = _apiToken;
     };
-
-  public async Task<EventSourcingDbContainer> Start(CancellationToken cancellationToken = default)
-  {
-    await _container.StartAsync(cancellationToken).ConfigureAwait(false);
-
-    return this;
-  }
+  
+  public async Task Start(CancellationToken cancellationToken = default)
+    => await _container.StartAsync(cancellationToken);
 
   public async ValueTask DisposeAsync() => await _container.DisposeAsync();
 }

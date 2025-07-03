@@ -5,13 +5,14 @@ using MediatR;
 namespace Core.Tanks.Refilling;
 
 public record LogRefilledCommand(
+  Guid ClubId,
   Guid TankId,
   int NewFuelLevel
 ) : IRequest;
 
 public class LogRefilledCommandHandler(
   IMediator mediator,
-  IEventStore eventStore
+  IEventStoreFactory eventStoreFactory
 ) : IRequestHandler<LogRefilledCommand>
 {
   public async Task Handle(
@@ -19,7 +20,7 @@ public class LogRefilledCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.TankId), cancellationToken);
+    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
 
     if (command.NewFuelLevel > tank.Capacity)
     {
@@ -31,10 +32,12 @@ public class LogRefilledCommandHandler(
       Subject: $"/tanks/{command.TankId}",
       Data: refilledEvent
     );
-    await eventStore.StoreEvents(
-      [candidate],
-      [tank.GetIsSubjectOnEventIdPrecondition()],
-      cancellationToken
-    );
+    await eventStoreFactory
+      .ForTenant(command.ClubId)
+      .StoreEvents(
+        [candidate],
+        [tank.GetIsSubjectOnEventIdPrecondition()],
+        cancellationToken
+      );
   }
 }

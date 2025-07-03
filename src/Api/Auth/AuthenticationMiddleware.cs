@@ -21,7 +21,7 @@ public class AuthenticationMiddleware(
 
     try
     {
-      var user = await GetMdsUser(context.User);
+      var user = await GetUser(context.User);
       context.Items.Add(nameof(User), user);
     }
     catch (Exception ex)
@@ -34,7 +34,7 @@ public class AuthenticationMiddleware(
     await next(context);
   }
 
-  private async Task<User> GetMdsUser(ClaimsPrincipal principal)
+  private async Task<User> GetUser(ClaimsPrincipal principal)
   {
     var email = principal.FindFirst(ClaimTypes.Email)?.Value;
     if (email is null)
