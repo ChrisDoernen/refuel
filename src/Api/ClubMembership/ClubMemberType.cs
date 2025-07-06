@@ -1,4 +1,5 @@
 ﻿using Core.ClubMembership;
+using Core.Shared;
 using Core.Users;
 using MediatR;
 
@@ -30,6 +31,20 @@ public class ClubMemberType : ObjectType<ClubMember>
           var query = new GetUserQuery(id);
 
           return await context.Service<IMediator>().Send(query, cancellationToken);
+        }
+      );
+
+    descriptor
+      .Field("roles")
+      .Resolve<IEnumerable<Role>>(
+        async (context, cancellationToken) =>
+        {
+          var ids = context.Parent<ClubMember>().RoleIds;
+          var query = new GetRolesQuery();
+
+          var roles = await context.Service<IMediator>().Send(query, cancellationToken);
+
+          return roles.Where(r => ids.Contains(r.Id)).ToList();
         }
       );
   }

@@ -11,6 +11,7 @@ using Core.Shared;
 using Core.Tanks;
 using dotenv.net;
 using EventSourcingDB;
+using MongoDB;
 using Shared.Testing;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,6 @@ DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
 Environment.SetEnvironmentVariable("RANDOMIZE_HOST_PORT", "false");
 
-builder.Services.AddCore();
 
 builder.Services.AddGraphQLServer()
   .AddGlobalObjectIdentification()
@@ -39,6 +39,7 @@ builder.Services.AddGraphQLServer()
 builder.Services.AddGraphQL();
 
 builder.Services.AddEventSourcingDb(builder.Configuration);
+builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
@@ -47,6 +48,8 @@ if (builder.Environment.IsDevelopment())
 {
   builder.Services.AddTesting();
 }
+
+builder.Services.AddCore();
 
 var app = builder.Build();
 

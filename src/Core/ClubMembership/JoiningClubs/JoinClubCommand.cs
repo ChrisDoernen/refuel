@@ -23,10 +23,10 @@ public class JoinClubCommandHandler(
     var user = await mediator.Send(new GetUserQuery(command.UserId), cancellationToken);
 
     var clubJoinedEvent = new UserJoinedClubEventV1(
-      user.Id,
-      user.FirstName,
-      user.FirstName,
-      user.LastName
+      UserId: user.Id,
+      Email: user.Email,
+      FirstName: user.FirstName,
+      LastName: user.LastName
     );
     var candidate = new EventCandidate(
       Subject: $"/members/{command.UserId}",
