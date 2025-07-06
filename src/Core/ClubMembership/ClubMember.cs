@@ -1,6 +1,5 @@
 ﻿using Core.ClubMembership.AssignClubRole;
 using Core.ClubMembership.JoiningClubs;
-using Core.Clubs;
 using Core.Shared;
 using EventSourcingDB;
 

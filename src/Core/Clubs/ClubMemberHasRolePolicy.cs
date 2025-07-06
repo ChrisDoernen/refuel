@@ -10,7 +10,7 @@ public record ClubMemberHasRolePolicy(
   Role Role
 ) : IAuthorizationPolicy;
 
-public class UserIsInClubRolePolicyHandler(
+public class ClubMemberHasRolePolicyHandler(
   IMediator mediator,
   IUserAccessor userAccessor
 ) : IAuthorizationHandler<ClubMemberHasRolePolicy>

@@ -10,7 +10,7 @@ public class RunEventQlQueryTests(
   EventSourcingDbFixture fixture
 ) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
-  private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
+  private readonly IEventStoreFactory _eventStoreFactory = fixture.Get<IEventStoreFactory>(testOutputHelper);
 
   [Fact]
   public async Task GetEventTypes()
@@ -30,7 +30,8 @@ public class RunEventQlQueryTests(
       Data: otherTestEvent
     );
 
-    await _eventStore.StoreEvents([eventCandidate, otherEventCandidate]);
+    await _eventStoreFactory
+      .ForTenant("tenant1").StoreEvents([eventCandidate, otherEventCandidate]);
 
     var query =
       $"""
@@ -39,7 +40,9 @@ public class RunEventQlQueryTests(
        PROJECT INTO e
        """;
 
-    var events = await _eventStore.RunEventQlQuery(query);
+    var events = await _eventStoreFactory
+      .ForTenant("tenant1")
+      .RunEventQlQuery(query);
 
     var eventList = await events.ToListAsync();
     eventList.Count.Should().Be(1);

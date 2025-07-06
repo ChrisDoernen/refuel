@@ -2,6 +2,10 @@
 
 public interface IEventStore
 {
+  Task Ping(CancellationToken cancellationToken = default);
+
+  Task VerifyApiToken(CancellationToken cancellationToken = default);
+  
   Task<IEnumerable<Event>> StoreEvents(
     IEnumerable<EventCandidate> eventCandidates,
     IEnumerable<Precondition>? preconditions = null,

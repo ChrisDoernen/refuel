@@ -12,7 +12,7 @@ public record AssignClubRoleCommand(
 
 public class AssignClubRoleCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<AssignClubRoleCommand>
 {
   public async Task Handle(
@@ -29,15 +29,15 @@ public class AssignClubRoleCommandHandler(
     }
 
     var clubRoleAssignedEvent = new ClubRoleAssignedEventV1(
-      command.MemberId,
-      command.RoleId
+      MemberId: member.UserId,
+      RoleId: command.RoleId
     );
     var candidate = new EventCandidate(
       Subject: $"/members/{command.MemberId}",
       Data: clubRoleAssignedEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
         [member.GetIsSubjectOnEventIdPrecondition()],

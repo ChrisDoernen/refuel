@@ -1,6 +1,6 @@
 ﻿namespace MongoDB.Tests;
 
-public record TestDocument : IDocument
+public class TestDocument : Document
 {
   public string Property { get; init; } = string.Empty;
   public DateTime Timestamp { get; init; }

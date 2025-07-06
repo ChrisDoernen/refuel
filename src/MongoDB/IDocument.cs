@@ -1,11 +1,11 @@
 ﻿namespace MongoDB;
 
-public record IDocument
+public interface IDocument
 {
-  public Guid Id { get; }
+  public Guid Id { get; set; }
 }
 
-public record Document : IDocument
+public class Document(Guid? id = null) : IDocument
 {
-  public Guid Id { get; } = Guid.CreateVersion7();
+  public Guid Id { get; set; } = id ?? Guid.CreateVersion7();
 }

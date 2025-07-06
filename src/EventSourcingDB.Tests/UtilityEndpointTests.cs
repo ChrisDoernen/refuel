@@ -9,17 +9,17 @@ public class UtilityEndpointTests(
   EventSourcingDbFixture fixture
 ) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
-  private readonly IEventSourcingDbClient _client = fixture.Get<IEventSourcingDbClient>(testOutputHelper);
+  private readonly IEventStoreFactory _eventStoreFactory = fixture.Get<IEventStoreFactory>(testOutputHelper);
 
   [Fact]
   public async Task Ping()
   {
-    await _client.Ping();
+    await _eventStoreFactory.ForTenant("tenant1").Ping();
   }
 
   [Fact]
   public async Task VerifyApiToken()
   {
-    await _client.VerifyApiToken();
+    await _eventStoreFactory.ForTenant("tenant1").VerifyApiToken();
   }
 }

@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace MongoDB;
@@ -12,6 +15,9 @@ public static class ServiceCollectionExtensions
     Action<MongoDbConnection>? configureConnection = null
   )
   {
+    BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+    BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc, BsonType.Document));
+    
     var mongoDbConnection =
       configuration
         .GetSection("MongoDb")

@@ -10,7 +10,7 @@ public class ReadEventsTests(
   EventSourcingDbFixture fixture
 ) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
-  private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
+  private readonly IEventStoreFactory _eventStoreFactory = fixture.Get<IEventStoreFactory>(testOutputHelper);
 
   [Fact]
   public async Task ReadEvents()
@@ -25,9 +25,13 @@ public class ReadEventsTests(
       Data: eventData
     );
 
-    await _eventStore.StoreEvents([eventCandidate]);
+    await _eventStoreFactory
+      .ForTenant("tenant1")
+      .StoreEvents([eventCandidate]);
 
-    var events = await _eventStore.GetEvents("/test/42");
+    var events = await _eventStoreFactory
+      .ForTenant("tenant1")
+      .GetEvents("/test/42");
 
     var eventList = await events.ToListAsync();
     eventList.Count.Should().Be(1);
@@ -54,15 +58,19 @@ public class ReadEventsTests(
       Data: new OtherTestEventV1(Guid.CreateVersion7())
     );
 
-    await _eventStore.StoreEvents([testEventCandidate, otherTestEventCandidate]);
+    await _eventStoreFactory
+      .ForTenant("tenant1")
+      .StoreEvents([testEventCandidate, otherTestEventCandidate]);
 
-    var events = await _eventStore.GetEvents(
-      "/test/43",
-      new ReadEventsOptions
-      {
-        Recursive = true
-      }
-    );
+    var events = await _eventStoreFactory
+      .ForTenant("tenant1")
+      .GetEvents(
+        "/test/43",
+        new ReadEventsOptions
+        {
+          Recursive = true
+        }
+      );
 
     var eventList = await events.ToListAsync();
 

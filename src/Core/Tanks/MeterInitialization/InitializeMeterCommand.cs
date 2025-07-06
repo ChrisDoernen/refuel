@@ -11,7 +11,7 @@ public record InitializeMeterCommand(
 
 public class InitializeMeterCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<InitializeMeterCommand>
 {
   public async Task Handle(
@@ -27,8 +27,8 @@ public class InitializeMeterCommandHandler(
       Subject: $"/tanks/{command.TankId}/meter",
       Data: meterInitializedEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
         [new IsSubjectPristine(candidate.Subject)],

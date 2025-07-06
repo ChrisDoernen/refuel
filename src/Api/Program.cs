@@ -9,9 +9,9 @@ using Core;
 using Core.Clubs;
 using Core.Shared;
 using Core.Tanks;
-using Dev;
 using dotenv.net;
 using EventSourcingDB;
+using Shared.Testing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,8 +45,7 @@ builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 if (builder.Environment.IsDevelopment())
 {
-  builder.Services.AddHostedService<TestContainerService>();
-  builder.Services.AddHostedService<DevDataRestoreService>();
+  builder.Services.AddTesting();
 }
 
 var app = builder.Build();

@@ -12,7 +12,7 @@ public record LogFuelExtractedCommand(
 
 public class LogFuelExtractedCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<LogFuelExtractedCommand>
 {
   public async Task Handle(
@@ -32,8 +32,8 @@ public class LogFuelExtractedCommandHandler(
       Subject: $"/tanks/{command.TankId}",
       Data: fuelExtractedEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
         [tank.GetIsSubjectOnEventIdPrecondition()],

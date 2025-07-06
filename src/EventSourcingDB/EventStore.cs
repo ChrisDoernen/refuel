@@ -5,16 +5,13 @@ using Microsoft.Extensions.Options;
 namespace EventSourcingDB;
 
 public class EventStore(
-  IHttpClientFactory factory,
   IOptions<EventSourcingDbOptions> eventSourcingDbOptions,
-  Guid tenantId
-) : IEventStore, IEventSourcingDbClient
+  HttpClient httpClient
+) : IEventStore
 {
-  private readonly HttpClient _client = factory.CreateClient($"eventsourcingdb-{tenantId}");
-
   public async Task Ping(CancellationToken cancellationToken)
   {
-    var response = await _client.GetAsync("ping", cancellationToken);
+    var response = await httpClient.GetAsync("ping", cancellationToken);
     response.EnsureSuccessStatusCode();
 
     var evnt = await response.Content.ReadFromJsonAsync<UtilityEndpointEvent>(cancellationToken);
@@ -26,7 +23,7 @@ public class EventStore(
 
   public async Task VerifyApiToken(CancellationToken cancellationToken)
   {
-    var response = await _client.PostAsync(
+    var response = await httpClient.PostAsync(
       "verify-api-token",
       null,
       cancellationToken
@@ -65,7 +62,7 @@ public class EventStore(
       options: JsonSerialization.Options
     );
 
-    var response = await _client.PostAsync(
+    var response = await httpClient.PostAsync(
       "write-events",
       httpContent,
       cancellationToken
@@ -115,7 +112,7 @@ public class EventStore(
       Content = httpContent
     };
 
-    var response = await _client.SendAsync(
+    var response = await httpClient.SendAsync(
       request,
       HttpCompletionOption.ResponseHeadersRead,
       cancellationToken
@@ -145,7 +142,7 @@ public class EventStore(
       Content = httpContent
     };
 
-    var response = await _client.SendAsync(
+    var response = await httpClient.SendAsync(
       request,
       HttpCompletionOption.ResponseHeadersRead,
       cancellationToken

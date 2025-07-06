@@ -10,7 +10,7 @@ public record GetTankQuery(
 ) : IRequest<Tank>;
 
 public class GetTankQueryHandler(
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<GetTankQuery, Tank>
 {
   public async Task<Tank> Handle(
@@ -18,8 +18,8 @@ public class GetTankQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStoreFactory
-      .ForTenant(query.ClubId)
+    var events = await eventStoreProvider
+      .ForClub(query.ClubId)
       .GetEvents(
         $"/tanks/{query.TankId}",
         new ReadEventsOptions

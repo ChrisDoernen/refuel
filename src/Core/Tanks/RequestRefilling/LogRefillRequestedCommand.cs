@@ -11,7 +11,7 @@ public record LogRefillRequestedCommand(
 
 public class LogRefillRequestedCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<LogRefillRequestedCommand>
 {
   public async Task Handle(
@@ -26,8 +26,8 @@ public class LogRefillRequestedCommandHandler(
       Subject: $"/tanks/{command.TankId}",
       Data: refillRequestedEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
       [candidate],
       [tank.GetIsSubjectOnEventIdPrecondition()],

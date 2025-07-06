@@ -60,7 +60,7 @@ public class SerializationTests
     evnt.Payload.PredecessorHash.Should().Be("0000000000000000000000000000000000000000000000000000000000000000");
     evnt.Payload.Time.Should().BeBefore(DateTime.UtcNow);
     evnt.Payload.Data.Should().BeOfType<TestEventV1>();
-    
+
     eventList.Last().Should().BeOfType<ErrorResponse>();
 
     var error = (ErrorResponse)eventList.Last()!;
@@ -80,10 +80,10 @@ public class SerializationTests
     var expectedJson =
       """
         {
+          "type": "isSubjectPristine",
           "payload": {
             "subject": "/test/42"
-          },
-          "type": "isSubjectPristine"
+          }
         }
         """.Minify();
 

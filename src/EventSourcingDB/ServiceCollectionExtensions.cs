@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace EventSourcingDB;
 
@@ -8,7 +9,7 @@ public static class ServiceCollectionExtensions
   public static void AddEventSourcingDb(
     this IServiceCollection services,
     IConfiguration configuration,
-    Action<IList<EventSourcingDbConnection>>? configureConnections = null
+    Action<EventSourcingDbConnections>? configureConnections = null
   )
   {
     services
@@ -16,27 +17,37 @@ public static class ServiceCollectionExtensions
       .Bind(configuration.GetSection(EventSourcingDbOptions.SectionName))
       .ValidateOnStart();
 
+    services
+      .AddOptions<EventSourcingDbConnections>()
+      .Bind(configuration.GetSection(EventSourcingDbConnections.SectionName))
+      .ValidateOnStart();
+
     var connections =
       configuration
-        .GetSection("EventSourcingDb:Connections")
-        .Get<IList<EventSourcingDbConnection>>()
+        .GetSection(EventSourcingDbConnections.SectionName)
+        .Get<EventSourcingDbConnections>()
       ?? throw new InvalidOperationException("EventSourcingDb connections are not configured.");
 
-    configureConnections?.Invoke(connections);
+    if (configureConnections is not null)
+    {
+      services.PostConfigure(configureConnections);
+    }
 
     foreach (var connection in connections)
     {
       services.AddHttpClient(
         $"eventsourcingdb-{connection.TenantId}",
-        client =>
+        (sp, client) =>
         {
-          client.BaseAddress = new UriBuilder(connection.Url) { Path = "api/v1/" }.Uri;
-          client.DefaultRequestHeaders.Add("Authorization", $"Bearer {connection.ApiToken}");
+          var configuredConnections = sp.GetRequiredService<IOptions<EventSourcingDbConnections>>().Value;
+          var configuredConnection = configuredConnections.ForTenant(connection.TenantId);
+
+          client.BaseAddress = new UriBuilder(configuredConnection.Url) { Path = "api/v1/" }.Uri;
+          client.DefaultRequestHeaders.Add("Authorization", $"Bearer {configuredConnection.ApiToken}");
         }
       );
     }
 
-    services.AddTransient<IEventStore, EventStore>();
-    services.AddTransient<IEventSourcingDbClient, EventStore>();
+    services.AddTransient<IEventStoreFactory, EventStoreFactory>();
   }
 }

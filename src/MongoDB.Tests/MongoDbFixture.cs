@@ -1,7 +1,9 @@
 ﻿using dotenv.net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Shared.Testing;
+using Shared.Testing.MongoDB;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Microsoft.DependencyInjection;
@@ -17,12 +19,7 @@ public class MongoDbFixture : TestBedFixture, IAsyncLifetime
   {
     DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 
-    var mongoDbConnection =
-      Configuration!
-        .GetSection("MongoDb")
-        .Get<MongoDbConnection>()!;
-
-    _testContainer = new MongoDbContainer(mongoDbConnection);
+    _testContainer = Configuration!.GetMongoDbContainer();
   }
 
   public async Task InitializeAsync() => await _testContainer.Start();
@@ -36,6 +33,14 @@ public class MongoDbFixture : TestBedFixture, IAsyncLifetime
   )
   {
     services.AddMongoDb(configuration!, _testContainer.ConfigureConnection);
+    services.AddTransient<IDocumentStore<TestDocument>>(
+      sp =>
+      {
+        var database = sp.GetRequiredService<IMongoDatabase>();
+
+        return new DocumentStore<TestDocument>(database, "testDocuments");
+      }
+    );
   }
 
   protected override IEnumerable<TestAppSettings> GetTestAppSettings()

@@ -2,14 +2,13 @@
 
 namespace Core.Clubs;
 
-public record Club : Document
+public class Club(
+  string name,
+  string tenantId,
+  string? description
+) : Document
 {
-  public string Name { get; private set; } = null!;
-  public string? Description { get; private set; }
-
-  public Club(string name, string? description)
-  {
-    Name = name;
-    Description = description;
-  }
+  public string Name { get; private set; } = name;
+  public string TenantId { get; private set; } = tenantId;
+  public string? Description { get; private set; } = description;
 }

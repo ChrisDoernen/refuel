@@ -10,7 +10,7 @@ public class WriteEventsTests(
   EventSourcingDbFixture fixture
 ) : TestBed<EventSourcingDbFixture>(testOutputHelper, fixture)
 {
-  private readonly IEventStore _eventStore = fixture.Get<IEventStore>(testOutputHelper);
+  private readonly IEventStoreFactory _eventStoreFactory = fixture.Get<IEventStoreFactory>(testOutputHelper);
 
   [Fact]
   public async Task WriteSingleEvent()
@@ -24,10 +24,12 @@ public class WriteEventsTests(
       )
     );
 
-    var events = await _eventStore.StoreEvents(
-      [eventCandidate],
-      [new IsSubjectPristine(eventCandidate.Subject)]
-    );
+    var events = await _eventStoreFactory
+      .ForTenant("tenant1")
+      .StoreEvents(
+        [eventCandidate],
+        [new IsSubjectPristine(eventCandidate.Subject)]
+      );
 
     events.Count().Should().Be(1);
   }

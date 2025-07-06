@@ -1,4 +1,5 @@
 ﻿using Core.ClubMembership.JoiningClubs;
+using Core.Shared;
 using EventSourcingDB;
 using MediatR;
 
@@ -9,7 +10,7 @@ public record GetClubMembersQuery(
 ) : IRequest<IEnumerable<ClubMember>>;
 
 public class GetClubMembersQueryHandler(
-  IEventStoreFactory eventStoreFactory,
+  IEventStoreProvider eventStoreProvider,
   IMediator mediator
 ) : IRequestHandler<GetClubMembersQuery, IEnumerable<ClubMember>>
 {
@@ -25,8 +26,8 @@ public class GetClubMembersQueryHandler(
        PROJECT INTO e
        """;
 
-    var events = await eventStoreFactory
-      .ForTenant(query.ClubId)
+    var events = await eventStoreProvider
+      .ForClub(query.ClubId)
       .RunEventQlQuery(eventQlQuery, cancellationToken);
 
     return await events

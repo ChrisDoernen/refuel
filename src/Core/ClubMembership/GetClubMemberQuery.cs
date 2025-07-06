@@ -10,7 +10,7 @@ public record GetClubMemberQuery(
 ) : IRequest<ClubMember>;
 
 public class GetClubMemberQueryHandler(
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<GetClubMemberQuery, ClubMember>
 {
   public async Task<ClubMember> Handle(
@@ -18,8 +18,8 @@ public class GetClubMemberQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStoreFactory
-      .ForTenant(query.ClubId)
+    var events = await eventStoreProvider
+      .ForClub(query.ClubId)
       .GetEvents(
         $"/members/{query.MemberId}",
         new ReadEventsOptions

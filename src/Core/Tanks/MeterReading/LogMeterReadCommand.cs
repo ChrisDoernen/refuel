@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.Shared;
+using EventSourcingDB;
 using MediatR;
 
 namespace Core.Tanks.MeterReading;
@@ -11,7 +12,7 @@ public record LogMeterReadCommand(
 
 public class LogMeterReadCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<LogMeterReadCommand>
 {
   public async Task Handle(
@@ -31,8 +32,8 @@ public class LogMeterReadCommandHandler(
       Subject: $"/tanks/{command.TankId}/meter",
       Data: meterReadEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
       [candidate],
       cancellationToken: cancellationToken

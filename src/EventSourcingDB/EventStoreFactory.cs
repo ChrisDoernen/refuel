@@ -5,22 +5,27 @@ namespace EventSourcingDB;
 
 public interface IEventStoreFactory
 {
-  IEventStore ForTenant(Guid tenantId);
+  IEventStore ForTenant(string tenantId);
 }
 
 public class EventStoreFactory(
   IServiceProvider serviceProvider
 ) : IEventStoreFactory
 {
-  public IEventStore ForTenant(Guid tenantId)
+  public IEventStore ForTenant(string tenantId)
   {
-    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
     var options = serviceProvider.GetRequiredService<IOptions<EventSourcingDbOptions>>();
+    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient($"eventsourcingdb-{tenantId}");
+
+    if (httpClient.BaseAddress is null)
+    {
+      throw new InvalidOperationException($"Tenant '{tenantId}' has no EventSourcingDB configured.");
+    }
 
     return new EventStore(
-      httpClientFactory,
       options,
-      tenantId
+      httpClient
     );
   }
 }

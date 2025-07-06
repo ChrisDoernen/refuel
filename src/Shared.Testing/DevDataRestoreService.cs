@@ -1,7 +1,6 @@
 ﻿using Core.ClubMembership;
 using Core.ClubMembership.AssignClubRole;
 using Core.ClubMembership.JoiningClubs;
-using Core.Clubs;
 using Core.Clubs.Creation;
 using Core.Users.SignUp;
 using MediatR;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Dev;
+namespace Shared.Testing;
 
 public class DevDataRestoreService(
   IServiceProvider services,
@@ -32,6 +31,7 @@ public class DevDataRestoreService(
 
     var createClubCommand = new CreateClubCommand(
       Name: "Die Luftakrobaten",
+      TenantId: "tenant1",
       Description: "Das ist unser super Verein!"
     );
     var clubId = await mediator.Send(createClubCommand, cancellationToken);

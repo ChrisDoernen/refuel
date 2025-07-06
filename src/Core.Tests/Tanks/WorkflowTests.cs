@@ -1,10 +1,15 @@
-﻿using Core.Tanks;
+﻿using Core.ClubMembership;
+using Core.ClubMembership.AssignClubRole;
+using Core.ClubMembership.JoiningClubs;
+using Core.Clubs.Creation;
+using Core.Tanks;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
 using Core.Tanks.Refilling;
 using Core.Tanks.Registration;
 using Core.Tanks.RequestRefilling;
+using Core.Users.SignUp;
 using FluentAssertions;
 using MediatR;
 using Xunit;
@@ -23,7 +28,32 @@ public class WorkflowTests(
   [Fact]
   public async Task TankWorkflow()
   {
-    var clubId = Guid.CreateVersion7();
+    var signUpCommand = new SignUpCommand(
+      Email: "chris@example.com",
+      FirstName: "Chris",
+      LastName: "Dörnen"
+    );
+    var userId = await _mediator.Send(signUpCommand);
+
+    var createClubCommand = new CreateClubCommand(
+      Name: "Die Luftakrobaten",
+      TenantId: "tenant1",
+      Description: "Das ist unser super Verein!"
+    );
+    var clubId = await _mediator.Send(createClubCommand);
+
+    var joinClubCommand = new JoinClubCommand(
+      UserId: userId,
+      ClubId: clubId
+    );
+    await _mediator.Send(joinClubCommand);
+
+    var assignClubRoleCommand = new AssignClubRoleCommand(
+      ClubId: clubId,
+      MemberId: userId,
+      RoleId: ClubRoles.Admin.Id
+    );
+    await _mediator.Send(assignClubRoleCommand);
 
     var registerTankCommand = new RegisterTankCommand(
       Name: "Benzintank H4",

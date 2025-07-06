@@ -1,4 +1,5 @@
-﻿using Core.Users;
+﻿using Core.Shared;
+using Core.Users;
 using EventSourcingDB;
 using MediatR;
 
@@ -11,7 +12,7 @@ public record JoinClubCommand(
 
 public class JoinClubCommandHandler(
   IMediator mediator,
-  IEventStoreFactory eventStoreFactory
+  IEventStoreProvider eventStoreProvider
 ) : IRequestHandler<JoinClubCommand>
 {
   public async Task Handle(
@@ -28,11 +29,11 @@ public class JoinClubCommandHandler(
       user.LastName
     );
     var candidate = new EventCandidate(
-      Subject: $"/member/{command.UserId}",
+      Subject: $"/members/{command.UserId}",
       Data: clubJoinedEvent
     );
-    await eventStoreFactory
-      .ForTenant(command.ClubId)
+    await eventStoreProvider
+      .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
         [new IsSubjectPristine(candidate.Subject)],
