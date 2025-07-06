@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Core.Shared.Authorization;
+using MediatR;
 using MongoDB;
 
 namespace Core.Users;
@@ -15,5 +16,13 @@ public class GetUsersQueryHandler(
   )
   {
     return await userStore.GetAll(cancellationToken);
+  }
+}
+
+public class GetUsersQueryAuthorizer : Authorizer<GetUsersQuery>
+{
+  public override async Task BuildPolicy(GetUsersQuery _)
+  {
+    UsePolicy(new UserIsInRolePolicy(UserRoles.Admin));
   }
 }

@@ -7,17 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj"/>
+    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <ProjectReference Include="..\Shared.Testing\Shared.Testing.csproj"/>
+    <ProjectReference Include="..\Shared.Testing\Shared.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotenv.net"/>
-    <PackageReference Include="HotChocolate.AspNetCore"/>
-    <PackageReference Include="HotChocolate.AspNetCore.CommandLine"/>
+    <PackageReference Include="dotenv.net" />
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="HotChocolate.AspNetCore.CommandLine" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
 </Project>

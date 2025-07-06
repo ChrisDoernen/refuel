@@ -20,13 +20,13 @@ public class ClubMemberHasRolePolicyHandler(
     CancellationToken cancellationToken
   )
   {
-    var user = userAccessor.User;
-    var member = await mediator.Send(new GetClubMemberQuery(policy.ClubId, user.Id), cancellationToken);
+    var userInfo = userAccessor.UserInfo;
+    var member = await mediator.Send(new GetClubMemberQuery(policy.ClubId, userInfo.User.Id), cancellationToken);
     var isUserInRole = member.RoleIds.Any(r => r.Equals(policy.Role.Id));
 
     var result = isUserInRole
       ? AuthorizationResult.Succeed()
-      : AuthorizationResult.Fail($"{userAccessor.User} is not in role {policy.Role}, club id {policy.ClubId}.");
+      : AuthorizationResult.Fail($"{userAccessor.UserInfo} is not in role {policy.Role}, club id {policy.ClubId}.");
 
     return await Task.FromResult(result);
   }

@@ -1,4 +1,5 @@
 using Core.Shared;
+using Core.Shared.Authorization;
 using Core.Users;
 
 namespace Api.Auth;
@@ -6,28 +7,28 @@ namespace Api.Auth;
 public class UserAccessor : IUserAccessor
 {
   private readonly IHttpContextAccessor _httpContextAccessor;
-  private readonly Lazy<User> _user;
-  public User User => _user.Value;
+  private readonly Lazy<UserInfo> _user;
+  public UserInfo UserInfo => _user.Value;
 
   public UserAccessor(IHttpContextAccessor httpContextAccessor)
   {
     _httpContextAccessor = httpContextAccessor;
-    _user = new Lazy<User>(GetMdsUser);
+    _user = new Lazy<UserInfo>(GetUserInfo);
   }
 
-  private User GetMdsUser()
+  private UserInfo GetUserInfo()
   {
     if (_httpContextAccessor.HttpContext is null)
     {
       // ToDo
     }
 
-    var isMdsUserFound = _httpContextAccessor.HttpContext!.Items.TryGetValue(nameof(User), out var user);
+    var isMdsUserFound = _httpContextAccessor.HttpContext!.Items.TryGetValue(nameof(UserInfo), out var user);
     if (!isMdsUserFound || user is null)
     {
       throw new Exception($"User not found, set up {nameof(AuthenticationMiddleware)} properly");
     }
 
-    return (User)user;
+    return (UserInfo)user;
   }
 }

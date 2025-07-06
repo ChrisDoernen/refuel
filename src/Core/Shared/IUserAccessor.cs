@@ -1,8 +1,8 @@
-﻿using Core.Users;
+﻿using Core.Shared.Authorization;
 
 namespace Core.Shared;
 
 public interface IUserAccessor
 {
-  User User { get; }
+  UserInfo UserInfo { get; }
 }

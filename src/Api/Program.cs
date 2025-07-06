@@ -1,3 +1,4 @@
+using Api;
 using Api.Auth;
 using Api.ClubMembership;
 using Api.Clubs;
@@ -11,6 +12,9 @@ using Core.Shared;
 using Core.Tanks;
 using dotenv.net;
 using EventSourcingDB;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB;
 using Shared.Testing;
 
@@ -21,7 +25,9 @@ DotEnv.Load(new DotEnvOptions(probeForEnv: true, probeLevelsToSearch: 6));
 Environment.SetEnvironmentVariable("RANDOMIZE_HOST_PORT", "false");
 
 
-builder.Services.AddGraphQLServer()
+builder.Services
+  .AddGraphQLServer()
+  .AddAuthorization()
   .AddGlobalObjectIdentification()
   .AddQueryType<Query>()
   .AddTypeExtension<ClubsQueryType>()
@@ -34,14 +40,18 @@ builder.Services.AddGraphQLServer()
   .AddType<ClubMemberType>()
   .AddType<ClubType>()
   .AddType<UserType>()
-  .AddType<TankType>();
+  .AddType<TankType>()
+  .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddGraphQL();
+builder.Services.AddErrorFilter<ErrorFilter>();
+
 
 builder.Services.AddEventSourcingDb(builder.Configuration);
 builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuthenticationMiddleware>();
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 if (builder.Environment.IsDevelopment())
@@ -51,10 +61,36 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddCore();
 
+
+#if DEBUG
+
+builder.Services
+  .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(
+    options =>
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = false,
+        SignatureValidator = (token, _) => new JsonWebToken(token),
+        RequireExpirationTime = false,
+        ValidateLifetime = false,
+        ClockSkew = TimeSpan.Zero,
+        RequireSignedTokens = false,
+      }
+  );
+
+#endif
+
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.MapGraphQL();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<AuthenticationMiddleware>();
 
 app.RunWithGraphQLCommands(args);

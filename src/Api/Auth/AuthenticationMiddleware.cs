@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Core.Shared;
+using Core.Shared.Authorization;
 using Core.Users;
 using MediatR;
 
@@ -15,26 +17,26 @@ public class AuthenticationMiddleware(
     if (identity is null || !identity.IsAuthenticated)
     {
       logger.LogWarning($"Unauthenticated request on path {context.Request.Path}");
-
-      throw new UnauthorizedAccessException();
+      
+      await next(context);
     }
 
     try
     {
-      var user = await GetUser(context.User);
-      context.Items.Add(nameof(User), user);
+      var userInfo = await GetUser(context.User);
+      context.Items.Add(nameof(UserInfo), userInfo);
     }
     catch (Exception ex)
     {
       logger.LogWarning($"Error parsing user: {ex}");
-
-      throw;
     }
 
     await next(context);
   }
 
-  private async Task<User> GetUser(ClaimsPrincipal principal)
+  private static readonly IEnumerable<Role> GlobalRoles = [UserRoles.Admin];
+
+  private async Task<UserInfo> GetUser(ClaimsPrincipal principal)
   {
     var email = principal.FindFirst(ClaimTypes.Email)?.Value;
     if (email is null)
@@ -42,6 +44,11 @@ public class AuthenticationMiddleware(
       throw new Exception("Missing email claim in JWT token");
     }
 
-    return await mediator.Send(new GetUserByEmailQuery(email));
+    var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+    var globalRoles = GlobalRoles.Where(r => roles.Contains(r.Id));
+
+    var user = await mediator.Send(new GetUserByEmailQuery(email));
+
+    return new UserInfo(user, globalRoles);
   }
 }
