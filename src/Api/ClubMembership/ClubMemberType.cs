@@ -1,4 +1,5 @@
-﻿using Core.ClubMembership;
+﻿using Api.Shared;
+using Core.ClubMembership;
 using Core.Shared;
 using Core.Users;
 using MediatR;
@@ -11,23 +12,23 @@ public class ClubMemberType : ObjectType<ClubMember>
   {
     descriptor.BindFieldsExplicitly();
 
-    descriptor.Field(c => c.UserId);
+    descriptor.Field(c => c.Id);
     descriptor.Field(c => c.FirstName);
     descriptor.Field(c => c.LastName);
 
-    // descriptor
-    //   .ImplementsNode()
-    //   .ResolveNode<Guid>(
-    //     async (context, id) =>
-    //       await context.Service<IMediator>().Send(new GetClubMemberQuery(id), context.RequestAborted)
-    //   );
+    descriptor
+      .ImplementsNode()
+      .ResolveNode<ClubCompoundId>(
+        async (context, id) =>
+          await context.Service<IMediator>().Send(new GetClubMemberQuery(id.ClubId, id.Id), context.RequestAborted)
+      );
 
     descriptor
       .Field("user")
       .Resolve<User>(
         async (context, cancellationToken) =>
         {
-          var id = context.Parent<ClubMember>().UserId;
+          var id = context.Parent<ClubMember>().Id;
           var query = new GetUserQuery(id);
 
           return await context.Service<IMediator>().Send(query, cancellationToken);
@@ -48,4 +49,11 @@ public class ClubMemberType : ObjectType<ClubMember>
         }
       );
   }
+}
+
+[ExtendObjectType(typeof(ClubMember))]
+public class ClubMemberExtensions
+{
+  [ID<ClubMember>]
+  public ClubCompoundId GetId([Parent] ClubMember member) => new(member.ClubId, member.Id);
 }

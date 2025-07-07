@@ -9,15 +9,15 @@ public class UserType : ObjectType<User>
   {
     descriptor.BindFieldsExplicitly();
 
-    descriptor.Field(u => u.Id).ID();
-    descriptor.Field(u => u.FirstName);
-    descriptor.Field(u => u.LastName);
-
     descriptor
       .ImplementsNode()
-      .ResolveNode<Guid>(
+      .IdField(u => u.Id)
+      .ResolveNode(
         async (context, id) =>
           await context.Service<IMediator>().Send(new GetUserQuery(id), context.RequestAborted)
       );
+
+    descriptor.Field(u => u.FirstName);
+    descriptor.Field(u => u.LastName);
   }
 }

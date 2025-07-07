@@ -11,8 +11,8 @@ namespace Core.Tanks;
 
 public record Tank : Audited<Tank>, IReplayable<Tank>
 {
-  public Guid Id { get; private init; }
   public Guid ClubId { get; private init; }
+  public Guid Id { get; private init; }
   public string Name { get; private init; } = null!;
   public string Description { get; private init; } = null!;
   public int Capacity { get; private init; }

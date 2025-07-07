@@ -29,7 +29,7 @@ public class AssignClubRoleCommandHandler(
     }
 
     var clubRoleAssignedEvent = new ClubRoleAssignedEventV1(
-      MemberId: member.UserId,
+      MemberId: member.Id,
       RoleId: command.RoleId
     );
     var candidate = new EventCandidate(

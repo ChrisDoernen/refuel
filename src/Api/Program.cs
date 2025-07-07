@@ -41,6 +41,8 @@ builder.Services
   .AddType<ClubType>()
   .AddType<UserType>()
   .AddType<TankType>()
+  .AddTypeConverter<string, ClubCompoundId>(ClubCompoundId.Parse)
+  .AddTypeConverter<ClubCompoundId, string>(x => x.ToString())
   .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddGraphQL();
