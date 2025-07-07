@@ -1,5 +1,6 @@
-﻿using Core.ClubMembership.AssignClubRole;
-using Core.ClubMembership.JoiningClubs;
+﻿using Core.ClubMembership.AssigningTankRoles;
+using Core.ClubMembership.ClubRoleAssignment;
+using Core.ClubMembership.Joining;
 using Core.Shared;
 using EventSourcingDB;
 
@@ -13,13 +14,15 @@ public record ClubMember : Audited<ClubMember>, IReplayable<ClubMember>
   public string FirstName { get; private init; } = null!;
   public string LastName { get; private init; } = null!;
   public IEnumerable<string> RoleIds { get; private init; } = [];
+  public Dictionary<Guid, IEnumerable<string>> TankRoleAssignments { get; private init; } = new();
 
   public ClubMember Apply(IEventData evnt)
   {
     return evnt switch
     {
-      UserJoinedClubEventV1 userSignedUpEvent => Apply(userSignedUpEvent),
+      UserJoinedClubEventV1 joinedClubEventV1 => Apply(joinedClubEventV1),
       ClubRoleAssignedEventV1 clubRoleAssignedEvent => Apply(clubRoleAssignedEvent),
+      TankRoleAssignedEventV1 tankRoleAssignedEvent => Apply(tankRoleAssignedEvent),
       _ => throw new InvalidOperationException("Unknown event for club member"),
     };
   }
@@ -27,6 +30,7 @@ public record ClubMember : Audited<ClubMember>, IReplayable<ClubMember>
   private ClubMember Apply(UserJoinedClubEventV1 evnt)
     => this with
     {
+      ClubId = evnt.ClubId,
       Id = evnt.UserId,
       Email = evnt.Email,
       FirstName = evnt.FirstName,
@@ -38,4 +42,20 @@ public record ClubMember : Audited<ClubMember>, IReplayable<ClubMember>
     {
       RoleIds = [.. RoleIds.Append(evnt.RoleId)]
     };
+
+  private ClubMember Apply(TankRoleAssignedEventV1 evnt)
+  {
+    var updatedAssignments = new Dictionary<Guid, IEnumerable<string>>(TankRoleAssignments);
+
+    if (updatedAssignments.TryGetValue(evnt.TankId, out var roles))
+    {
+      updatedAssignments[evnt.TankId] = roles.Append(evnt.RoleId);
+    }
+    else
+    {
+      updatedAssignments[evnt.TankId] = [evnt.RoleId];
+    }
+
+    return this with { TankRoleAssignments = updatedAssignments };
+  }
 }

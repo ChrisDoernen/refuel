@@ -3,16 +3,16 @@ using Core.Shared.Authorization;
 
 namespace Core.Users;
 
-public record UserIsInRolePolicy(
+public record UserHasRolePolicy(
   Role Role
 ) : IAuthorizationPolicy;
 
-public class UserIsInRolePolicyHandler(
+public class UserHasRolePolicyHandler(
   IUserAccessor userAccessor
-) : IAuthorizationHandler<UserIsInRolePolicy>
+) : IAuthorizationHandler<UserHasRolePolicy>
 {
   public async Task<AuthorizationResult> Handle(
-    UserIsInRolePolicy policy,
+    UserHasRolePolicy policy,
     CancellationToken cancellationToken
   )
   {

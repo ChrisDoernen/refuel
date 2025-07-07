@@ -1,6 +1,6 @@
 ﻿using Core.ClubMembership;
-using Core.ClubMembership.AssignClubRole;
-using Core.ClubMembership.JoiningClubs;
+using Core.ClubMembership.ClubRoleAssignment;
+using Core.ClubMembership.Joining;
 using Core.Clubs.Creation;
 using Core.Tanks;
 using Core.Tanks.FuelExtraction;

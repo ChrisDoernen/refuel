@@ -1,6 +1,6 @@
 ﻿using EventSourcingDB;
 
-namespace Core.ClubMembership.AssignClubRole;
+namespace Core.ClubMembership.ClubRoleAssignment;
 
 [EventType("com.example.club-role-assigned.v1")]
 public record ClubRoleAssignedEventV1(

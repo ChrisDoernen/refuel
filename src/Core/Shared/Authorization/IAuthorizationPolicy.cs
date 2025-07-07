@@ -24,6 +24,9 @@ public abstract class Authorizer<T> : IAuthorizer<T>
 
   public IEnumerable<IAuthorizationPolicy> Policies => _policies;
 
+  /// <summary>
+  ///   Any of the used policies must be fulfilled
+  /// </summary>
   protected void UsePolicy(IAuthorizationPolicy policy)
   {
     _policies.Add(policy);

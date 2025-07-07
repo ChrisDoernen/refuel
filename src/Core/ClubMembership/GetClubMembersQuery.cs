@@ -1,4 +1,4 @@
-﻿using Core.ClubMembership.JoiningClubs;
+﻿using Core.ClubMembership.Joining;
 using Core.Shared;
 using EventSourcingDB;
 using MediatR;

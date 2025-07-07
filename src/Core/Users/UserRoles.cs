@@ -4,7 +4,7 @@ namespace Core.Users;
 
 public class UserRoles : IRoleDefinition
 {
-  public static Role Admin = new(
+  public static Role GlobalAdmin = new(
     "global.admin",
     "Admin",
     "Global",

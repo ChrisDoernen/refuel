@@ -7,6 +7,7 @@ using Api.Shared;
 using Api.Tanks;
 using Api.Users;
 using Core;
+using Core.ClubMembership;
 using Core.Clubs;
 using Core.Shared;
 using Core.Tanks;
@@ -38,6 +39,7 @@ builder.Services
   .AddType<StateChangeType<TankType, Tank>>()
   .AddType<RoleType>()
   .AddType<ClubMemberType>()
+  .AddType<TankRoleAssignmentsType>()
   .AddType<ClubType>()
   .AddType<UserType>()
   .AddType<TankType>()

@@ -34,7 +34,7 @@ public class AuthenticationMiddleware(
     await next(context);
   }
 
-  private static readonly IEnumerable<Role> GlobalRoles = [UserRoles.Admin];
+  private static readonly IEnumerable<Role> GlobalRoles = [UserRoles.GlobalAdmin];
 
   private async Task<UserInfo> GetUser(ClaimsPrincipal principal)
   {

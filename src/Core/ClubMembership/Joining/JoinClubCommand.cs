@@ -3,7 +3,7 @@ using Core.Users;
 using EventSourcingDB;
 using MediatR;
 
-namespace Core.ClubMembership.JoiningClubs;
+namespace Core.ClubMembership.Joining;
 
 public record JoinClubCommand(
   Guid UserId,
@@ -23,6 +23,7 @@ public class JoinClubCommandHandler(
     var user = await mediator.Send(new GetUserQuery(command.UserId), cancellationToken);
 
     var clubJoinedEvent = new UserJoinedClubEventV1(
+      ClubId: command.ClubId,
       UserId: user.Id,
       Email: user.Email,
       FirstName: user.FirstName,

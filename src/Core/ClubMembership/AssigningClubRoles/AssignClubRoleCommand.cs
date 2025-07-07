@@ -1,8 +1,11 @@
-﻿using Core.Shared;
+﻿using Core.Clubs;
+using Core.Shared;
+using Core.Shared.Authorization;
+using Core.Users;
 using EventSourcingDB;
 using MediatR;
 
-namespace Core.ClubMembership.AssignClubRole;
+namespace Core.ClubMembership.ClubRoleAssignment;
 
 public record AssignClubRoleCommand(
   Guid ClubId,
@@ -43,5 +46,14 @@ public class AssignClubRoleCommandHandler(
         [member.GetIsSubjectOnEventIdPrecondition()],
         cancellationToken
       );
+  }
+}
+
+public class AssignClubRoleCommandAuthorizer : Authorizer<AssignClubRoleCommand>
+{
+  public override async Task BuildPolicy(AssignClubRoleCommand command)
+  {
+    // UsePolicy(new ClubMemberHasRolePolicy(command.ClubId, ClubRoles.Admin));
+    // UsePolicy(new UserHasRolePolicy(UserRoles.GlobalAdmin));
   }
 }

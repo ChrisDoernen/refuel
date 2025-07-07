@@ -11,7 +11,6 @@ public class TankType : ObjectType<Tank>
   {
     descriptor.BindFieldsExplicitly();
 
-    descriptor.Field(t => t.ClubId);
     descriptor.Field(t => t.Name);
     descriptor.Field(t => t.Description);
     descriptor.Field(t => t.Capacity);

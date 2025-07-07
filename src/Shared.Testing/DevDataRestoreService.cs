@@ -1,7 +1,9 @@
 ﻿using Core.ClubMembership;
-using Core.ClubMembership.AssignClubRole;
-using Core.ClubMembership.JoiningClubs;
+using Core.ClubMembership.AssigningTankRoles;
+using Core.ClubMembership.ClubRoleAssignment;
+using Core.ClubMembership.Joining;
 using Core.Clubs.Creation;
+using Core.Tanks;
 using Core.Tanks.Registration;
 using Core.Users.SignUp;
 using MediatR;
@@ -57,7 +59,15 @@ public class DevDataRestoreService(
       Capacity: 900,
       FuelLevel: 150
     );
-    await mediator.Send(registerTankCommand, cancellationToken);
+    var tankId = await mediator.Send(registerTankCommand, cancellationToken);
+
+    var assignTankRoleCommand = new AssignTankRoleCommand(
+      ClubId: clubId,
+      TankId: tankId,
+      MemberId: userId,
+      RoleId: TankRoles.Responsible.Id
+    );
+    await mediator.Send(assignTankRoleCommand, cancellationToken);
   }
 
   public Task StopAsync(CancellationToken _) => Task.CompletedTask;

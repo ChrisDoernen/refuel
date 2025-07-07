@@ -23,6 +23,6 @@ public class GetUsersQueryAuthorizer : Authorizer<GetUsersQuery>
 {
   public override async Task BuildPolicy(GetUsersQuery _)
   {
-    UsePolicy(new UserIsInRolePolicy(UserRoles.Admin));
+    UsePolicy(new UserHasRolePolicy(UserRoles.GlobalAdmin));
   }
 }

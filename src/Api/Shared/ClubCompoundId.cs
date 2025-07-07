@@ -1,5 +1,9 @@
 ﻿namespace Api.Shared;
 
+/// <summary>
+///   A compound identifier for any object that belongs to a club.
+///   We need to know from which club (tenant) to fetch the data.
+/// </summary>
 public readonly record struct ClubCompoundId(
   Guid ClubId,
   Guid Id

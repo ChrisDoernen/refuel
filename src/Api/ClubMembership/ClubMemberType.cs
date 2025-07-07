@@ -1,6 +1,8 @@
 ﻿using Api.Shared;
 using Core.ClubMembership;
+using Core.Clubs;
 using Core.Shared;
+using Core.Tanks;
 using Core.Users;
 using MediatR;
 
@@ -12,15 +14,44 @@ public class ClubMemberType : ObjectType<ClubMember>
   {
     descriptor.BindFieldsExplicitly();
 
-    descriptor.Field(c => c.Id);
-    descriptor.Field(c => c.FirstName);
-    descriptor.Field(c => c.LastName);
-
     descriptor
       .ImplementsNode()
       .ResolveNode<ClubCompoundId>(
         async (context, id) =>
           await context.Service<IMediator>().Send(new GetClubMemberQuery(id.ClubId, id.Id), context.RequestAborted)
+      );
+
+    descriptor.Field(c => c.FirstName);
+    descriptor.Field(c => c.LastName);
+
+    descriptor.Field("tanks")
+      .Resolve<IEnumerable<TankRoleAssignments>>(
+        async (context, cancellationToken) =>
+        {
+          var member = context.Parent<ClubMember>();
+          var assignments = new List<TankRoleAssignments>();
+
+          var roleQuery = new GetRolesQuery();
+          var roles = (await context.Service<IMediator>().Send(roleQuery, cancellationToken)).ToList();
+
+          foreach (var assignment in member.TankRoleAssignments)
+          {
+            var query = new GetTankQuery(member.ClubId, assignment.Key);
+
+            var tank = await context.Service<IMediator>().Send(query, cancellationToken);
+
+            var assignedRoles = roles.Where(r => assignment.Value.Contains(r.Id));
+
+            var tankRoleAssignments = new TankRoleAssignments
+            {
+              Tank = tank,
+              Roles = assignedRoles
+            };
+            assignments.Add(tankRoleAssignments);
+          }
+
+          return assignments;
+        }
       );
 
     descriptor
@@ -45,7 +76,19 @@ public class ClubMemberType : ObjectType<ClubMember>
 
           var roles = await context.Service<IMediator>().Send(query, cancellationToken);
 
-          return roles.Where(r => ids.Contains(r.Id)).ToList();
+          return roles.Where(r => ids.Contains(r.Id));
+        }
+      );
+
+    descriptor
+      .Field("club")
+      .Resolve<Club>(
+        async (context, cancellationToken) =>
+        {
+          var clubId = context.Parent<ClubMember>().ClubId;
+          var query = new GetClubQuery(clubId);
+
+          return await context.Service<IMediator>().Send(query, cancellationToken);
         }
       );
   }
