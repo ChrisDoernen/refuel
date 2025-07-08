@@ -5,9 +5,9 @@ using MongoDB.Driver;
 using Shared.Testing;
 using Shared.Testing.MongoDB;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
+using Xunit.Sdk;
 
 namespace MongoDB.Tests;
 
@@ -22,7 +22,7 @@ public class MongoDbFixture : TestBedFixture, IAsyncLifetime
     _testContainer = Configuration!.GetMongoDbContainer();
   }
 
-  public async Task InitializeAsync() => await _testContainer.Start();
+  public async ValueTask InitializeAsync() => await _testContainer.Start();
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");

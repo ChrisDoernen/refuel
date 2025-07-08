@@ -3,7 +3,7 @@ using Core.Shared;
 using FluentAssertions;
 using MediatR;
 using Xunit;
-using Xunit.Abstractions;
+
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace Core.Tests.Shared;

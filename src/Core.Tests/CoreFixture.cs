@@ -7,9 +7,9 @@ using Shared.Testing;
 using Shared.Testing.EventSourcingDB;
 using Shared.Testing.MongoDB;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
+using Xunit.Sdk;
 
 namespace Core.Tests;
 
@@ -28,7 +28,7 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
     ];
   }
 
-  public async Task InitializeAsync() => await _testContainers.Start();
+  public async ValueTask InitializeAsync() => await _testContainers.Start();
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");

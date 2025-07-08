@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
+
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace EventSourcingDB.Tests;

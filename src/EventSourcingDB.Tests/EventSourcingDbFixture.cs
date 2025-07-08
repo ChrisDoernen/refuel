@@ -4,9 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Shared.Testing;
 using Shared.Testing.EventSourcingDB;
 using Xunit;
-using Xunit.Abstractions;
+
 using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
+using Xunit.Sdk;
 
 namespace EventSourcingDB.Tests;
 
@@ -22,7 +23,7 @@ public class EventSourcingDbFixture : TestBedFixture, IAsyncLifetime
     _testContainers = Configuration!.GetEventSourcingDbContainers();
   }
 
-  public async Task InitializeAsync() => await _testContainers.Start();
+  public async ValueTask InitializeAsync() => await _testContainers.Start();
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");
