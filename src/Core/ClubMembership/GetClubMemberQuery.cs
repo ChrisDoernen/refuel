@@ -1,5 +1,5 @@
 ﻿using Core.Shared;
-using EventSourcingDB;
+using EventSourcingDb.Types;
 using MediatR;
 
 namespace Core.ClubMembership;
@@ -18,14 +18,11 @@ public class GetClubMemberQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStoreProvider
+    var events = eventStoreProvider
       .ForClub(query.ClubId)
       .GetEvents(
         $"/members/{query.MemberId}",
-        new ReadEventsOptions
-        {
-          Recursive = true
-        },
+        new ReadEventsOptions(true),
         cancellationToken
       );
 

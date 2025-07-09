@@ -1,4 +1,4 @@
-﻿using EventSourcingDB;
+﻿using EventSourcing;
 
 namespace Core.Shared;
 
@@ -10,7 +10,7 @@ public record StateChange<T>(
 public record Change(
   string Id,
   string Subject,
-  DateTime Time,
+  DateTimeOffset Time,
   IEventData Data
 )
 {

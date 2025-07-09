@@ -1,7 +1,7 @@
 ﻿using Core.ClubMembership.ClubRoleAssignment;
 using Core.Shared;
 using Core.Shared.Authorization;
-using EventSourcingDB;
+using EventSourcing;
 using MediatR;
 
 namespace Core.ClubMembership.AssigningTankRoles;

@@ -2,7 +2,7 @@
 using Core.ClubMembership.ClubRoleAssignment;
 using Core.ClubMembership.Joining;
 using Core.Shared;
-using EventSourcingDB;
+using EventSourcing;
 
 namespace Core.ClubMembership;
 

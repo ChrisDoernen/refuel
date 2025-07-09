@@ -1,10 +1,10 @@
 ﻿using dotenv.net;
+using EventSourcing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Testing;
 using Shared.Testing.EventSourcingDB;
 using Xunit;
-
 using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 using Xunit.Sdk;

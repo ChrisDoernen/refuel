@@ -1,7 +1,8 @@
 ﻿using Core.Shared;
 using Core.Users;
-using EventSourcingDB;
+using EventSourcingDb.Types;
 using MediatR;
+using EventCandidate = EventSourcing.EventCandidate;
 
 namespace Core.ClubMembership.Joining;
 
@@ -37,7 +38,7 @@ public class JoinClubCommandHandler(
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [new IsSubjectPristine(candidate.Subject)],
+        [Precondition.IsSubjectPristinePrecondition(candidate.Subject)],
         cancellationToken
       );
   }

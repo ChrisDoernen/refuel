@@ -1,4 +1,4 @@
-﻿namespace EventSourcingDB;
+﻿namespace EventSourcing;
 
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class EventTypeAttribute(

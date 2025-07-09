@@ -1,6 +1,7 @@
 ﻿using Core.Shared;
-using EventSourcingDB;
+using EventSourcingDb.Types;
 using MediatR;
+using EventCandidate = EventSourcing.EventCandidate;
 
 namespace Core.Tanks.MeterInitialization;
 
@@ -31,7 +32,7 @@ public class InitializeMeterCommandHandler(
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [new IsSubjectPristine(candidate.Subject)],
+        [Precondition.IsSubjectPristinePrecondition(candidate.Subject)],
         cancellationToken
       );
   }

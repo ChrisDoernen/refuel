@@ -1,5 +1,5 @@
 ﻿using dotenv.net;
-using EventSourcingDB;
+using EventSourcing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB;

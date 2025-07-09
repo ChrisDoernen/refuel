@@ -1,6 +1,6 @@
 ﻿using Core.ClubMembership.Joining;
 using Core.Shared;
-using EventSourcingDB;
+using EventSourcing;
 using MediatR;
 
 namespace Core.ClubMembership;
@@ -19,21 +19,6 @@ public class GetClubMembersQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var eventQlQuery =
-      $"""
-       FROM e IN events
-       WHERE e.type == '{EventType.Of<UserJoinedClubEventV1>()}'
-       PROJECT INTO e
-       """;
-
-    var events = await eventStoreProvider
-      .ForClub(query.ClubId)
-      .RunEventQlQuery(eventQlQuery, cancellationToken);
-
-    return await events
-      .Select(e => e.Data)
-      .Cast<UserJoinedClubEventV1>()
-      .SelectAwait(async e => await mediator.Send(new GetClubMemberQuery(query.ClubId, e.UserId), cancellationToken))
-      .ToListAsync(cancellationToken);
+    return new List<ClubMember>();
   }
 }

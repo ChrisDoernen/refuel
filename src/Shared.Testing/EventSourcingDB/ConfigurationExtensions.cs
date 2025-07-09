@@ -1,4 +1,4 @@
-﻿using EventSourcingDB;
+﻿using EventSourcing;
 using Microsoft.Extensions.Configuration;
 
 namespace Shared.Testing.EventSourcingDB;

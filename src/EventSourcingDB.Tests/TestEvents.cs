@@ -1,4 +1,6 @@
-﻿namespace EventSourcingDB.Tests;
+﻿using EventSourcing;
+
+namespace EventSourcingDB.Tests;
 
 [EventType("com.example.test-event.v1")]
 public record TestEventV1(

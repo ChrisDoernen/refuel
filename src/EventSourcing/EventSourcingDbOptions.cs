@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EventSourcingDB;
+namespace EventSourcing;
 
 public sealed class EventSourcingDbOptions
 {

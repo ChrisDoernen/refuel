@@ -10,13 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventSourcingDB\EventSourcingDB.csproj" />
+    <ProjectReference Include="..\EventSourcing\EventSourcing.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Shared.Testing\Shared.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector"/>
     <PackageReference Include="dotenv.net" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />

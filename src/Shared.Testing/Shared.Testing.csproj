@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Testcontainers" />
-      <PackageReference Include="xunit.abstractions" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Testcontainers"/>
+    <PackageReference Include="xunit.v3.extensibility.core"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Core\Core.csproj" />
-      <ProjectReference Include="..\EventSourcingDB\EventSourcingDB.csproj" />
-      <ProjectReference Include="..\MongoDB\MongoDB.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj"/>
+    <ProjectReference Include="..\EventSourcing\EventSourcing.csproj"/>
+    <ProjectReference Include="..\MongoDB\MongoDB.csproj"/>
+  </ItemGroup>
 
 </Project>

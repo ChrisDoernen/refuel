@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{935F0F8F-DA31-432D-B906-849A6F0EB8EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDB", "EventSourcingDB\EventSourcingDB.csproj", "{BE17733D-6450-46C3-8F06-68A6AD7CA05B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcing", "EventSourcing\EventSourcing.csproj", "{BE17733D-6450-46C3-8F06-68A6AD7CA05B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcingDB.Tests", "EventSourcingDB.Tests\EventSourcingDB.Tests.csproj", "{3FF87095-35AF-4083-8439-0FDE54D75412}"
 EndProject

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using EventSourcing;
+using FluentAssertions;
 using Xunit;
 
 namespace EventSourcingDB.Tests;

@@ -1,4 +1,6 @@
-﻿namespace EventSourcingDB;
+﻿using EventSourcingDb.Types;
+
+namespace EventSourcing;
 
 public interface IEventStore
 {
@@ -6,20 +8,20 @@ public interface IEventStore
 
   Task VerifyApiToken(CancellationToken cancellationToken = default);
   
-  Task<IEnumerable<Event>> StoreEvents(
+  Task<IReadOnlyCollection<Event>> StoreEvents(
     IEnumerable<EventCandidate> eventCandidates,
     IEnumerable<Precondition>? preconditions = null,
     CancellationToken cancellationToken = default
   );
 
-  Task<IAsyncEnumerable<Event>> GetEvents(
+  IAsyncEnumerable<Event> GetEvents(
     string subject,
-    ReadEventsOptions? options = null,
+    ReadEventsOptions? readEventsOptions = null,
     CancellationToken cancellationToken = default
   );
 
-  Task<IAsyncEnumerable<EventProjection>> RunEventQlQuery(
-    string query,
-    CancellationToken cancellationToken = default
-  );
+  // Task<IAsyncEnumerable<object>> RunEventQlQuery(
+  //   string query,
+  //   CancellationToken cancellationToken = default
+  // );
 }

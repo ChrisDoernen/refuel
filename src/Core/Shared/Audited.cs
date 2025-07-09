@@ -1,4 +1,4 @@
-﻿using EventSourcingDB;
+﻿using EventSourcingDb.Types;
 
 namespace Core.Shared;
 
@@ -9,14 +9,14 @@ public record Audited<T> where T : IReplayable<T>, new()
 
 public static class AuditedExtensions
 {
-  public static IsSubjectOnEventId GetIsSubjectOnEventIdPrecondition<T>(
+  public static Precondition GetIsSubjectOnEventIdPrecondition<T>(
     this Audited<T> audited
   ) where T : IReplayable<T>, new()
   {
     audited.EnsureNotPristine();
     var lastChange = audited.AuditTrail.Last().Change;
 
-    return new IsSubjectOnEventId(lastChange.Subject, lastChange.Id);
+    return Precondition.IsSubjectOnEventIdPrecondition(lastChange.Subject, lastChange.Id);
   }
 
   public static void EnsureNotPristine<T>(

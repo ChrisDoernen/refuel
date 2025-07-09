@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using EventSourcingDb;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace EventSourcingDB;
+namespace EventSourcing;
 
 public static class ServiceCollectionExtensions
 {
@@ -35,19 +37,22 @@ public static class ServiceCollectionExtensions
 
     foreach (var connection in connections)
     {
-      services.AddHttpClient(
-        $"eventsourcingdb-{connection.TenantId}",
-        (sp, client) =>
+      services.AddKeyedScoped<Client>(
+        $"esdbclient-{connection.TenantId}",
+        (sp, foo) =>
         {
           var configuredConnections = sp.GetRequiredService<IOptions<EventSourcingDbConnections>>().Value;
           var configuredConnection = configuredConnections.ForTenant(connection.TenantId);
+          var logger = sp.GetRequiredService<ILogger<Client>>();
 
-          client.BaseAddress = new UriBuilder(configuredConnection.Url) { Path = "api/v1/" }.Uri;
-          client.DefaultRequestHeaders.Add("Authorization", $"Bearer {configuredConnection.ApiToken}");
+          var uri = new Uri(configuredConnection.Url);
+
+          return new Client(uri, configuredConnection.ApiToken, logger);
         }
       );
     }
 
     services.AddTransient<IEventStoreFactory, EventStoreFactory>();
+    services.AddSingleton<EventConverter>();
   }
 }

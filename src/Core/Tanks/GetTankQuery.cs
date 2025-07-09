@@ -1,5 +1,5 @@
 ﻿using Core.Shared;
-using EventSourcingDB;
+using EventSourcingDb.Types;
 using MediatR;
 
 namespace Core.Tanks;
@@ -18,14 +18,10 @@ public class GetTankQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    var events = await eventStoreProvider
+    var events = eventStoreProvider
       .ForClub(query.ClubId)
-      .GetEvents(
-        $"/tanks/{query.TankId}",
-        new ReadEventsOptions
-        {
-          Recursive = true
-        },
+      .GetEvents($"/tanks/{query.TankId}",
+        new ReadEventsOptions(true),
         cancellationToken
       );
 

@@ -82,6 +82,7 @@ dotnet_diagnostic.CA1051.severity = none # Do not declare visible instance field
 dotnet_diagnostic.IDE0010.severity = none # Populate switch
 dotnet_diagnostic.CS8669.severity = none # The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 dotnet_diagnostic.ide0022.severity = none # Use expression body for methods
+dotnet_diagnostic.xUnit1051.severity = none # Use xunit cancellation token
 
 dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.IDE0039.severity = none

@@ -12,7 +12,7 @@ using Core.Clubs;
 using Core.Shared;
 using Core.Tanks;
 using dotenv.net;
-using EventSourcingDB;
+using EventSourcing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;

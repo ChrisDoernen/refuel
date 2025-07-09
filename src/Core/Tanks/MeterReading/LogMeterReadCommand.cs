@@ -1,5 +1,5 @@
 ﻿using Core.Shared;
-using EventSourcingDB;
+using EventSourcing;
 using MediatR;
 
 namespace Core.Tanks.MeterReading;

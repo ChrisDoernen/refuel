@@ -1,3 +1,4 @@
+using EventSourcing;
 using Xunit;
 
 using Xunit.Microsoft.DependencyInjection.Abstracts;

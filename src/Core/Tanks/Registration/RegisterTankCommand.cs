@@ -1,7 +1,8 @@
 ﻿using Core.Shared;
 using Core.Shared.Authorization;
-using EventSourcingDB;
+using EventSourcingDb.Types;
 using MediatR;
+using EventCandidate = EventSourcing.EventCandidate;
 
 namespace Core.Tanks.Registration;
 
@@ -40,7 +41,7 @@ public class RegisterTankCommandHandler(
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [new IsSubjectPristine(candidate.Subject)],
+        [Precondition.IsSubjectPristinePrecondition(candidate.Subject)],
         cancellationToken
       );
 

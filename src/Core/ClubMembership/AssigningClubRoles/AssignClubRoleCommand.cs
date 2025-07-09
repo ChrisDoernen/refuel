@@ -2,7 +2,7 @@
 using Core.Shared;
 using Core.Shared.Authorization;
 using Core.Users;
-using EventSourcingDB;
+using EventSourcing;
 using MediatR;
 
 namespace Core.ClubMembership.ClubRoleAssignment;

@@ -1,7 +1,7 @@
 ﻿using DotNet.Testcontainers.Builders;
-using EventSourcingDB;
+using EventSourcing;
 
-namespace Shared.Testing;
+namespace Shared.Testing.EventSourcingDB;
 
 public class EventSourcingDbContainer : TestContainer
 {

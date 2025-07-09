@@ -1,7 +1,10 @@
+using EventSourcing;
+using EventSourcingDb.Types;
 using FluentAssertions;
 using Xunit;
 
 using Xunit.Microsoft.DependencyInjection.Abstracts;
+using EventCandidate = EventSourcing.EventCandidate;
 
 namespace EventSourcingDB.Tests;
 
@@ -29,7 +32,7 @@ public class ReadEventsTests(
       .ForTenant("tenant1")
       .StoreEvents([eventCandidate]);
 
-    var events = await _eventStoreFactory
+    var events = _eventStoreFactory
       .ForTenant("tenant1")
       .GetEvents("/test/42");
 
@@ -62,14 +65,11 @@ public class ReadEventsTests(
       .ForTenant("tenant1")
       .StoreEvents([testEventCandidate, otherTestEventCandidate]);
 
-    var events = await _eventStoreFactory
+    var events = _eventStoreFactory
       .ForTenant("tenant1")
       .GetEvents(
         "/test/43",
-        new ReadEventsOptions
-        {
-          Recursive = true
-        }
+        new ReadEventsOptions(true)
       );
 
     var eventList = await events.ToListAsync();

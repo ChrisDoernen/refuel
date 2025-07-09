@@ -1,4 +1,5 @@
-﻿using EventSourcingDB;
+﻿using Core.ClubMembership.Joining;
+using EventSourcing;
 
 namespace Core.Tanks.Registration;
 
@@ -10,4 +11,4 @@ public record TankRegisteredEventV1(
   string Description,
   int Capacity,
   int InitialFuelLevel
-) :  IEventData;
+) : IEventData;
