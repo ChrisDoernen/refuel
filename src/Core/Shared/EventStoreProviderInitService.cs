@@ -16,7 +16,6 @@ public class EventStoreProviderInitService(
     logger.LogInformation("Initializing event store provider");
 
     var clubs = await mediator.Send(new GetClubsQuery(), cancellationToken);
-
     foreach (var club in clubs)
     {
       eventStoreProvider.RegisterTenant(club.Id, club.TenantId);

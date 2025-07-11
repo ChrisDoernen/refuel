@@ -31,6 +31,8 @@ builder.Services
   .AddAuthorization()
   .AddGlobalObjectIdentification()
   .AddQueryType<Query>()
+  .AddMutationType<Mutation>()
+  .AddTypeExtension<UsersMutationType>()
   .AddTypeExtension<ClubsQueryType>()
   .AddTypeExtension<UsersQueryType>()
   .AddTypeExtension<SharedQueryType>()
@@ -43,6 +45,7 @@ builder.Services
   .AddType<ClubType>()
   .AddType<UserType>()
   .AddType<TankType>()
+  .AddType<SignUpCommandInputType>()
   .AddTypeConverter<string, ClubCompoundId>(ClubCompoundId.Parse)
   .AddTypeConverter<ClubCompoundId, string>(x => x.ToString())
   .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());

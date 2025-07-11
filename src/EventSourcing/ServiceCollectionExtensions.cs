@@ -37,9 +37,9 @@ public static class ServiceCollectionExtensions
 
     foreach (var connection in connections)
     {
-      services.AddKeyedScoped<Client>(
+      services.AddKeyedTransient<Client>(
         $"esdbclient-{connection.TenantId}",
-        (sp, foo) =>
+        (sp, _) =>
         {
           var configuredConnections = sp.GetRequiredService<IOptions<EventSourcingDbConnections>>().Value;
           var configuredConnection = configuredConnections.ForTenant(connection.TenantId);

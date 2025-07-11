@@ -1,22 +1,18 @@
-﻿namespace EventSourcing;
+﻿using MediatR;
+
+namespace EventSourcing;
 
 /// <summary>
-///   This is the same as the event type from EventSourcingDb, but with deserialized data
+///   This is the same as the event type from EventSourcingDb, but with deserialized data.
+///   It can be published to the MediatR and be handled by the application.
 /// </summary>
 public record Event(
-  string SpecVersion,
   string Id,
   DateTimeOffset Time,
   string Source,
   string Subject,
-  string Type,
-  string DataContentType,
-  IEventData Data,
-  string Hash,
-  string PredecessorHash,
-  string? TraceParent,
-  string? TraceState
-);
+  IEventData Data
+) : INotification;
 
 /// <summary>
 ///   The event candidate of the public interface.

@@ -16,16 +16,21 @@ public static class ServiceCollectionExtensions
   )
   {
     var assembly = typeof(ServiceCollectionExtensions).Assembly;
-    services.AddMediatR(c => c.RegisterServicesFromAssembly(assembly));
+    services.AddMediatR(c =>
+      {
+        c.RegisterServicesFromAssembly(assembly);
+        c.MediatorImplementationType = typeof(EventSourcingMediator);
+      }
+    );
+    
     services.AddMediatorAuthorization(assembly);
-
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
-
     services.AddAuthorizersFromAssembly(assembly);
 
     services.AddSingleton<IRoleProvider, RoleProvider>();
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddHostedService<EventStoreProviderInitService>();
+    services.AddHostedService<EventStoreSubscriptionService>();
 
     services.AddTransient<IDocumentStore<User>>(
       sp => new DocumentStore<User>(

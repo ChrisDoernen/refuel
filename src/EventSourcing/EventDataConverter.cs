@@ -32,18 +32,11 @@ public class EventConverter
       throw new Exception($"Failed to deserialize event data of type '{evnt.Type}'");
 
     return new Event(
-      evnt.SpecVersion,
       evnt.Id,
       evnt.Time,
       evnt.Source,
       evnt.Subject,
-      evnt.Type,
-      evnt.DataContentType,
-      eventData,
-      evnt.Hash,
-      evnt.PredecessorHash,
-      evnt.TraceParent,
-      evnt.TraceState
+      eventData
     );
   }
 }
