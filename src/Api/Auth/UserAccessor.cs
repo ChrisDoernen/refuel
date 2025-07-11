@@ -1,5 +1,6 @@
+using App.Authorization;
+using App.Cqrs;
 using Core.Shared;
-using Core.Shared.Authorization;
 using Core.Users;
 
 namespace Api.Auth;

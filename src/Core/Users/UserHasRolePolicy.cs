@@ -1,5 +1,7 @@
+using App;
+using App.Authorization;
+using App.Cqrs;
 using Core.Shared;
-using Core.Shared.Authorization;
 
 namespace Core.Users;
 
@@ -21,7 +23,7 @@ public class UserHasRolePolicyHandler(
 
     var result = isUserInRole
       ? AuthorizationResult.Succeed()
-      : AuthorizationResult.Fail($"{userInfo.User.Email} is not in role {policy.Role}.");
+      : AuthorizationResult.Fail($"{userInfo.Email} is not in role {policy.Role}.");
 
     return await Task.FromResult(result);
   }

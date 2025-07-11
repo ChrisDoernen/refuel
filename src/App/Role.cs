@@ -1,4 +1,4 @@
-﻿namespace Core.Shared;
+﻿namespace App;
 
 public record Role(
   string Id,

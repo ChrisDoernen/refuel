@@ -1,6 +1,7 @@
 using System.Security.Claims;
+using App;
+using App.Authorization;
 using Core.Shared;
-using Core.Shared.Authorization;
 using Core.Users;
 using MediatR;
 
@@ -17,7 +18,7 @@ public class AuthenticationMiddleware(
     if (identity is null || !identity.IsAuthenticated)
     {
       logger.LogWarning($"Unauthenticated request on path {context.Request.Path}");
-      
+
       await next(context);
     }
 
@@ -49,6 +50,11 @@ public class AuthenticationMiddleware(
 
     var user = await mediator.Send(new GetUserByEmailQuery(email));
 
-    return new UserInfo(user, globalRoles);
+    return new UserInfo(
+      user.Id,
+      user.Email,
+      $"{user.FirstName} {user.LastName}",
+      globalRoles
+    );
   }
 }

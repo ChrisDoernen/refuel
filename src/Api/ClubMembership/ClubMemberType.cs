@@ -1,4 +1,5 @@
 ﻿using Api.Shared;
+using App;
 using Core.ClubMembership;
 using Core.Clubs;
 using Core.Shared;

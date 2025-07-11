@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Core.Shared;
+namespace App.Cqrs;
 
 public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : Audited<T>, IReplayable<T>, new()
 {

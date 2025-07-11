@@ -1,4 +1,4 @@
-﻿namespace Core.Shared.Authorization;
+﻿namespace App.Authorization;
 
 public class AuthorizationResult
 {

@@ -1,6 +1,6 @@
 ﻿using EventSourcingDb.Types;
 
-namespace Core.Shared;
+namespace App.Cqrs;
 
 public record Audited<T> where T : IReplayable<T>, new()
 {

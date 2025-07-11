@@ -1,6 +1,7 @@
-﻿using Core.Clubs;
+﻿using App.Authorization;
+using App.Cqrs;
+using Core.Clubs;
 using Core.Shared;
-using Core.Shared.Authorization;
 using Core.Users;
 using EventSourcing;
 using MediatR;

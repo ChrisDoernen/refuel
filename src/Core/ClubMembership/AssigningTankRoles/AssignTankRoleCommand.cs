@@ -1,6 +1,7 @@
-﻿using Core.ClubMembership.ClubRoleAssignment;
+﻿using App.Authorization;
+using App.Cqrs;
+using Core.ClubMembership.ClubRoleAssignment;
 using Core.Shared;
-using Core.Shared.Authorization;
 using EventSourcing;
 using MediatR;
 

@@ -1,6 +1,7 @@
-﻿using Core.Clubs;
+﻿using App.Authorization;
+using App.Cqrs;
+using Core.Clubs;
 using Core.Shared;
-using Core.Shared.Authorization;
 using Core.Users;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,14 +24,10 @@ public static class ServiceCollectionExtensions
       }
     );
     
-    services.AddMediatorAuthorization(assembly);
-    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
     services.AddAuthorizersFromAssembly(assembly);
 
     services.AddSingleton<IRoleProvider, RoleProvider>();
-    services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddHostedService<EventStoreProviderInitService>();
-    services.AddHostedService<EventStoreSubscriptionService>();
 
     services.AddTransient<IDocumentStore<User>>(
       sp => new DocumentStore<User>(

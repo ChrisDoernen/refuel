@@ -1,4 +1,5 @@
-﻿using Core.Shared;
+﻿using App.Cqrs;
+using Core.Shared;
 using EventSourcing;
 using MediatR;
 

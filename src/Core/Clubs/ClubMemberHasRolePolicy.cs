@@ -1,6 +1,8 @@
+using App;
+using App.Authorization;
+using App.Cqrs;
 using Core.ClubMembership;
 using Core.Shared;
-using Core.Shared.Authorization;
 using MediatR;
 
 namespace Core.Clubs;
@@ -21,7 +23,7 @@ public class ClubMemberHasRolePolicyHandler(
   )
   {
     var userInfo = userAccessor.UserInfo;
-    var member = await mediator.Send(new GetClubMemberQuery(policy.ClubId, userInfo.User.Id), cancellationToken);
+    var member = await mediator.Send(new GetClubMemberQuery(policy.ClubId, userInfo.Id), cancellationToken);
     var isUserInRole = member.RoleIds.Any(r => r.Equals(policy.Role.Id));
 
     var result = isUserInRole

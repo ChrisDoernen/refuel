@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Shared;
+namespace App.Cqrs;
 
 public class EventSourcingMediator(
   IServiceProvider serviceProvider,
@@ -15,8 +15,7 @@ public class EventSourcingMediator(
     CancellationToken cancellationToken
   )
   {
-    var evnt = (Event)notification;
-    logger.LogInformation($"Publishing {EventType.Of(evnt.Data)}");
+    logger.LogInformation($"Publishing {EventType.Of(((Event)notification).Data)}");
 
     foreach (var handler in handlers)
     {

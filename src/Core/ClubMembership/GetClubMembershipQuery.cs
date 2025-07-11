@@ -1,4 +1,5 @@
-﻿using Core.ClubMembership.Joining;
+﻿using App.Cqrs;
+using Core.ClubMembership.Joining;
 using Core.Clubs;
 using Core.Shared;
 using EventSourcing;

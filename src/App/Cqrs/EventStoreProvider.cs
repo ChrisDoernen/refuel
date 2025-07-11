@@ -1,6 +1,6 @@
 ﻿using EventSourcing;
 
-namespace Core.Shared;
+namespace App.Cqrs;
 
 public interface IEventStoreProvider
 {

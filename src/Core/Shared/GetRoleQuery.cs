@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using App;
+using MediatR;
 
 namespace Core.Shared;
 

@@ -1,4 +1,5 @@
-﻿using Core.ClubMembership.AssigningTankRoles;
+﻿using App.Cqrs;
+using Core.ClubMembership.AssigningTankRoles;
 using Core.ClubMembership.ClubRoleAssignment;
 using Core.ClubMembership.Joining;
 using Core.Shared;

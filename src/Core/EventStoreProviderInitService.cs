@@ -1,9 +1,10 @@
-﻿using Core.Clubs;
+﻿using App.Cqrs;
+using Core.Clubs;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Shared;
+namespace Core;
 
 public class EventStoreProviderInitService(
   ILogger<EventStoreProviderInitService> logger,

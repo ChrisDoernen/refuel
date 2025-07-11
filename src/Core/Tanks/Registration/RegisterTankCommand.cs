@@ -1,5 +1,6 @@
-﻿using Core.Shared;
-using Core.Shared.Authorization;
+﻿using App.Authorization;
+using App.Cqrs;
+using Core.Shared;
 using EventSourcingDb.Types;
 using MediatR;
 using EventCandidate = EventSourcing.EventCandidate;

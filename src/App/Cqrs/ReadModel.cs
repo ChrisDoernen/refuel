@@ -1,4 +1,4 @@
-﻿namespace Core.Shared;
+﻿namespace App.Cqrs;
 
 public class ReadModel<T>
     where T : IReplayable<T>

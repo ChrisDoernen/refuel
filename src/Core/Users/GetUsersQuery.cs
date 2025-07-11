@@ -1,4 +1,4 @@
-﻿using Core.Shared.Authorization;
+﻿using App.Authorization;
 using MediatR;
 using MongoDB;
 

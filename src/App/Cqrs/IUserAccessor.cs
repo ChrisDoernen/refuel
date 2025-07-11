@@ -1,6 +1,6 @@
-﻿using Core.Shared.Authorization;
+﻿using App.Authorization;
 
-namespace Core.Shared;
+namespace App.Cqrs;
 
 public interface IUserAccessor
 {
