@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
-using App.Authorization;
-using App.Cqrs;
+using Core.Infrastructure.Authorization;
+using Core.Infrastructure.Cqrs;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace App;
+namespace Core.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-  public static void AddApp(
+  public static void AddCoreInfrastructure(
     this IServiceCollection services,
     Assembly assembly
   )

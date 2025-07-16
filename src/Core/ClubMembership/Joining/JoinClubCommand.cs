@@ -1,4 +1,4 @@
-﻿using App.Cqrs;
+﻿using Core.Infrastructure.Cqrs;
 using Core.Users;
 using EventSourcing;
 using EventSourcingDb.Types;

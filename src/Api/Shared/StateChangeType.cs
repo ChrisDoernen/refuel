@@ -1,5 +1,4 @@
-﻿using App.Cqrs;
-using Core.Shared;
+﻿using Core.Infrastructure.Cqrs;
 
 namespace Api.Shared;
 

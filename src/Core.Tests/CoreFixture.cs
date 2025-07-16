@@ -1,4 +1,4 @@
-﻿using App;
+﻿using Core.Infrastructure;
 using dotenv.net;
 using EventSourcing;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +40,7 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
   )
   {
     services.AddCore();
-    services.AddApp(typeof(Core.ServiceCollectionExtensions).Assembly);
+    services.AddCoreInfrastructure(typeof(Core.ServiceCollectionExtensions).Assembly);
     services.AddEventSourcingDb(
       configuration!,
       connections => connections.ConfigureFromContainers(_testContainers)

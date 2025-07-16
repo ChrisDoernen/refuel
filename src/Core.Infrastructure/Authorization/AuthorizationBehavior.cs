@@ -2,7 +2,7 @@
 using System.Reflection;
 using MediatR;
 
-namespace App.Authorization;
+namespace Core.Infrastructure.Authorization;
 
 public class AuthorizationBehavior<TRequest, TResponse>(
   IEnumerable<IAuthorizer<TRequest>> authorizers,

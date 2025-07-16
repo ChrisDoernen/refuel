@@ -1,7 +1,8 @@
 ﻿using Api.Shared;
-using App;
+
 using Core.ClubMembership;
 using Core.Clubs;
+using Core.Infrastructure;
 using Core.Shared;
 using Core.Tanks;
 using Core.Users;

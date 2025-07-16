@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 public class EventStoreSubscriptionService(
   ILogger<EventStoreSubscriptionService> logger,

@@ -1,7 +1,5 @@
-using App.Authorization;
-using App.Cqrs;
-using Core.Shared;
-using Core.Users;
+using Core.Infrastructure.Authorization;
+using Core.Infrastructure.Cqrs;
 
 namespace Api.Auth;
 

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\App\App.csproj" />
+    <ProjectReference Include="..\Core.Infrastructure\Core.Infrastructure.csproj" />
     <ProjectReference Include="..\EventSourcing\EventSourcing.csproj" />
     <ProjectReference Include="..\MongoDB\MongoDB.csproj" />
   </ItemGroup>

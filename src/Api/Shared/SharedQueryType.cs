@@ -1,5 +1,5 @@
 ﻿using Api.GraphQL;
-using App;
+using Core.Infrastructure;
 using Core.Shared;
 using MediatR;
 

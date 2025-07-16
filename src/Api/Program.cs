@@ -6,12 +6,9 @@ using Api.GraphQL;
 using Api.Shared;
 using Api.Tanks;
 using Api.Users;
-using App;
-using App.Cqrs;
 using Core;
-using Core.ClubMembership;
-using Core.Clubs;
-using Core.Shared;
+using Core.Infrastructure;
+using Core.Infrastructure.Cqrs;
 using Core.Tanks;
 using dotenv.net;
 using EventSourcing;
@@ -56,7 +53,7 @@ builder.Services.AddGraphQL();
 builder.Services.AddErrorFilter<ErrorFilter>();
 
 
-builder.Services.AddApp(typeof(Core.ServiceCollectionExtensions).Assembly);
+builder.Services.AddCoreInfrastructure(typeof(Core.ServiceCollectionExtensions).Assembly);
 builder.Services.AddEventSourcingDb(builder.Configuration);
 builder.Services.AddMongoDb(builder.Configuration);
 

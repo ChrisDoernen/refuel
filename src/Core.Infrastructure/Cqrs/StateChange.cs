@@ -1,6 +1,6 @@
 ﻿using EventSourcing;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 /// <summary>
 ///   Contains a state together with the event that led to this state.

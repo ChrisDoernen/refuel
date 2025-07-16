@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
-using App.Cqrs;
-using App.ReadModels;
+using Core.Infrastructure.Cqrs;
+using Core.Infrastructure.ReadModels;
 using MediatR;
 
 namespace Core.ClubMembership;

@@ -1,4 +1,4 @@
-﻿using App.Cqrs;
+﻿using Core.Infrastructure.Cqrs;
 using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.AssigningTankRoles;
 using Core.ClubMembership.Joining;

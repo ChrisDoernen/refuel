@@ -1,4 +1,4 @@
-﻿namespace App.Authorization;
+﻿namespace Core.Infrastructure.Authorization;
 
 public interface IAuthorizationPolicy;
 

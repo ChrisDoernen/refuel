@@ -1,5 +1,5 @@
-﻿using App.Authorization;
-using App.Cqrs;
+﻿using Core.Infrastructure.Authorization;
+using Core.Infrastructure.Cqrs;
 using EventSourcing;
 using MediatR;
 

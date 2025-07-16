@@ -1,7 +1,6 @@
 using System.Security.Claims;
-using App;
-using App.Authorization;
-using Core.Shared;
+using Core.Infrastructure;
+using Core.Infrastructure.Authorization;
 using Core.Users;
 using MediatR;
 

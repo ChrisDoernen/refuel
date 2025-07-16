@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace App.Authorization;
+namespace Core.Infrastructure.Authorization;
 
 public static class ServiceCollectionExtensions
 {

@@ -1,4 +1,4 @@
-﻿using App.Cqrs;
+﻿using Core.Infrastructure.Cqrs;
 using Core.Clubs;
 using MediatR;
 using Microsoft.Extensions.Hosting;

@@ -1,6 +1,6 @@
-using App;
-using App.Authorization;
-using App.Cqrs;
+using Core.Infrastructure;
+using Core.Infrastructure.Authorization;
+using Core.Infrastructure.Cqrs;
 
 namespace Core.Users;
 

@@ -1,9 +1,9 @@
-﻿using App.ReadModels;
+﻿using Core.Infrastructure.ReadModels;
 using EventSourcing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 public class EventSourcingMediator(
   IServiceProvider serviceProvider,

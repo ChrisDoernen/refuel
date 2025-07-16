@@ -2,7 +2,7 @@
 using System.Globalization;
 using EventSourcingDb.Types;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 public record AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IReplayable<T>, new()
 {

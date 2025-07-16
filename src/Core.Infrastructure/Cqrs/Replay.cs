@@ -1,6 +1,6 @@
 ﻿using EventSourcing;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 public class Replay<T> where T : IReplayable<T>, new()
 {

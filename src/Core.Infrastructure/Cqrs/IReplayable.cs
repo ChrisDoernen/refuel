@@ -1,6 +1,6 @@
 ﻿using EventSourcing;
 
-namespace App.Cqrs;
+namespace Core.Infrastructure.Cqrs;
 
 public interface IReplayable<T>
 {

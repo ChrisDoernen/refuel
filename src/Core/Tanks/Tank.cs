@@ -1,4 +1,4 @@
-﻿using App.Cqrs;
+﻿using Core.Infrastructure.Cqrs;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;

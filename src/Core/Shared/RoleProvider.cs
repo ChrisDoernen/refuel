@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using App;
+using Core.Infrastructure;
 
 namespace Core.Shared;
 

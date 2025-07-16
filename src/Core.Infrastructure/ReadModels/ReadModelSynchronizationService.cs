@@ -1,8 +1,8 @@
-﻿using App.Cqrs;
+﻿using Core.Infrastructure.Cqrs;
 using EventSourcing;
 using Microsoft.Extensions.Logging;
 
-namespace App.ReadModels;
+namespace Core.Infrastructure.ReadModels;
 
 public interface IReadModelSynchronizationService
 {

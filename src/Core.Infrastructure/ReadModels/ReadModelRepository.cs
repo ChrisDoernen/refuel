@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using App.Cqrs;
+using Core.Infrastructure.Cqrs;
 
-namespace App.ReadModels;
+namespace Core.Infrastructure.ReadModels;
 
 public interface IReadModelRepository<T> where T : IReplayable<T>, new()
 {

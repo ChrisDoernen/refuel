@@ -1,4 +1,4 @@
-﻿using App;
+﻿using Core.Infrastructure;
 
 namespace Core.ClubMembership;
 
