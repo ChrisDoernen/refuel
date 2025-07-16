@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
@@ -10,7 +9,7 @@ using EventSourcing;
 
 namespace Core.Tanks;
 
-public record Tank : Audited<Tank>, IReplayable<Tank>
+public record Tank : AuditTrail<Tank>, IReplayable<Tank>
 {
   public Guid ClubId { get; private init; }
   public Guid Id { get; private init; }

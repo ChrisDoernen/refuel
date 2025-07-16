@@ -1,5 +1,4 @@
 ﻿using App;
-using Core.Shared;
 
 namespace Core.Users;
 

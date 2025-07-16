@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB;
 using Shared.Testing;
+using EventType = Api.Shared.EventType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,8 +39,7 @@ builder.Services
   .AddTypeExtension<ClubsQueryType>()
   .AddTypeExtension<UsersQueryType>()
   .AddTypeExtension<SharedQueryType>()
-  .AddType<ChangeType>()
-  .AddType<StateChangeType<ClubType, Club>>()
+  .AddType<EventType>()
   .AddType<StateChangeType<TankType, Tank>>()
   .AddType<RoleType>()
   .AddType<ClubMemberType>()
@@ -56,7 +56,7 @@ builder.Services.AddGraphQL();
 builder.Services.AddErrorFilter<ErrorFilter>();
 
 
-builder.Services.AddApp();
+builder.Services.AddApp(typeof(Core.ServiceCollectionExtensions).Assembly);
 builder.Services.AddEventSourcingDb(builder.Configuration);
 builder.Services.AddMongoDb(builder.Configuration);
 

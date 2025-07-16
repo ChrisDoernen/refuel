@@ -1,12 +1,9 @@
 ﻿using App.Authorization;
 using App.Cqrs;
-using Core.Clubs;
-using Core.Shared;
-using Core.Users;
 using EventSourcing;
 using MediatR;
 
-namespace Core.ClubMembership.ClubRoleAssignment;
+namespace Core.ClubMembership.AssigningClubRoles;
 
 public record AssignClubRoleCommand(
   Guid ClubId,
@@ -24,8 +21,10 @@ public class AssignClubRoleCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var member = await mediator.Send(new GetClubMemberQuery(command.ClubId, command.MemberId), cancellationToken);
+    var getMemberQuery = new GetClubMemberAuditTrailQuery(command.ClubId, command.MemberId);
+    var auditTrail = await mediator.Send(getMemberQuery, cancellationToken);
 
+    var member = auditTrail.CurrentState;
     if (member.RoleIds.Any(r => r.Equals(command.RoleId)))
     {
       // Nothing to do, as the desired state is already reached.
@@ -37,14 +36,14 @@ public class AssignClubRoleCommandHandler(
       RoleId: command.RoleId
     );
     var candidate = new EventCandidate(
-      Subject: $"/members/{command.MemberId}",
+      Subject: new Subject($"/members/{command.MemberId}"),
       Data: clubRoleAssignedEvent
     );
     await eventStoreProvider
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [member.GetIsSubjectOnEventIdPrecondition()],
+        [auditTrail.GetIsSubjectOnEventIdPrecondition()],
         cancellationToken
       );
   }

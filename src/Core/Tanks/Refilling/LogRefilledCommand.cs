@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using EventSourcing;
 using MediatR;
 
@@ -21,8 +20,10 @@ public class LogRefilledCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
+    var auditTrail = await mediator.Send(new GetTankAuditTrailQuery(command.ClubId, command.TankId), cancellationToken);
 
+    var tank = auditTrail.CurrentState;
+    
     if (command.NewFuelLevel > tank.Capacity)
     {
       throw new InvalidOperationException("New fuel level exceeds tank capacity.");
@@ -30,14 +31,14 @@ public class LogRefilledCommandHandler(
 
     var refilledEvent = new RefilledEventV1(command.NewFuelLevel);
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{command.TankId}",
+      Subject: new Subject($"/tanks/{command.TankId}"),
       Data: refilledEvent
     );
     await eventStoreProvider
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [tank.GetIsSubjectOnEventIdPrecondition()],
+        [auditTrail.GetIsSubjectOnEventIdPrecondition()],
         cancellationToken
       );
   }

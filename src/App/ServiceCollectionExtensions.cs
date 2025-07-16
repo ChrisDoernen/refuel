@@ -1,4 +1,5 @@
-﻿using App.Authorization;
+﻿using System.Reflection;
+using App.Authorization;
 using App.Cqrs;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,14 +9,21 @@ namespace App;
 public static class ServiceCollectionExtensions
 {
   public static void AddApp(
-    this IServiceCollection services
+    this IServiceCollection services,
+    Assembly assembly
   )
   {
-    var assembly = typeof(ServiceCollectionExtensions).Assembly;
+    services.AddMediatR(c =>
+      {
+        c.RegisterServicesFromAssembly(assembly);
+        c.MediatorImplementationType = typeof(EventSourcingMediator);
+      }
+    );
+
+    services.AddAuthorizersFromAssembly(assembly);
 
     services.AddMediatorAuthorization(assembly);
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
-    services.AddAuthorizersFromAssembly(assembly);
 
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddHostedService<EventStoreSubscriptionService>();

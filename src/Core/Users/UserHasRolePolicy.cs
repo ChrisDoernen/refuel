@@ -1,7 +1,6 @@
 using App;
 using App.Authorization;
 using App.Cqrs;
-using Core.Shared;
 
 namespace Core.Users;
 

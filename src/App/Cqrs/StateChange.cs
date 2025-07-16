@@ -2,23 +2,10 @@
 
 namespace App.Cqrs;
 
+/// <summary>
+///   Contains a state together with the event that led to this state.
+/// </summary>
 public record StateChange<T>(
-  Change Change,
+  Event ProcessedEvent,
   T State
-);
-
-public record Change(
-  string Id,
-  string Subject,
-  DateTimeOffset Time,
-  IEventData Data
-)
-{
-  public static Change FromEvent(Event evnt) =>
-    new(
-      evnt.Id,
-      evnt.Subject,
-      evnt.Time,
-      evnt.Data
-    );
-}
+) where T : IReplayable<T>, new();

@@ -1,5 +1,4 @@
-﻿using Core.ClubMembership.Joining;
-using EventSourcing;
+﻿using EventSourcing;
 
 namespace Core.Tanks.Registration;
 

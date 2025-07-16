@@ -24,7 +24,7 @@ public class ReadEventsTests(
       DateTime.UtcNow
     );
     var eventCandidate = new EventCandidate(
-      Subject: "/test/42",
+      Subject: new Subject("/test/42"),
       Data: eventData
     );
 
@@ -34,7 +34,7 @@ public class ReadEventsTests(
 
     var events = _eventStoreFactory
       .ForTenant("tenant1")
-      .GetEvents("/test/42");
+      .GetEvents(new Subject("/test/42"));
 
     var eventList = await events.ToListAsync();
     eventList.Count.Should().Be(1);
@@ -53,11 +53,11 @@ public class ReadEventsTests(
       DateTime.UtcNow
     );
     var testEventCandidate = new EventCandidate(
-      Subject: "/test/43/foo",
+      Subject: new Subject("/test/43/foo"),
       Data: eventData
     );
     var otherTestEventCandidate = new EventCandidate(
-      Subject: "/test/43/bar",
+      Subject: new Subject("/test/43/bar"),
       Data: new OtherTestEventV1(Guid.CreateVersion7())
     );
 
@@ -68,7 +68,7 @@ public class ReadEventsTests(
     var events = _eventStoreFactory
       .ForTenant("tenant1")
       .GetEvents(
-        "/test/43",
+        new Subject("/test/43"),
         new ReadEventsOptions(true)
       );
 

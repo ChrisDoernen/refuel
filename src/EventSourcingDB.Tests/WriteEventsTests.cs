@@ -19,7 +19,7 @@ public class WriteEventsTests(
   public async Task WriteSingleEvent()
   {
     var eventCandidate = new EventCandidate(
-      Subject: "/test/42",
+      Subject: new Subject("/test/42"),
       Data: new TestEventV1(
         Guid.CreateVersion7(),
         "Chris",

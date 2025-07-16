@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using EventSourcing;
 using MediatR;
 
@@ -20,11 +19,11 @@ public class LogRefillRequestedCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
+    var tank = await mediator.Send(new GetTankAuditTrailQuery(command.ClubId, command.TankId), cancellationToken);
     
     var refillRequestedEvent = new RefillRequestedEventV1();
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{command.TankId}",
+      Subject: new Subject($"/tanks/{command.TankId}"),
       Data: refillRequestedEvent
     );
     await eventStoreProvider

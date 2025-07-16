@@ -1,4 +1,5 @@
-﻿using EventSourcing;
+﻿using App.ReadModels;
+using EventSourcing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +7,8 @@ namespace App.Cqrs;
 
 public class EventSourcingMediator(
   IServiceProvider serviceProvider,
-  ILogger<EventSourcingMediator> logger
+  ILogger<EventSourcingMediator> logger,
+  IEnumerable<IReadModelSynchronizationService> readModelSynchronizationServices
 ) : Mediator(serviceProvider)
 {
   protected override async Task PublishCore(
@@ -15,7 +17,14 @@ public class EventSourcingMediator(
     CancellationToken cancellationToken
   )
   {
-    logger.LogInformation($"Publishing {EventType.Of(((Event)notification).Data)}");
+    var evnt = notification as Event ?? throw new Exception("Notification is not an Event");
+
+    logger.LogInformation($"Publishing {EventType.Of(evnt.Data)}");
+
+    foreach (var synchronizationService in readModelSynchronizationServices)
+    {
+      await synchronizationService.Replay(evnt, cancellationToken);
+    }
 
     foreach (var handler in handlers)
     {

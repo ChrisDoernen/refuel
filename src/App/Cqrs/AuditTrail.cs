@@ -1,50 +1,49 @@
 ﻿using System.Collections;
+using System.Globalization;
+using EventSourcingDb.Types;
 
 namespace App.Cqrs;
 
-public class AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : Audited<T>, IReplayable<T>, new()
+public record AuditTrail<T> : IReadOnlyCollection<StateChange<T>> where T : IReplayable<T>, new()
 {
   private readonly List<StateChange<T>> _auditTrail = [];
-  private StateChange<T>? Current => _auditTrail.LastOrDefault();
-  public T CurrentState => Current is null ? new T() : _auditTrail.Last().State;
-  public Change? LastChange => Current?.Change;
-
-  private AuditTrail() { }
-
-  public static AuditTrail<T> Pristine() => new();
-
-  public static AuditTrail<T> FromSnapshot(T snapshot)
-  {
-    // ToDo: Implement logic to create an AuditTrail from a snapshot
-    throw new NotImplementedException();
-  }
-
-  public async Task<AuditTrail<T>> Replay(IAsyncEnumerable<Change> changes)
-  {
-    await foreach (var change in changes)
-    {
-      var newState = CurrentState.Apply(change.Data);
-      var stateChange = new StateChange<T>(change, newState);
-
-      _auditTrail.Add(stateChange);
-    }
-
-    return this;
-  }
-
-  public T GetAudited() => CurrentState with { AuditTrail = _auditTrail };
-
-  public AuditTrail<T> EnsureNotPristine()
-  {
-    if (!_auditTrail.Any())
-    {
-      throw new Exception($"Audit trail for {typeof(T).Name} was expected to have changes.");
-    }
-
-    return this;
-  }
 
   public IEnumerator<StateChange<T>> GetEnumerator() => _auditTrail.GetEnumerator();
+
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
   public int Count => _auditTrail.Count;
+  private StateChange<T>? Current => _auditTrail.LastOrDefault();
+  public T CurrentState => Current is null ? new T() : _auditTrail.Last().State;
+
+  public void Append(StateChange<T> stateChange)
+  {
+    _auditTrail.Add(stateChange);
+  }
+}
+
+public static class AuditTrailExtensions
+{
+  public static Precondition GetIsSubjectOnEventIdPrecondition<T>(
+    this AuditTrail<T> auditTrail
+  ) where T : IReplayable<T>, new()
+  {
+    auditTrail.EnsureNotPristine();
+    var lastChange = auditTrail.Last().ProcessedEvent;
+
+    return Precondition.IsSubjectOnEventIdPrecondition(
+      lastChange.Subject.ToString(),
+      lastChange.Id.ToString(CultureInfo.InvariantCulture)
+    );
+  }
+
+  public static void EnsureNotPristine<T>(
+    this AuditTrail<T> auditTrail
+  ) where T : IReplayable<T>, new()
+  {
+    if (auditTrail.LastOrDefault() is null)
+    {
+      throw new InvalidOperationException("Audit trail is empty.");
+    }
+  }
 }

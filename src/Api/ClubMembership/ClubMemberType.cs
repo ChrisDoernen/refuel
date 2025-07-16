@@ -17,17 +17,20 @@ public class ClubMemberType : ObjectType<ClubMember>
 
     descriptor
       .ImplementsNode()
-      .ResolveNode<ClubCompoundId>(
-        async (context, id) =>
-          await context.Service<IMediator>().Send(new GetClubMemberQuery(id.ClubId, id.Id), context.RequestAborted)
+      .ResolveNode<ClubCompoundId>(async (context, id) =>
+        {
+          var query = new GetClubMemberAuditTrailQuery(id.ClubId, id.Id);
+          var clubMember = await context.Service<IMediator>().Send(query, context.RequestAborted);
+
+          return clubMember.CurrentState;
+        }
       );
 
     descriptor.Field(c => c.FirstName);
     descriptor.Field(c => c.LastName);
 
     descriptor.Field("tanks")
-      .Resolve<IEnumerable<TankRoleAssignments>>(
-        async (context, cancellationToken) =>
+      .Resolve<IEnumerable<TankRoleAssignments>>(async (context, cancellationToken) =>
         {
           var member = context.Parent<ClubMember>();
           var assignments = new List<TankRoleAssignments>();
@@ -37,7 +40,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
           foreach (var assignment in member.TankRoleAssignments)
           {
-            var query = new GetTankQuery(member.ClubId, assignment.Key);
+            var query = new GetTankAuditTrailQuery(member.ClubId, assignment.Key);
 
             var tank = await context.Service<IMediator>().Send(query, cancellationToken);
 
@@ -45,7 +48,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
             var tankRoleAssignments = new TankRoleAssignments
             {
-              Tank = tank,
+              Tank = tank.CurrentState,
               Roles = assignedRoles
             };
             assignments.Add(tankRoleAssignments);
@@ -57,8 +60,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
     descriptor
       .Field("user")
-      .Resolve<User>(
-        async (context, cancellationToken) =>
+      .Resolve<User>(async (context, cancellationToken) =>
         {
           var id = context.Parent<ClubMember>().Id;
           var query = new GetUserQuery(id);
@@ -69,8 +71,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
     descriptor
       .Field("roles")
-      .Resolve<IEnumerable<Role>>(
-        async (context, cancellationToken) =>
+      .Resolve<IEnumerable<Role>>(async (context, cancellationToken) =>
         {
           var ids = context.Parent<ClubMember>().RoleIds;
           var query = new GetRolesQuery();
@@ -83,8 +84,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
     descriptor
       .Field("club")
-      .Resolve<Club>(
-        async (context, cancellationToken) =>
+      .Resolve<Club>(async (context, cancellationToken) =>
         {
           var clubId = context.Parent<ClubMember>().ClubId;
           var query = new GetClubQuery(clubId);

@@ -1,4 +1,5 @@
-﻿using EventSourcing;
+﻿using App.Cqrs;
+using EventSourcing;
 
 namespace Core.ClubMembership.Joining;
 
@@ -9,4 +10,4 @@ public record UserJoinedClubEventV1(
   string Email,
   string FirstName,
   string LastName
-) : IEventData;
+) : IInitializesSubject, IEventData;

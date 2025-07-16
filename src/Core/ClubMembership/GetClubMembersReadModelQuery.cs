@@ -5,20 +5,20 @@ using MediatR;
 
 namespace Core.ClubMembership;
 
-public record GetClubMembershipQuery(
-  Guid UserId
+public record GetClubMembersReadModelQuery(
+  Guid ClubId
 ) : IRequest<IEnumerable<StateChange<ClubMember>>>;
 
-public class GetClubMembershipQueryHandler(
+public class GetClubMembersQueryHandler(
   IReadModelRepository<ClubMember> repository
-) : IRequestHandler<GetClubMembershipQuery, IEnumerable<StateChange<ClubMember>>>
+) : IRequestHandler<GetClubMembersReadModelQuery, IEnumerable<StateChange<ClubMember>>>
 {
   public async Task<IEnumerable<StateChange<ClubMember>>> Handle(
-    GetClubMembershipQuery query,
+    GetClubMembersReadModelQuery query,
     CancellationToken cancellationToken
   )
   {
-    Expression<Func<ClubMember, bool>> filter = m => m.Id == query.UserId;
+    Expression<Func<ClubMember, bool>> filter = m => m.ClubId == query.ClubId;
 
     return await repository.Filter(filter, cancellationToken);
   }

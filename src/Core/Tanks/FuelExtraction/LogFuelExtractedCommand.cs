@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using EventSourcing;
 using MediatR;
 
@@ -21,7 +20,8 @@ public class LogFuelExtractedCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
+    var auditTrail = await mediator.Send(new GetTankAuditTrailQuery(command.ClubId, command.TankId), cancellationToken);
+    var tank = auditTrail.CurrentState;
 
     if (tank.FuelLevel - command.AmountExtracted < 0)
     {
@@ -30,14 +30,14 @@ public class LogFuelExtractedCommandHandler(
 
     var fuelExtractedEvent = new FuelExtractedEventV1(command.AmountExtracted);
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{command.TankId}",
+      Subject: new Subject($"/tanks/{command.TankId}"),
       Data: fuelExtractedEvent
     );
     await eventStoreProvider
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [tank.GetIsSubjectOnEventIdPrecondition()],
+        [auditTrail.GetIsSubjectOnEventIdPrecondition()],
         cancellationToken
       );
   }

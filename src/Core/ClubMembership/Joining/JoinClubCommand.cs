@@ -1,6 +1,6 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using Core.Users;
+using EventSourcing;
 using EventSourcingDb.Types;
 using MediatR;
 using EventCandidate = EventSourcing.EventCandidate;
@@ -32,7 +32,7 @@ public class JoinClubCommandHandler(
       LastName: user.LastName
     );
     var candidate = new EventCandidate(
-      Subject: $"/members/{command.UserId}",
+      Subject: new Subject($"/members/{command.UserId}"),
       Data: clubJoinedEvent
     );
     await eventStoreProvider

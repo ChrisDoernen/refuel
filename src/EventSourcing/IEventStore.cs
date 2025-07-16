@@ -15,7 +15,7 @@ public interface IEventStore
   );
 
   IAsyncEnumerable<Event> GetEvents(
-    string subject,
+    Subject subject,
     ReadEventsOptions? readEventsOptions = null,
     CancellationToken cancellationToken = default
   );

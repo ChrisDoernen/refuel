@@ -7,10 +7,10 @@ namespace EventSourcing;
 ///   It can be published to the MediatR and be handled by the application.
 /// </summary>
 public record Event(
-  string Id,
+  uint Id,
   DateTimeOffset Time,
   string Source,
-  string Subject,
+  Subject Subject,
   IEventData Data
 ) : INotification;
 
@@ -20,6 +20,6 @@ public record Event(
 ///   The event type is read from the attribute.
 /// </summary>
 public record EventCandidate(
-  string Subject,
+  Subject Subject,
   IEventData Data
 );

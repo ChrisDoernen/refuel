@@ -1,5 +1,5 @@
 ﻿using Core.ClubMembership;
-using Core.ClubMembership.ClubRoleAssignment;
+using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.Joining;
 using Core.Clubs.Creation;
 using Core.Tanks;
@@ -64,13 +64,13 @@ public class WorkflowTests(
     );
     var tankId = await _mediator.Send(registerTankCommand);
 
-    var getTankQuery = new GetTankQuery(clubId, tankId);
-    var tank = await _mediator.Send(getTankQuery);
+    var getTankAuditTrailQuery = new GetTankAuditTrailQuery(clubId, tankId);
+    var tank = await _mediator.Send(getTankAuditTrailQuery);
 
     tank.Should().BeOfType<Tank>();
-    tank.AuditTrail.Count().Should().Be(1);
-    tank.FuelLevel.Should().Be(150);
-    tank.Meter.Should().BeNull();
+    tank.Count.Should().Be(1);
+    tank.CurrentState.FuelLevel.Should().Be(150);
+    tank.CurrentState.Meter.Should().BeNull();
 
     var initializeMeter = new InitializeMeterCommand(
       ClubId: clubId,
@@ -78,9 +78,9 @@ public class WorkflowTests(
     );
     await _mediator.Send(initializeMeter);
 
-    tank = await _mediator.Send(getTankQuery);
+    tank = await _mediator.Send(getTankAuditTrailQuery);
 
-    tank.Meter!.Value.Should().Be(0);
+    tank.CurrentState.Meter!.Value.Should().Be(0);
 
     var logFuelExtractedCommand = new LogFuelExtractedCommand(
       ClubId: clubId,
@@ -95,10 +95,10 @@ public class WorkflowTests(
     await _mediator.Send(logFuelExtractedCommand);
     await _mediator.Send(logMeterReadCommand);
 
-    tank = await _mediator.Send(getTankQuery);
+    tank = await _mediator.Send(getTankAuditTrailQuery);
 
-    tank.FuelLevel.Should().Be(100);
-    tank.Meter!.Value.Should().Be(50);
+    tank.CurrentState.FuelLevel.Should().Be(100);
+    tank.CurrentState.Meter!.Value.Should().Be(50);
 
     var logRefillRequested = new LogRefillRequestedCommand(
       ClubId: clubId,
@@ -106,10 +106,10 @@ public class WorkflowTests(
     );
     await _mediator.Send(logRefillRequested);
 
-    tank = await _mediator.Send(getTankQuery);
+    tank = await _mediator.Send(getTankAuditTrailQuery);
 
-    tank.FuelLevel.Should().Be(100);
-    tank.RefillRequested.Should().Be(true);
+    tank.CurrentState.FuelLevel.Should().Be(100);
+    tank.CurrentState.RefillRequested.Should().Be(true);
 
     var logRefilledCommand = new LogRefilledCommand(
       ClubId: clubId,
@@ -118,11 +118,11 @@ public class WorkflowTests(
     );
     await _mediator.Send(logRefilledCommand);
 
-    tank = await _mediator.Send(getTankQuery);
+    tank = await _mediator.Send(getTankAuditTrailQuery);
 
-    tank.AuditTrail.Count().Should().Be(6);
-    tank.FuelLevel.Should().Be(200);
-    tank.RefillRequested.Should().Be(false);
+    tank.Count.Should().Be(6);
+    tank.CurrentState.FuelLevel.Should().Be(200);
+    tank.CurrentState.RefillRequested.Should().Be(false);
 
     var logTooMuchFuelExtractedCommand = new LogFuelExtractedCommand(
       ClubId: clubId,

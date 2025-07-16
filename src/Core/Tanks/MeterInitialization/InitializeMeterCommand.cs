@@ -1,5 +1,5 @@
 ﻿using App.Cqrs;
-using Core.Shared;
+using EventSourcing;
 using EventSourcingDb.Types;
 using MediatR;
 using EventCandidate = EventSourcing.EventCandidate;
@@ -21,12 +21,12 @@ public class InitializeMeterCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
+    var tank = await mediator.Send(new GetTankAuditTrailQuery(command.ClubId, command.TankId), cancellationToken);
     tank.EnsureNotPristine();
 
     var meterInitializedEvent = new MeterInitializedEventV1();
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{command.TankId}/meter",
+      Subject: new Subject($"/tanks/{command.TankId}/meter"),
       Data: meterInitializedEvent
     );
     await eventStoreProvider

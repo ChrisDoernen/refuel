@@ -22,14 +22,16 @@ public class UserType : ObjectType<User>
     descriptor.Field(u => u.LastName);
 
     descriptor
-      .Field("clubs")
+      .Field("clubsMembership")
       .Resolve<IEnumerable<ClubMember>>(
         async (context, cancellationToken) =>
         {
           var userId = context.Parent<User>().Id;
           var query = new GetClubMembershipQuery(userId);
 
-          return await context.Service<IMediator>().Send(query, cancellationToken);
+          var changes = await context.Service<IMediator>().Send(query, cancellationToken);
+
+          return changes.Select(c => c.State);
         }
       );
   }

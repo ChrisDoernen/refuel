@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 
 namespace EventSourcing;
 
@@ -31,11 +32,14 @@ public class EventConverter
       evnt.Data.Deserialize(type, DefaultSerializerOptions) as IEventData ??
       throw new Exception($"Failed to deserialize event data of type '{evnt.Type}'");
 
+    // EventSourcingDb guarantees Id is a valid uint
+    var id = System.Convert.ToUInt32(evnt.Id, CultureInfo.InvariantCulture);
+
     return new Event(
-      evnt.Id,
+      id,
       evnt.Time,
       evnt.Source,
-      evnt.Subject,
+      Subject.Parse(evnt.Subject),
       eventData
     );
   }

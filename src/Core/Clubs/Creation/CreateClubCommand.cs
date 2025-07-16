@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using MediatR;
 using MongoDB;
 

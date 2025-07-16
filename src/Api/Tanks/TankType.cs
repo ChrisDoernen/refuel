@@ -16,12 +16,10 @@ public class TankType : ObjectType<Tank>
     descriptor.Field(t => t.Capacity);
     descriptor.Field(t => t.RefillRequested);
     descriptor.Field(t => t.FuelLevel);
-    descriptor.Field(t => t.AuditTrail);
 
     descriptor
       .Field("Club")
-      .Resolve<Club>(
-        async (context, cancellationToken) =>
+      .Resolve<Club>(async (context, cancellationToken) =>
         {
           var id = context.Parent<Club>().Id;
           var query = new GetClubQuery(id);
@@ -32,9 +30,13 @@ public class TankType : ObjectType<Tank>
 
     descriptor
       .ImplementsNode()
-      .ResolveNode<ClubCompoundId>(
-        async (context, id) =>
-          await context.Service<IMediator>().Send(new GetTankQuery(id.ClubId, id.Id), context.RequestAborted)
+      .ResolveNode<ClubCompoundId>(async (context, id) =>
+        {
+          var query = new GetTankAuditTrailQuery(id.ClubId, id.Id);
+          var tank = await context.Service<IMediator>().Send(query, context.RequestAborted);
+
+          return tank.CurrentState;
+        }
       );
   }
 }
@@ -45,4 +47,3 @@ public class TankExtensions
   [ID<Tank>]
   public ClubCompoundId GetId([Parent] Tank tank) => new(tank.ClubId, tank.Id);
 }
-

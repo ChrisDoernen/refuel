@@ -1,13 +1,12 @@
 ﻿using App.Cqrs;
+using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.AssigningTankRoles;
-using Core.ClubMembership.ClubRoleAssignment;
 using Core.ClubMembership.Joining;
-using Core.Shared;
 using EventSourcing;
 
 namespace Core.ClubMembership;
 
-public record ClubMember : Audited<ClubMember>, IReplayable<ClubMember>
+public record ClubMember : IReplayable<ClubMember>
 {
   public Guid ClubId { get; private init; }
   public Guid Id { get; private init; }
@@ -22,8 +21,8 @@ public record ClubMember : Audited<ClubMember>, IReplayable<ClubMember>
     return evnt switch
     {
       UserJoinedClubEventV1 joinedClubEventV1 => Apply(joinedClubEventV1),
-      ClubRoleAssignedEventV1 clubRoleAssignedEvent => Apply(clubRoleAssignedEvent),
-      TankRoleAssignedEventV1 tankRoleAssignedEvent => Apply(tankRoleAssignedEvent),
+      ClubRoleAssignedEventV1 clubRoleAssignedEventV1 => Apply(clubRoleAssignedEventV1),
+      TankRoleAssignedEventV1 tankRoleAssignedEventV1 => Apply(tankRoleAssignedEventV1),
       _ => throw new InvalidOperationException("Unknown event for club member"),
     };
   }

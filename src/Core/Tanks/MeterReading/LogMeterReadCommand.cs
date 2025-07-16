@@ -1,5 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
 using EventSourcing;
 using MediatR;
 
@@ -21,7 +20,8 @@ public class LogMeterReadCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var tank = await mediator.Send(new GetTankQuery(command.ClubId, command.TankId), cancellationToken);
+    var auditTrail = await mediator.Send(new GetTankAuditTrailQuery(command.ClubId, command.TankId), cancellationToken);
+    var tank = auditTrail.CurrentState;
 
     if (command.Value < tank.Meter?.Value)
     {
@@ -30,7 +30,7 @@ public class LogMeterReadCommandHandler(
 
     var meterReadEvent = new MeterReadEventV1(command.Value);
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{command.TankId}/meter",
+      Subject: new Subject($"/tanks/{command.TankId}/meter"),
       Data: meterReadEvent
     );
     await eventStoreProvider

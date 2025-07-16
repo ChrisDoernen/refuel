@@ -1,4 +1,5 @@
-﻿using EventSourcingDb.Types;
+﻿using EventSourcing;
+using EventSourcingDb.Types;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,14 +17,15 @@ public class EventStoreSubscriptionService(
   public Task StartAsync(CancellationToken cancellationToken)
   {
     logger.LogInformation("Starting EventStore subscriptions");
-    
+
     foreach (var eventStore in eventStoreProvider.All())
     {
       Task.Run(
         async () =>
         {
+          // ToDo: Persist the last processed event id for each event store and start from there when restarting
           var events = eventStore.GetEvents(
-            "/",
+            new Subject("/"),
             new ReadEventsOptions(true),
             _cancellationTokenSource.Token
           );
@@ -33,6 +35,8 @@ public class EventStoreSubscriptionService(
             {
               break;
             }
+
+            // ToDo: Scope?
             await mediator.Publish(evnt, _cancellationTokenSource.Token);
           }
         },

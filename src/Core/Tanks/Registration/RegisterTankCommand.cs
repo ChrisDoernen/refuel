@@ -1,6 +1,6 @@
 ﻿using App.Authorization;
 using App.Cqrs;
-using Core.Shared;
+using EventSourcing;
 using EventSourcingDb.Types;
 using MediatR;
 using EventCandidate = EventSourcing.EventCandidate;
@@ -34,7 +34,7 @@ public class RegisterTankCommandHandler(
     );
 
     var candidate = new EventCandidate(
-      Subject: $"/tanks/{evnt.TankId}",
+      Subject: new Subject($"/tanks/{evnt.TankId}"),
       Data: evnt
     );
 

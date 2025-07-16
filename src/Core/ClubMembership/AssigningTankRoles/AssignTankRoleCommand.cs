@@ -1,7 +1,6 @@
 ﻿using App.Authorization;
 using App.Cqrs;
-using Core.ClubMembership.ClubRoleAssignment;
-using Core.Shared;
+using Core.ClubMembership.AssigningClubRoles;
 using EventSourcing;
 using MediatR;
 
@@ -24,28 +23,32 @@ public class AssignTankRoleCommandHandler(
     CancellationToken cancellationToken
   )
   {
-    var member = await mediator.Send(new GetClubMemberQuery(command.ClubId, command.MemberId), cancellationToken);
+    var auditTrail = await mediator.Send(new GetClubMemberAuditTrailQuery(command.ClubId, command.MemberId), cancellationToken);
 
-    if (member.TankRoleAssignments.TryGetValue(command.TankId, out var roles) && roles.Contains(command.RoleId))
+    var clubMember = auditTrail.CurrentState;
+    if (
+      clubMember.TankRoleAssignments.TryGetValue(command.TankId, out var roles)
+      && roles.Contains(command.RoleId)
+    )
     {
       // Nothing to do, as the desired state is already reached.
       return;
     }
 
     var clubRoleAssignedEvent = new TankRoleAssignedEventV1(
-      MemberId: member.Id,
+      MemberId: clubMember.Id,
       TankId: command.TankId,
       RoleId: command.RoleId
     );
     var candidate = new EventCandidate(
-      Subject: $"/members/{member.Id}",
+      Subject: new Subject($"/members/{clubMember.Id}"),
       Data: clubRoleAssignedEvent
     );
     await eventStoreProvider
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [member.GetIsSubjectOnEventIdPrecondition()],
+        [auditTrail.GetIsSubjectOnEventIdPrecondition()],
         cancellationToken
       );
   }

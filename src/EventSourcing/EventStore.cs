@@ -31,7 +31,7 @@ public class EventStore(
   {
     var candidates = eventCandidates
       .Select(c => new EventSourcingDb.Types.EventCandidate(
-          Subject: c.Subject,
+          Subject: c.Subject.ToString(),
           Type: EventType.Of(c.Data),
           Data: c.Data,
           Source: options.Value.Source
@@ -44,13 +44,13 @@ public class EventStore(
   }
 
   public async IAsyncEnumerable<Event> GetEvents(
-    string subject,
+    Subject subject,
     ReadEventsOptions? readEventsOptions = null,
     [EnumeratorCancellation] CancellationToken cancellationToken = default
   )
   {
     var events = client.ReadEventsAsync(
-      subject,
+      subject.ToString(),
       readEventsOptions ?? new ReadEventsOptions(true),
       cancellationToken
     );

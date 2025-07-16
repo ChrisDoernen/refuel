@@ -1,7 +1,4 @@
 ﻿using App.Cqrs;
-using Core.Shared;
-using Core.Tanks.Registration;
-using EventSourcing;
 using MediatR;
 
 namespace Core.Tanks;

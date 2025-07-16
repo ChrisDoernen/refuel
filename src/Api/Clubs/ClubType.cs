@@ -14,9 +14,8 @@ public class ClubType : ObjectType<Club>
     descriptor
       .ImplementsNode()
       .IdField(c => c.Id)
-      .ResolveNode(
-        async (context, id) =>
-          await context.Service<IMediator>().Send(new GetClubQuery(id), context.RequestAborted)
+      .ResolveNode(async (context, id) =>
+        await context.Service<IMediator>().Send(new GetClubQuery(id), context.RequestAborted)
       );
 
     descriptor.Field(c => c.Name);
@@ -24,8 +23,7 @@ public class ClubType : ObjectType<Club>
 
     descriptor
       .Field("tanks")
-      .Resolve<IEnumerable<Tank>>(
-        async (context, cancellationToken) =>
+      .Resolve<IEnumerable<Tank>>(async (context, cancellationToken) =>
         {
           var clubId = context.Parent<Club>().Id;
           var query = new GetTanksOfClubQuery(clubId);
@@ -36,13 +34,14 @@ public class ClubType : ObjectType<Club>
 
     descriptor
       .Field("members")
-      .Resolve<IEnumerable<ClubMember>>(
-        async (context, cancellationToken) =>
+      .Resolve<IEnumerable<ClubMember>>(async (context, cancellationToken) =>
         {
           var id = context.Parent<Club>().Id;
-          var query = new GetClubMembersQuery(id);
+          var query = new GetClubMembersReadModelQuery(id);
 
-          return await context.Service<IMediator>().Send(query, cancellationToken);
+          var changes = await context.Service<IMediator>().Send(query, cancellationToken);
+
+          return changes.Select(c => c.State);
         }
       );
   }

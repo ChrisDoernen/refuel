@@ -1,4 +1,5 @@
-﻿using dotenv.net;
+﻿using App;
+using dotenv.net;
 using EventSourcing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,7 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
   )
   {
     services.AddCore();
+    services.AddApp(typeof(Core.ServiceCollectionExtensions).Assembly);
     services.AddEventSourcingDb(
       configuration!,
       connections => connections.ConfigureFromContainers(_testContainers)
@@ -55,6 +57,4 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
   }
 
   protected override async ValueTask DisposeAsyncCore() => await _testContainers.Dispose();
-
-  public new async Task DisposeAsync() => await base.DisposeAsync();
 }
