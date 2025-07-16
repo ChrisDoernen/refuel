@@ -27,38 +27,15 @@ public class ReadModelSynchronizationService<T>(
       return;
     }
 
-    // Id is extracted from the subject. Most of the time the subject is "/something/id"
+    // Most of the time the subject is "/something/{id}"
     var id = getIdFromSubject(evnt.Subject);
 
-    var lastStateChange = await repository.GetById(id, cancellationToken);
+    var maybeStateChange = await repository.MaybeGetById(id, cancellationToken);
 
-    // We are working with an existing read model
-    if (lastStateChange is not null)
-    {
-      // Skip events that have already been processed
-      if (!(evnt.Id > lastStateChange.ProcessedEvent.Id))
-      {
-        return;
-      }
+    var stateChange = maybeStateChange
+      .Map(change => change.Apply(evnt))
+      .Reduce(() => new T().GetInitialChange(evnt));
 
-      var updatedReadModel = lastStateChange.State.Apply(evnt.Data);
-      var stateChange = new StateChange<T>(evnt, updatedReadModel);
-
-      await repository.Update(stateChange, cancellationToken);
-    }
-
-    // Read model does not exist yet.
-    // We can create it if the event initializes a subject
-    if (lastStateChange is null && evnt.Data is IInitializesSubject)
-    {
-      var newReadModel = new T().Apply(evnt.Data);
-      var newStateChange = new StateChange<T>(evnt, newReadModel);
-
-      await repository.Create(newStateChange, cancellationToken);
-    }
-    else
-    {
-      throw new Exception("Can not replay from the middle of a read model lifecycle");
-    }
+    await repository.Upsert(stateChange, cancellationToken);
   }
 }

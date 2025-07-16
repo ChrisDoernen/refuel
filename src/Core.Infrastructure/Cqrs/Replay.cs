@@ -28,10 +28,11 @@ public class Replay<T> where T : IReplayable<T>, new()
 
   public Replay<T> ApplyEvent(Event evnt)
   {
-    var newState = _auditTrail.CurrentState.Apply(evnt.Data);
-    var stateChange = new StateChange<T>(evnt, newState);
+    var newState = _auditTrail.CurrentChange
+      .Map(change => change.Apply(evnt))
+      .Reduce(() => new T().GetInitialChange(evnt));
 
-    _auditTrail.Append(stateChange);
+    _auditTrail.Append(newState);
 
     return this;
   }

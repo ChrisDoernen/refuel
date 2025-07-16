@@ -19,6 +19,6 @@ public class GetClubMemberReadModelQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    return await repository.FindById(query.MemberId, cancellationToken);
+    return await repository.GetById(query.MemberId, cancellationToken);
   }
 }

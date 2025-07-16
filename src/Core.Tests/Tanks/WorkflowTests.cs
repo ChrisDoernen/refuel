@@ -73,11 +73,11 @@ public class WorkflowTests(
     tank.CurrentState.FuelLevel.Should().Be(150);
     tank.CurrentState.Meter.Should().BeNull();
 
-    var initializeMeter = new InitializeMeterCommand(
+    var initializeMeterCommand = new InitializeMeterCommand(
       ClubId: clubId,
       TankId: tankId
     );
-    await _mediator.Send(initializeMeter);
+    await _mediator.Send(initializeMeterCommand);
 
     tank = await _mediator.Send(getTankAuditTrailQuery);
 
