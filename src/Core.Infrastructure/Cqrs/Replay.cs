@@ -20,19 +20,12 @@ public class Replay<T> where T : IReplayable<T>, new()
   {
     await foreach (var evnt in events)
     {
-      ApplyEvent(evnt);
+      var newState = _auditTrail.CurrentChange
+        .Map(change => change.Apply(evnt))
+        .Reduce(() => new T().GetInitialChange(evnt));
+
+      _auditTrail.Append(newState);
     }
-
-    return this;
-  }
-
-  public Replay<T> ApplyEvent(Event evnt)
-  {
-    var newState = _auditTrail.CurrentChange
-      .Map(change => change.Apply(evnt))
-      .Reduce(() => new T().GetInitialChange(evnt));
-
-    _auditTrail.Append(newState);
 
     return this;
   }

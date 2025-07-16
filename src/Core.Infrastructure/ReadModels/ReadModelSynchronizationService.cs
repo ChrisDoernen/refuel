@@ -1,6 +1,5 @@
 ﻿using Core.Infrastructure.Cqrs;
 using EventSourcing;
-using Microsoft.Extensions.Logging;
 
 namespace Core.Infrastructure.ReadModels;
 

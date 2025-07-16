@@ -1,5 +1,6 @@
 ﻿using Core.Infrastructure;
-using Core.Shared;
+using Core.Infrastructure.Roles;
+using Core.Roles;
 using MediatR;
 
 namespace Api.Shared;

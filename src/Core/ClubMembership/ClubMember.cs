@@ -8,8 +8,8 @@ namespace Core.ClubMembership;
 
 public record ClubMember : IReplayable<ClubMember>
 {
-  public Guid ClubId { get; private init; }
   public Guid Id { get; private init; }
+  public Guid ClubId { get; private init; }
   public string Email { get; private init; } = null!;
   public string FirstName { get; private init; } = null!;
   public string LastName { get; private init; } = null!;

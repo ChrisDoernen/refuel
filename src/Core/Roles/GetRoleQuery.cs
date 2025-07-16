@@ -1,7 +1,7 @@
-﻿using Core.Infrastructure;
+﻿using Core.Infrastructure.Roles;
 using MediatR;
 
-namespace Core.Shared;
+namespace Core.Roles;
 
 public record GetRoleQuery(
   string Id

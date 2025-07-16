@@ -1,6 +1,7 @@
 using Core.Infrastructure;
 using Core.Infrastructure.Authorization;
 using Core.Infrastructure.Cqrs;
+using Core.Infrastructure.Roles;
 
 namespace Core.Users;
 

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Core.Infrastructure.Authorization;
 using Core.Infrastructure.Cqrs;
+using Core.Infrastructure.Roles;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,5 +28,7 @@ public static class ServiceCollectionExtensions
 
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddHostedService<EventStoreSubscriptionService>();
+
+    services.AddSingleton<IRoleProvider>(new RoleProvider(assembly));
   }
 }

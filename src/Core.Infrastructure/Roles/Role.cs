@@ -1,4 +1,4 @@
-﻿namespace Core.Infrastructure;
+﻿namespace Core.Infrastructure.Roles;
 
 public record Role(
   string Id,

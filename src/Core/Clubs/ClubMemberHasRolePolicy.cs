@@ -2,6 +2,7 @@ using Core.Infrastructure;
 using Core.Infrastructure.Authorization;
 using Core.Infrastructure.Cqrs;
 using Core.ClubMembership;
+using Core.Infrastructure.Roles;
 using MediatR;
 
 namespace Core.Clubs;

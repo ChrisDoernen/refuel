@@ -12,10 +12,11 @@ public interface IDocumentStore<T> : IDisposable where T : IDocument
   Task<T> GetSingle(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
   Task<bool> ExistsById(Guid id, CancellationToken cancellationToken = default);
   Task<bool> Exists(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default);
-  Task CreateOne(T entity, CancellationToken cancellationToken = default);
+  Task CreateOne(T document, CancellationToken cancellationToken = default);
   Task CreateMany(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-  Task UpdateOne(T entity, CancellationToken cancellationToken = default);
+  Task UpdateOne(T document, CancellationToken cancellationToken = default);
+  Task UpsertOne(T document, CancellationToken cancellationToken = default);
   Task UpdateMany(IEnumerable<T> entities, bool upsert = true, CancellationToken cancellationToken = default);
-  Task DeleteOne(T entity, CancellationToken cancellationToken = default);
-  Task DeleteMany(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+  Task DeleteOne(T document, CancellationToken cancellationToken = default);
+  Task DeleteMany(IEnumerable<T> documents, CancellationToken cancellationToken = default);
 }

@@ -1,5 +1,4 @@
 ﻿using Core.Clubs;
-using Core.Shared;
 using Core.Users;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB;
@@ -13,20 +12,18 @@ public static class ServiceCollectionExtensions
     this IServiceCollection services
   )
   {
-    services.AddSingleton<IRoleProvider, RoleProvider>();
     services.AddHostedService<EventStoreProviderInitService>();
 
-    services.AddTransient<IDocumentStore<User>>(
-      sp => new DocumentStore<User>(
-        sp.GetRequiredService<IMongoDatabase>(),
-        "users"
-      )
-    );
-    services.AddTransient<IDocumentStore<Club>>(
-      sp => new DocumentStore<Club>(
-        sp.GetRequiredService<IMongoDatabase>(),
-        "clubs"
-      )
-    );
+    Dictionary<Type, string> documents =
+      new()
+      {
+        { typeof(User), "users" },
+        { typeof(Club), "clubs" }
+      };
+
+    foreach (var document in documents)
+    {
+      services.AddDocumentStore(document.Key, document.Value);
+    }
   }
 }

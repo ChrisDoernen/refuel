@@ -1,4 +1,6 @@
-﻿namespace Core.Infrastructure.Authorization;
+﻿using Core.Infrastructure.Roles;
+
+namespace Core.Infrastructure.Authorization;
 
 public record UserInfo(
   Guid Id,

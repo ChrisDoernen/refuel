@@ -3,7 +3,8 @@
 using Core.ClubMembership;
 using Core.Clubs;
 using Core.Infrastructure;
-using Core.Shared;
+using Core.Infrastructure.Roles;
+using Core.Roles;
 using Core.Tanks;
 using Core.Users;
 using MediatR;

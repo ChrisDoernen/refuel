@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure;
+using Core.Infrastructure.Roles;
 
 namespace Core.Users;
 

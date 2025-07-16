@@ -127,6 +127,21 @@ public class DocumentStore<TDocument>(
     );
   }
 
+  public async Task UpsertOne(TDocument document, CancellationToken cancellationToken)
+  {
+    var filter = Builders<TDocument>.Filter.Eq(d => d.Id, document.Id);
+    var options = new FindOneAndReplaceOptions<TDocument>
+    {
+      IsUpsert = true
+    };
+    await _collection.FindOneAndReplaceAsync(
+      filter,
+      document,
+      options,
+      cancellationToken: cancellationToken
+    );
+  }
+
   public async Task UpdateMany(
     IEnumerable<TDocument> documents,
     bool upsert = true,

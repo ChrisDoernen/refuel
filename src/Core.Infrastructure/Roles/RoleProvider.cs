@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using Core.Infrastructure;
 
-namespace Core.Shared;
+namespace Core.Infrastructure.Roles;
 
 public interface IRoleProvider
 {
@@ -17,9 +16,9 @@ public class RoleProvider : IRoleProvider
     Roles.FirstOrDefault(role => role.Id == id)
     ?? throw new KeyNotFoundException($"Role with id '{id}' was not found.");
 
-  public RoleProvider()
+  public RoleProvider(Assembly assembly)
   {
-    Roles = Assembly.GetExecutingAssembly()
+    Roles = assembly
       .GetTypes()
       .Where(t => typeof(IRoleDefinition).IsAssignableFrom(t) && t.IsClass)
       .SelectMany(

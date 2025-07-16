@@ -1,6 +1,6 @@
 ﻿
 using Core.Infrastructure;
-using Core.Shared;
+using Core.Infrastructure.Roles;
 using Core.Tanks;
 
 namespace Api.ClubMembership;
