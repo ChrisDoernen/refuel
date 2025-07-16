@@ -2,6 +2,7 @@
 using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.Joining;
 using Core.Clubs.Creation;
+using Core.Infrastructure.Cqrs;
 using Core.Tanks;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
@@ -67,7 +68,7 @@ public class WorkflowTests(
     var getTankAuditTrailQuery = new GetTankAuditTrailQuery(clubId, tankId);
     var tank = await _mediator.Send(getTankAuditTrailQuery);
 
-    tank.Should().BeOfType<Tank>();
+    tank.Should().BeOfType<AuditTrail<Tank>>();
     tank.Count.Should().Be(1);
     tank.CurrentState.FuelLevel.Should().Be(150);
     tank.CurrentState.Meter.Should().BeNull();

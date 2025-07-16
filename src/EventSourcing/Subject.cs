@@ -19,7 +19,7 @@ public class Subject
     _parts = new List<string>(parts);
   }
 
-  public override string ToString() => string.Join('/', _parts).Insert(0, "/");
+  public override string ToString() => string.Join('/', _parts);
 
   public static Subject Parse(string subject) => new(Split(subject));
 
