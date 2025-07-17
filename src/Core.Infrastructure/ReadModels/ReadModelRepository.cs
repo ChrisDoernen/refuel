@@ -6,11 +6,31 @@ namespace Core.Infrastructure.ReadModels;
 
 public interface IReadModelRepository<T> where T : IReplayable<T>, new()
 {
-  Task<Maybe<StateChange<T>>> MaybeGetById(Guid id, CancellationToken cancellationToken);
-  Task<StateChange<T>> GetById(Guid id, CancellationToken cancellationToken);
-  Task<IEnumerable<StateChange<T>>> Filter(Expression<Func<T, bool>> filter, CancellationToken cancellationToken);
-  Task<IEnumerable<StateChange<T>>> GetManyById(IEnumerable<Guid> ids, CancellationToken cancellationToken);
-  Task Upsert(StateChange<T> stateChange, CancellationToken cancellationToken);
+  Task<Maybe<StateChange<T>>> MaybeGetById(
+    Guid id,
+    CancellationToken cancellationToken = default
+  );
+
+  Task<StateChange<T>> GetById(
+    Guid id,
+    CancellationToken cancellationToken = default
+  );
+
+  Task<IEnumerable<StateChange<T>>> Filter(
+    Expression<Func<T, bool>> filter,
+    CancellationToken cancellationToken = default
+  );
+
+  Task<IEnumerable<StateChange<T>>> GetManyById(
+    IEnumerable<Guid> ids,
+    CancellationToken cancellationToken = default
+  );
+
+  Task Upsert(
+    Guid id,
+    StateChange<T> stateChange,
+    CancellationToken cancellationToken = default
+  );
 }
 
 public class ReadModelRepository<T>(
@@ -63,11 +83,12 @@ public class ReadModelRepository<T>(
   }
 
   public async Task Upsert(
+    Guid id,
     StateChange<T> stateChange,
     CancellationToken cancellationToken
   )
   {
-    var persistableChange = new PersistableStateChange<T>(Guid.NewGuid(), stateChange);
+    var persistableChange = new PersistableStateChange<T>(id, stateChange);
 
     await documentStore.UpsertOne(persistableChange, cancellationToken);
   }

@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure;
+using Core.Infrastructure.Cqrs;
 using dotenv.net;
 using EventSourcing;
 using Microsoft.Extensions.Configuration;

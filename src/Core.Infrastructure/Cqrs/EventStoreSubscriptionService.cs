@@ -1,6 +1,7 @@
 ﻿using EventSourcing;
 using EventSourcingDb.Types;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +10,7 @@ namespace Core.Infrastructure.Cqrs;
 public class EventStoreSubscriptionService(
   ILogger<EventStoreSubscriptionService> logger,
   IEventStoreProvider eventStoreProvider,
-  IMediator mediator
+  IServiceProvider serviceProvider
 ) : IHostedService, IDisposable
 {
   private readonly CancellationTokenSource _cancellationTokenSource = new();
@@ -18,31 +19,40 @@ public class EventStoreSubscriptionService(
   {
     logger.LogInformation("Starting EventStore subscriptions");
 
-    foreach (var eventStore in eventStoreProvider.All())
-    {
-      Task.Run(
-        async () =>
+    Task.Run(
+      async () =>
+      {
+        try
         {
-          // ToDo: Persist the last processed event id for each event store and start from there when restarting
-          var events = eventStore.GetEvents(
-            new Subject("/"),
-            new ReadEventsOptions(true),
-            _cancellationTokenSource.Token
-          );
-          await foreach (var evnt in events)
+          foreach (var eventStore in eventStoreProvider.All())
           {
-            if (_cancellationTokenSource.IsCancellationRequested)
+            // ToDo: Persist the last processed event id for each event store and start from there when restarting
+            var events = eventStore.GetEvents(
+              new Subject("/"),
+              new ReadEventsOptions(true),
+              _cancellationTokenSource.Token
+            );
+            await foreach (var evnt in events)
             {
-              break;
-            }
+              if (_cancellationTokenSource.IsCancellationRequested)
+              {
+                break;
+              }
 
-            // ToDo: Scope?
-            await mediator.Publish(evnt, _cancellationTokenSource.Token);
+              using var scope = serviceProvider.CreateScope();
+              var mediator = scope.ServiceProvider.GetService<IMediator>()!;
+
+              await mediator.Publish(evnt, _cancellationTokenSource.Token);
+            }
           }
-        },
-        cancellationToken
-      );
-    }
+        }
+        catch (Exception ex)
+        {
+          logger.LogError("Error while processing events: {Message}", ex.Message);
+        }
+      },
+      cancellationToken
+    );
 
     return Task.CompletedTask;
   }

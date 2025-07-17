@@ -3,6 +3,7 @@ using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.Joining;
 using Core.Clubs.Creation;
 using Core.Infrastructure.Cqrs;
+using Core.Infrastructure.ReadModels;
 using Core.Tanks;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
@@ -14,7 +15,6 @@ using Core.Users.SignUp;
 using FluentAssertions;
 using MediatR;
 using Xunit;
-
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace Core.Tests.Tanks;
@@ -133,5 +133,18 @@ public class WorkflowTests(
     var logTooMuchExtracted = () => _mediator.Send(logTooMuchFuelExtractedCommand);
 
     await logTooMuchExtracted.Should().ThrowAsync<Exception>();
+
+    
+    var eventStoreSubscriptionService = _fixture.Get<EventStoreSubscriptionService>(testOutputHelper);
+    await eventStoreSubscriptionService.StartAsync(CancellationToken.None);
+    
+    await Task.Delay(10000);
+
+    var rmr = fixture.Get<IReadModelRepository<Tank>>(testOutputHelper);
+
+    await Task.Delay(10000);
+
+    var change = await rmr.GetById(tankId);
+    // change.State.Id.Should().Be(tankId);
   }
 }

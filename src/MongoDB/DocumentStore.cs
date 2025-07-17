@@ -74,7 +74,7 @@ public class DocumentStore<TDocument>(
 
       return await documents.SingleAsync(cancellationToken: cancellationToken);
     }
-    catch (InvalidOperationException)
+    catch (InvalidOperationException _)
     {
       throw new KeyNotFoundException($"Document {typeof(TDocument).Name} with id {id} was not found in the database");
     }

@@ -21,18 +21,34 @@ public class EventSourcingMediator(
 
     logger.LogInformation($"Publishing {EventType.Of(evnt.Data)}");
 
-    foreach (var synchronizationService in readModelSynchronizationServices)
+    try
     {
-      await synchronizationService.Replay(evnt, cancellationToken);
+      foreach (var synchronizationService in readModelSynchronizationServices)
+      {
+        await synchronizationService.Replay(evnt, cancellationToken);
+      }
+    }
+    catch (Exception ex)
+    {
+      logger.LogError("Error while synchronizing read models: {Message}", ex.Message);
+      // ToDo ??
     }
 
-    foreach (var handler in handlers)
+    try
     {
-      var handlerFullName = handler.HandlerInstance.GetType().FullName;
+      foreach (var handler in handlers)
+      {
+        var handlerFullName = handler.HandlerInstance.GetType().FullName;
 
-      logger.LogDebug($"Handling event with {handlerFullName}");
+        logger.LogDebug($"Handling event with {handlerFullName}");
 
-      await handler.HandlerCallback(notification, cancellationToken);
+        await handler.HandlerCallback(notification, cancellationToken);
+      }
+    }
+    catch (Exception ex)
+    {
+      logger.LogError("Error while publishing events: {Message}", ex.Message);
+      // ToDo ??
     }
   }
 }

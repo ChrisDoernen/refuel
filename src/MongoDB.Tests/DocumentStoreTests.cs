@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Xunit;
-
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace MongoDB.Tests;
@@ -27,5 +26,13 @@ public class DocumentStoreTests(
 
     retrievedDocument.Should().BeOfType<TestDocument>();
     retrievedDocument.Should().BeEquivalentTo(testDocument);
+  }
+
+  [Fact]
+  public async Task GetByIdIfExistingReturnsNull()
+  {
+    var document = await _store.GetByIdIfExisting(Guid.CreateVersion7());
+
+    document.Should().BeNull();
   }
 }
