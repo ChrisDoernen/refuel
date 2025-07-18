@@ -35,12 +35,15 @@ public class EventConverter
     // EventSourcingDb guarantees Id is a valid uint
     var id = System.Convert.ToUInt32(evnt.Id, CultureInfo.InvariantCulture);
 
-    return new Event(
-      id,
-      evnt.Time,
-      evnt.Source,
-      Subject.Parse(evnt.Subject),
-      eventData
-    );
+    var subject = Subject.Parse(evnt.Subject);
+
+    return new Event
+    {
+      Data = eventData,
+      Id = id,
+      Time = evnt.Time,
+      Source = evnt.Source,
+      Subject = subject
+    };
   }
 }

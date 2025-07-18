@@ -4,6 +4,7 @@ namespace Core.Infrastructure.Cqrs;
 
 /// <summary>
 ///   Contains a state together with the event that led to this state.
+///   To be used on the write side, it contains the whole event.
 /// </summary>
 public record StateChange<T>(
   Event ProcessedEvent,
@@ -17,7 +18,7 @@ public static class StateChangeExtensions
     Event evnt
   ) where T : IReplayable<T>, new()
   {
-    if (!(evnt.Id > stateChange.ProcessedEvent.Id))
+    if (evnt.Id <= stateChange.ProcessedEvent.Id)
     {
       return stateChange;
     }

@@ -68,4 +68,31 @@ public class EventStore(
       }
     }
   }
+  
+  
+  public async IAsyncEnumerable<Event> ObserveEvents(
+    Subject subject,
+    ObserveEventsOptions? observeEventsOptions = null,
+    [EnumeratorCancellation] CancellationToken cancellationToken = default
+  )
+  {
+    var events = client.ObserveEventsAsync(
+      subject.ToString(),
+      observeEventsOptions ?? new ObserveEventsOptions(true),
+      cancellationToken
+    );
+
+    await foreach (var evnt in events)
+    {
+      if (evnt.IsEventSet)
+      {
+        yield return converter.Convert(evnt.Event);
+      }
+
+      if (evnt.IsErrorSet)
+      {
+        logger.LogError("Error reading event");
+      }
+    }
+  }
 }

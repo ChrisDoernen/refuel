@@ -19,40 +19,34 @@ public class EventStoreSubscriptionService(
   {
     logger.LogInformation("Starting EventStore subscriptions");
 
-    Task.Run(
-      async () =>
-      {
-        try
+    foreach (var eventStore in eventStoreProvider.All())
+    {
+      Task.Run(
+        async () =>
         {
-          foreach (var eventStore in eventStoreProvider.All())
+          try
           {
             // ToDo: Persist the last processed event id for each event store and start from there when restarting
-            var events = eventStore.GetEvents(
+            var events = eventStore.ObserveEvents(
               new Subject("/"),
-              new ReadEventsOptions(true),
-              _cancellationTokenSource.Token
+              cancellationToken: _cancellationTokenSource.Token
             );
             await foreach (var evnt in events)
             {
-              if (_cancellationTokenSource.IsCancellationRequested)
-              {
-                break;
-              }
-
               using var scope = serviceProvider.CreateScope();
               var mediator = scope.ServiceProvider.GetService<IMediator>()!;
 
               await mediator.Publish(evnt, _cancellationTokenSource.Token);
             }
           }
-        }
-        catch (Exception ex)
-        {
-          logger.LogError("Error while processing events: {Message}", ex.Message);
-        }
-      },
-      cancellationToken
-    );
+          catch (Exception ex)
+          {
+            logger.LogError("Error while processing events: {Message}", ex.Message);
+          }
+        },
+        cancellationToken
+      );
+    }
 
     return Task.CompletedTask;
   }

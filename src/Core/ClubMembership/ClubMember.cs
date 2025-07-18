@@ -2,19 +2,20 @@
 using Core.ClubMembership.AssigningClubRoles;
 using Core.ClubMembership.AssigningTankRoles;
 using Core.ClubMembership.Joining;
+using Core.Infrastructure.ReadModels;
 using EventSourcing;
 
 namespace Core.ClubMembership;
 
-public record ClubMember : IReplayable<ClubMember>
+public record ClubMember : IReplayable<ClubMember>, IIdentifiedReadModel
 {
-  public Guid Id { get; private init; }
-  public Guid ClubId { get; private init; }
-  public string Email { get; private init; } = null!;
-  public string FirstName { get; private init; } = null!;
-  public string LastName { get; private init; } = null!;
-  public IEnumerable<string> RoleIds { get; private init; } = [];
-  public Dictionary<Guid, IEnumerable<string>> TankRoleAssignments { get; private init; } = new();
+  public Guid Id { get; init; }
+  public Guid ClubId { get; init; }
+  public string Email { get; init; } = null!;
+  public string FirstName { get; init; } = null!;
+  public string LastName { get; init; } = null!;
+  public IEnumerable<string> RoleIds { get; init; } = [];
+  public Dictionary<Guid, IEnumerable<string>> TankRoleAssignments { get; init; } = new();
 
   public ClubMember Apply(IEventData evnt)
   {

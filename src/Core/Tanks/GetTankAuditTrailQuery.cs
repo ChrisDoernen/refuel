@@ -10,25 +10,16 @@ public record GetTankAuditTrailQuery(
   Guid TankId
 ) : IRequest<AuditTrail<Tank>>;
 
-public class GetTankQueryHandler(
-  IEventStoreProvider eventStoreProvider
+public class GetTankAuditTrailQueryHandler(
+  IAuditTrailReplayService<Tank> replayService
 ) : IRequestHandler<GetTankAuditTrailQuery, AuditTrail<Tank>>
 {
   public async Task<AuditTrail<Tank>> Handle(
     GetTankAuditTrailQuery query,
     CancellationToken cancellationToken
-  )
-  {
-    var events = eventStoreProvider
-      .ForClub(query.ClubId)
-      .GetEvents(
-        new Subject($"/tanks/{query.TankId}"),
-        new ReadEventsOptions(true),
-        cancellationToken
-      );
-
-    var replay = await Replay<Tank>.New().ApplyEventStream(events);
-
-    return replay.GetAuditTrail();
-  }
+  ) => await replayService.GetAuditTrail(
+    query.ClubId,
+    new Subject($"/tanks/{query.TankId}"),
+    cancellationToken
+  );
 }

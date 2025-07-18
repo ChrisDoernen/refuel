@@ -1,95 +1,135 @@
 ﻿using System.Linq.Expressions;
+using Core.Infrastructure.Caching;
 using Core.Infrastructure.Cqrs;
-using MongoDB;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Core.Infrastructure.ReadModels;
 
-public interface IReadModelRepository<T> where T : IReplayable<T>, new()
+public interface IIdentifiedReadModelRepository<T> where T : IIdentifiedReadModel, IReplayable<T>, new()
 {
-  Task<Maybe<StateChange<T>>> MaybeGetById(
+  Task<Maybe<ReadModelChange<T>>> MaybeGetById(
     Guid id,
     CancellationToken cancellationToken = default
   );
 
-  Task<StateChange<T>> GetById(
+  Task<ReadModelChange<T>> GetById(
     Guid id,
     CancellationToken cancellationToken = default
   );
 
-  Task<IEnumerable<StateChange<T>>> Filter(
+  Task<IEnumerable<ReadModelChange<T>>> Filter(
     Expression<Func<T, bool>> filter,
     CancellationToken cancellationToken = default
   );
 
-  Task<IEnumerable<StateChange<T>>> GetManyById(
+  Task<IEnumerable<ReadModelChange<T>>> GetManyById(
     IEnumerable<Guid> ids,
     CancellationToken cancellationToken = default
   );
 
   Task Upsert(
-    Guid id,
-    StateChange<T> stateChange,
+    ReadModelChange<T> change,
     CancellationToken cancellationToken = default
   );
 }
 
-public class ReadModelRepository<T>(
-  IDocumentStore<PersistableStateChange<T>> documentStore
-) : IReadModelRepository<T> where T : IReplayable<T>, new()
+public class IdentifiedReadModelRepository<T>(
+  HybridCache cache,
+  CacheKey key
+) : IIdentifiedReadModelRepository<T> where T : IReplayable<T>, IIdentifiedReadModel, new()
 {
-  public async Task<Maybe<StateChange<T>>> MaybeGetById(
+  public async Task<Maybe<ReadModelChange<T>>> MaybeGetById(
     Guid id,
     CancellationToken cancellationToken
   )
   {
-    var change = await documentStore.GetByIdIfExisting(id, cancellationToken);
+    var maybeState = await cache.GetEntry<IdentifiedReadModelsState<T>>(key, cancellationToken);
 
-    return Maybe<PersistableStateChange<T>>
-      .ForValue(change)
-      .Map(d => d.ToStateChange());
+    return maybeState
+      .Map(s => Maybe<T>
+        .ForValue(s.ReadModels.GetValueOrDefault(id))
+        .Map(m => new ReadModelChange<T>(s.Metadata, m))
+      );
   }
 
-  public async Task<StateChange<T>> GetById(
+  public async Task<ReadModelChange<T>> GetById(
     Guid id,
     CancellationToken cancellationToken
   )
   {
-    var change = await documentStore.GetById(id, cancellationToken);
+    var maybeState = await cache.GetEntry<IdentifiedReadModelsState<T>>(key, cancellationToken);
 
-    return change.ToStateChange();
+    return maybeState
+      .Map(s => Maybe<T>
+        .ForValue(s.ReadModels.GetValueOrDefault(id))
+        .Map(m => new ReadModelChange<T>(s.Metadata, m))
+        .ReduceThrow(new KeyNotFoundException("Read model not found"))
+      ).ReduceThrow(new ReadModelInconsistencyException(key));
   }
 
-  public async Task<IEnumerable<StateChange<T>>> Filter(
+  public async Task<IEnumerable<ReadModelChange<T>>> Filter(
     Expression<Func<T, bool>> filter,
     CancellationToken cancellationToken
   )
   {
-    var param = Expression.Parameter(typeof(PersistableStateChange<T>), "m");
-    var stateProperty = Expression.PropertyOrField(param, nameof(PersistableStateChange<T>.State));
-    var invokedExpr = Expression.Invoke(filter, stateProperty);
-    var expression = Expression.Lambda<Func<PersistableStateChange<T>, bool>>(invokedExpr, param);
+    var maybeState = await cache.GetEntry<IdentifiedReadModelsState<T>>(key, cancellationToken);
+    var predicate = filter.Compile();
 
-    var changes = await documentStore.FilterBy(expression, cancellationToken);
-
-    return changes.Select(c => c.ToStateChange());
+    return maybeState
+      .Map(s => s.ReadModels
+        .Where(m => predicate(m.Value))
+        .Select(m => new ReadModelChange<T>(s.Metadata, m.Value))
+      )
+      .ReduceThrow(new ReadModelInconsistencyException(key));
   }
 
-  public Task<IEnumerable<StateChange<T>>> GetManyById(
+  public async Task<IEnumerable<ReadModelChange<T>>> GetManyById(
     IEnumerable<Guid> ids,
     CancellationToken cancellationToken
   )
   {
-    throw new NotImplementedException();
+    var maybeState = await cache.GetEntry<IdentifiedReadModelsState<T>>(key, cancellationToken);
+
+    return maybeState
+      .Map(s => s.ReadModels
+        .Where(m => ids.Contains(m.Key))
+        .Select(m => new ReadModelChange<T>(s.Metadata, m.Value))
+      )
+      .ReduceThrow(new ReadModelInconsistencyException(key));
   }
 
   public async Task Upsert(
-    Guid id,
-    StateChange<T> stateChange,
+    ReadModelChange<T> change,
     CancellationToken cancellationToken
   )
   {
-    var persistableChange = new PersistableStateChange<T>(id, stateChange);
+    var maybeState = await cache.GetEntry<IdentifiedReadModelsState<T>>(key, cancellationToken);
 
-    await documentStore.UpsertOne(persistableChange, cancellationToken);
+    var newState = maybeState
+      .Map(s => new IdentifiedReadModelsState<T>
+        {
+          Metadata = change.EventMetadata,
+          ReadModels = new Dictionary<Guid, T>(s.ReadModels)
+          {
+            [change.State.Id] = change.State
+          }
+        }
+      )
+      .Reduce(
+        new IdentifiedReadModelsState<T>
+        {
+          Metadata = change.EventMetadata,
+          ReadModels = new Dictionary<Guid, T>
+          {
+            [change.State.Id] = change.State
+          }
+        }
+      );
+
+    await cache.SetEntry(
+      key,
+      newState,
+      cancellationToken: cancellationToken
+    );
   }
 }

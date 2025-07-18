@@ -7,13 +7,13 @@ namespace Core.ClubMembership;
 
 public record GetClubMembershipQuery(
   Guid UserId
-) : IRequest<IEnumerable<StateChange<ClubMember>>>;
+) : IRequest<IEnumerable<ReadModelChange<ClubMember>>>;
 
 public class GetClubMembershipQueryHandler(
-  IReadModelRepository<ClubMember> repository
-) : IRequestHandler<GetClubMembershipQuery, IEnumerable<StateChange<ClubMember>>>
+  IIdentifiedReadModelRepository<ClubMember> repository
+) : IRequestHandler<GetClubMembershipQuery, IEnumerable<ReadModelChange<ClubMember>>>
 {
-  public async Task<IEnumerable<StateChange<ClubMember>>> Handle(
+  public async Task<IEnumerable<ReadModelChange<ClubMember>>> Handle(
     GetClubMembershipQuery query,
     CancellationToken cancellationToken
   )

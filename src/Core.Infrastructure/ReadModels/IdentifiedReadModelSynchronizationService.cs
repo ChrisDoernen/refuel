@@ -9,13 +9,13 @@ public interface IReadModelSynchronizationService
 }
 
 /// <summary>
-///   Synchronizes the read model with events, usually replayed from the event store.
+///   Synchronizes the read models with events, usually replayed from the event store.
 /// </summary>
-public class ReadModelSynchronizationService<T>(
-  IReadModelRepository<T> repository,
+public class IdentifiedReadModelSynchronizationService<T>(
+  IIdentifiedReadModelRepository<T> repository,
   IEnumerable<Type> relevantEventTypes,
   Func<Subject, Guid> idSelector
-) : IReadModelSynchronizationService where T : IReplayable<T>, new()
+) : IReadModelSynchronizationService where T : IReplayable<T>, IIdentifiedReadModel, new()
 {
   public async Task Replay(Event evnt, CancellationToken cancellationToken)
   {
@@ -26,12 +26,12 @@ public class ReadModelSynchronizationService<T>(
 
     var id = idSelector(evnt.Subject);
 
-    var maybeStateChange = await repository.MaybeGetById(id, cancellationToken);
+    var maybeLastChange = await repository.MaybeGetById(id, cancellationToken);
 
-    var stateChange = maybeStateChange
+    var newChange = maybeLastChange
       .Map(change => change.Apply(evnt))
-      .Reduce(() => new T().GetInitialChange(evnt));
+      .Reduce(() => new T().GetInitialReadModelChange(evnt));
 
-    await repository.Upsert(id, stateChange, cancellationToken);
+    await repository.Upsert(newChange, cancellationToken);
   }
 }

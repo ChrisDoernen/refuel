@@ -1,10 +1,14 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using Core.Infrastructure.Authorization;
+using Core.Infrastructure.Caching;
 using Core.Infrastructure.Cqrs;
 using Core.Infrastructure.ReadModels;
 using Core.Infrastructure.Roles;
+using Core.Infrastructure.Serialization;
 using EventSourcing;
 using MediatR;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB;
 using MongoDB.Driver;
@@ -30,12 +34,29 @@ public static class ServiceCollectionExtensions
     services.AddMediatorAuthorization(assembly);
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
 
+    services.AddTransient(typeof(IAuditTrailReplayService<>), typeof(AuditTrailReplayService<>));
+
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddSingleton<EventStoreSubscriptionService>();
 
     services.AddSingleton<IRoleProvider>(new RoleProvider(assembly));
-  }
 
+    var jsonSerializerOptions = new JsonSerializerOptions();
+    jsonSerializerOptions.Converters.Add(new SubjectConverter());
+    services.AddKeyedSingleton<JsonSerializerOptions>(typeof(IHybridCacheSerializer<>), jsonSerializerOptions);
+
+    services.AddHybridCache(options =>
+      {
+        options.MaximumPayloadBytes = 1024 * 1024;
+        options.MaximumKeyLength = 1024;
+        options.DefaultEntryOptions = new HybridCacheEntryOptions
+        {
+          Expiration = TimeSpan.FromDays(365),
+          LocalCacheExpiration = TimeSpan.FromDays(365)
+        };
+      }
+    );
+  }
 
   public static void AddDocumentStore(
     this IServiceCollection services,
@@ -69,21 +90,13 @@ public static class ServiceCollectionExtensions
     }
   }
 
-  public static void AddReadModel(
+  public static void AddIdentifiedReadModel(
     this IServiceCollection services,
     Type type,
-    string collectionName,
+    CacheKey cacheKey,
     Func<Subject, Guid> idSelector
   )
   {
-    services.AddScoped(
-      typeof(IReadModelRepository<>).MakeGenericType(type),
-      typeof(ReadModelRepository<>).MakeGenericType(type)
-    );
-
-    var persistableType = typeof(PersistableStateChange<>).MakeGenericType(type);
-    services.AddDocumentStore(persistableType, collectionName);
-
     var eventTypes = type
       .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
       .Where(m => m.Name == "Apply")
@@ -92,33 +105,59 @@ public static class ServiceCollectionExtensions
       .Distinct()
       .ToList();
 
-    var method = typeof(ReadModelSynchronizationServiceFactory)
+    var syncServiceFactoryMethod = typeof(ReadModelSynchronizationServiceFactory)
       .GetMethod(nameof(ReadModelSynchronizationServiceFactory.Get))!
       .MakeGenericMethod(type);
 
-    var factory =
-      (IServiceProvider sp) => method.Invoke(null, [sp, type, eventTypes, idSelector]);
-
+    var syncServiceFactory =
+      (IServiceProvider sp) => syncServiceFactoryMethod.Invoke(null, [sp, type, eventTypes, idSelector]);
 
     services.AddScoped(
       typeof(IReadModelSynchronizationService),
-      factory!
+      syncServiceFactory!
+    );
+
+    var repoFactoryMethod = typeof(ReadModelRepositoryFactory)
+      .GetMethod(nameof(ReadModelRepositoryFactory.Get))!
+      .MakeGenericMethod(type);
+
+    var repoFactory =
+      (IServiceProvider sp) => repoFactoryMethod.Invoke(null, [sp, cacheKey]);
+
+    var genericRepo = typeof(IIdentifiedReadModelRepository<>).MakeGenericType(type);
+
+    services.AddScoped(
+      genericRepo,
+      repoFactory!
     );
   }
 
   private static class ReadModelSynchronizationServiceFactory
   {
-    public static ReadModelSynchronizationService<T> Get<T>(
+    public static IdentifiedReadModelSynchronizationService<T> Get<T>(
       IServiceProvider serviceProvider,
       Type type,
       IEnumerable<Type> eventTypes,
       Func<Subject, Guid> idSelector
-    ) where T : IReplayable<T>, new()
+    ) where T : IReplayable<T>, IIdentifiedReadModel, new()
     {
-      var genericType = typeof(IReadModelRepository<>).MakeGenericType(type);
-      var repo = (IReadModelRepository<T>)serviceProvider.GetRequiredService(genericType);
+      var genericType = typeof(IIdentifiedReadModelRepository<>).MakeGenericType(type);
+      var repo = (IIdentifiedReadModelRepository<T>)serviceProvider.GetRequiredService(genericType);
 
-      return new ReadModelSynchronizationService<T>(repo, eventTypes, idSelector);
+      return new IdentifiedReadModelSynchronizationService<T>(repo, eventTypes, idSelector);
+    }
+  }
+
+  private static class ReadModelRepositoryFactory
+  {
+    public static IdentifiedReadModelRepository<T> Get<T>(
+      IServiceProvider serviceProvider,
+      CacheKey cacheKey
+    ) where T : IReplayable<T>, IIdentifiedReadModel, new()
+    {
+      var cache = serviceProvider.GetRequiredService<HybridCache>();
+
+      return new IdentifiedReadModelRepository<T>(cache, cacheKey);
     }
   }
 }

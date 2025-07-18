@@ -138,13 +138,11 @@ public class WorkflowTests(
     var eventStoreSubscriptionService = _fixture.Get<EventStoreSubscriptionService>(testOutputHelper);
     await eventStoreSubscriptionService.StartAsync(CancellationToken.None);
     
-    await Task.Delay(10000);
+    await Task.Delay(5000);
 
-    var rmr = fixture.Get<IReadModelRepository<Tank>>(testOutputHelper);
+    var rmr = await _mediator.Send(new GetClubMembersReadModelQuery(clubId));
 
-    await Task.Delay(10000);
-
-    var change = await rmr.GetById(tankId);
+    rmr.Count().Should().Be(1);
     // change.State.Id.Should().Be(tankId);
   }
 }

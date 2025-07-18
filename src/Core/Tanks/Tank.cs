@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure.Cqrs;
+using Core.Infrastructure.ReadModels;
 using Core.Tanks.FuelExtraction;
 using Core.Tanks.MeterInitialization;
 using Core.Tanks.MeterReading;
@@ -9,16 +10,16 @@ using EventSourcing;
 
 namespace Core.Tanks;
 
-public record Tank : IReplayable<Tank>
+public record Tank : IReplayable<Tank>, IIdentifiedReadModel
 {
-  public Guid Id { get; private init; }
-  public Guid ClubId { get; private init; }
-  public string Name { get; private init; } = null!;
-  public string Description { get; private init; } = null!;
-  public int Capacity { get; private init; }
-  public bool RefillRequested { get; private init; }
-  public int FuelLevel { get; private init; }
-  public Meter? Meter { get; private init; }
+  public Guid Id { get; init; }
+  public Guid ClubId { get; init; }
+  public string Name { get; init; } = null!;
+  public string Description { get; init; } = null!;
+  public int Capacity { get; init; }
+  public bool RefillRequested { get; init; }
+  public int FuelLevel { get; init; }
+  public Meter? Meter { get; init; }
 
   public Tank Apply(IEventData evnt)
   {

@@ -1,4 +1,5 @@
-﻿using EventSourcing;
+﻿using Core.Infrastructure.ReadModels;
+using EventSourcing;
 
 namespace Core.Infrastructure.Cqrs;
 
@@ -13,10 +14,17 @@ public static class ReplayableExtensions
     this IReplayable<T> replayable,
     Event evnt
   ) where T : IReplayable<T>, new()
-  {
-    return new StateChange<T>(
+    => new(
       evnt,
       replayable.Apply(evnt.Data)
     );
-  }
+
+  public static ReadModelChange<T> GetInitialReadModelChange<T>(
+    this IReplayable<T> replayable,
+    Event evnt
+  ) where T : IReplayable<T>, new()
+    => new(
+      evnt,
+      replayable.Apply(evnt.Data)
+    );
 }

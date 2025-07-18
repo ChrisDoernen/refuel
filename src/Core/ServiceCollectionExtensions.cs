@@ -1,6 +1,7 @@
 ﻿using Core.ClubMembership;
 using Core.Clubs;
 using Core.Infrastructure;
+using Core.Infrastructure.Caching;
 using Core.Infrastructure.ReadModels;
 using Core.Tanks;
 using Core.Users;
@@ -16,9 +17,9 @@ public static class ServiceCollectionExtensions
     string CollectionName
   );
 
-  private record ReadModelDefinition(
+  private record IdentifiedReadModelDefinition(
     Type Type,
-    string CollectionName,
+    CacheKey CacheKey,
     Func<Subject, Guid> IdSelector
   );
 
@@ -34,23 +35,23 @@ public static class ServiceCollectionExtensions
 
   private static void AddReadModels(IServiceCollection services)
   {
-    IEnumerable<ReadModelDefinition> readModels =
-      new List<ReadModelDefinition>
+    IEnumerable<IdentifiedReadModelDefinition> readModels =
+      new List<IdentifiedReadModelDefinition>
       {
         new(
           typeof(ClubMember),
-          "clubMembers",
+          new CacheKey("/clubMembers"),
           Subject.FromLevel(1)
         ),
         new(
           typeof(Tank),
-          "tanks",
+          new CacheKey("/tanks"),
           Subject.FromLevel(1)
         )
       };
     foreach (var readModel in readModels)
     {
-      services.AddReadModel(readModel.Type, readModel.CollectionName, readModel.IdSelector);
+      services.AddIdentifiedReadModel(readModel.Type, readModel.CacheKey, readModel.IdSelector);
     }
   }
 

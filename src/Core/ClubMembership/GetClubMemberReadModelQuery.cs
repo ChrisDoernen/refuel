@@ -8,13 +8,13 @@ namespace Core.ClubMembership;
 
 public record GetClubMemberReadModelQuery(
   Guid MemberId
-) : IRequest<StateChange<ClubMember>>;
+) : IRequest<ReadModelChange<ClubMember>>;
 
 public class GetClubMemberReadModelQueryHandler(
-  IReadModelRepository<ClubMember> repository
-) : IRequestHandler<GetClubMemberReadModelQuery, StateChange<ClubMember>>
+  IIdentifiedReadModelRepository<ClubMember> repository
+) : IRequestHandler<GetClubMemberReadModelQuery, ReadModelChange<ClubMember>>
 {
-  public async Task<StateChange<ClubMember>> Handle(
+  public async Task<ReadModelChange<ClubMember>> Handle(
     GetClubMemberReadModelQuery query,
     CancellationToken cancellationToken
   )
