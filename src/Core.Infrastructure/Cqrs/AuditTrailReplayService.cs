@@ -3,7 +3,7 @@ using EventSourcingDb.Types;
 
 namespace Core.Infrastructure.Cqrs;
 
-public interface IAuditTrailReplayService<T> where T : IReplayable<T>, new()
+public interface IReplayService<T> where T : IReplayable<T>, new()
 {
   Task<AuditTrail<T>> GetAuditTrail(
     Guid clubId,
@@ -12,9 +12,9 @@ public interface IAuditTrailReplayService<T> where T : IReplayable<T>, new()
   );
 }
 
-public class AuditTrailReplayService<T>(
+public class ReplayService<T>(
   IEventStoreProvider eventStoreProvider
-) : IAuditTrailReplayService<T> where T : IReplayable<T>, new()
+) : IReplayService<T> where T : IReplayable<T>, new()
 {
   public async Task<AuditTrail<T>> GetAuditTrail(
     Guid clubId,

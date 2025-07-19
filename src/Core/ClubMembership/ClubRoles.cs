@@ -1,5 +1,4 @@
-﻿using Core.Infrastructure;
-using Core.Infrastructure.Roles;
+﻿using Core.Infrastructure.Roles;
 
 namespace Core.ClubMembership;
 

@@ -1,6 +1,8 @@
 ﻿using Api.Shared;
-using Core.Clubs;
-using Core.Tanks;
+using Core.Clubs.Models;
+using Core.Clubs.Queries;
+using Core.Tanks.Projections;
+using Core.Tanks.Queries;
 using MediatR;
 
 namespace Api.Tanks;
@@ -32,10 +34,8 @@ public class TankType : ObjectType<Tank>
       .ImplementsNode()
       .ResolveNode<ClubCompoundId>(async (context, id) =>
         {
-          var query = new GetTankAuditTrailQuery(id.ClubId, id.Id);
-          var tank = await context.Service<IMediator>().Send(query, context.RequestAborted);
-
-          return tank.CurrentState;
+          var query = new GetTankQuery(id.Id);
+          return await context.Service<IMediator>().Send(query, context.RequestAborted);
         }
       );
   }

@@ -1,5 +1,6 @@
 ﻿using Core.Infrastructure.Cqrs;
 using Core.Clubs;
+using Core.Clubs.Queries;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

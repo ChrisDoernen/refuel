@@ -1,10 +1,14 @@
 ﻿using Core.ClubMembership;
+using Core.ClubMembership.Commands;
+using Core.ClubMembership.Models;
 using Core.Clubs;
+using Core.Clubs.Models;
 using Core.Infrastructure;
 using Core.Infrastructure.Caching;
-using Core.Infrastructure.ReadModels;
 using Core.Tanks;
+using Core.Tanks.Projections;
 using Core.Users;
+using Core.Users.Models;
 using EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,5 +1,7 @@
-﻿using Core.ClubMembership;
-using Core.Users;
+﻿using Core.ClubMembership.Projections;
+using Core.ClubMembership.Queries;
+using Core.Users.Models;
+using Core.Users.Queries;
 using MediatR;
 
 namespace Api.Users;
@@ -13,9 +15,8 @@ public class UserType : ObjectType<User>
     descriptor
       .ImplementsNode()
       .IdField(u => u.Id)
-      .ResolveNode(
-        async (context, id) =>
-          await context.Service<IMediator>().Send(new GetUserQuery(id), context.RequestAborted)
+      .ResolveNode(async (context, id) =>
+        await context.Service<IMediator>().Send(new GetUserQuery(id), context.RequestAborted)
       );
 
     descriptor.Field(u => u.FirstName);
@@ -23,15 +24,12 @@ public class UserType : ObjectType<User>
 
     descriptor
       .Field("clubsMembership")
-      .Resolve<IEnumerable<ClubMember>>(
-        async (context, cancellationToken) =>
+      .Resolve<IEnumerable<ClubMember>>(async (context, cancellationToken) =>
         {
           var userId = context.Parent<User>().Id;
           var query = new GetClubMembershipQuery(userId);
 
-          var changes = await context.Service<IMediator>().Send(query, cancellationToken);
-
-          return changes.Select(c => c.State);
+          return await context.Service<IMediator>().Send(query, cancellationToken);
         }
       );
   }

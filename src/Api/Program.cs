@@ -10,6 +10,7 @@ using Core;
 using Core.Infrastructure;
 using Core.Infrastructure.Cqrs;
 using Core.Tanks;
+using Core.Tanks.Projections;
 using dotenv.net;
 using EventSourcing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

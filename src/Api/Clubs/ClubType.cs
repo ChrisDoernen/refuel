@@ -1,6 +1,9 @@
-﻿using Core.ClubMembership;
-using Core.Clubs;
-using Core.Tanks;
+﻿using Core.ClubMembership.Projections;
+using Core.ClubMembership.Queries;
+using Core.Clubs.Models;
+using Core.Clubs.Queries;
+using Core.Tanks.Projections;
+using Core.Tanks.Queries;
 using MediatR;
 
 namespace Api.Clubs;
@@ -39,9 +42,7 @@ public class ClubType : ObjectType<Club>
           var id = context.Parent<Club>().Id;
           var query = new GetClubMembersReadModelQuery(id);
 
-          var changes = await context.Service<IMediator>().Send(query, cancellationToken);
-
-          return changes.Select(c => c.State);
+          return await context.Service<IMediator>().Send(query, cancellationToken);
         }
       );
   }

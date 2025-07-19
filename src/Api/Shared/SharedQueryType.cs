@@ -2,6 +2,7 @@
 using Core.Infrastructure;
 using Core.Infrastructure.Roles;
 using Core.Roles;
+using Core.Roles.Queries;
 using MediatR;
 
 namespace Api.Shared;

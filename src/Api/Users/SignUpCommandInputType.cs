@@ -1,4 +1,4 @@
-﻿using Core.Users.SignUp;
+﻿using Core.Users.Commands;
 
 namespace Api.Users;
 

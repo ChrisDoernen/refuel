@@ -1,4 +1,4 @@
-﻿using Core.Infrastructure.ReadModels;
+﻿using Core.Infrastructure.Projections;
 using EventSourcing;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ namespace Core.Infrastructure.Cqrs;
 public class EventSourcingMediator(
   IServiceProvider serviceProvider,
   ILogger<EventSourcingMediator> logger,
-  IEnumerable<IReadModelSynchronizationService> readModelSynchronizationServices
+  IEnumerable<IProjector> readModelSynchronizationServices
 ) : Mediator(serviceProvider)
 {
   protected override async Task PublishCore(
@@ -25,7 +25,7 @@ public class EventSourcingMediator(
     {
       foreach (var synchronizationService in readModelSynchronizationServices)
       {
-        await synchronizationService.Replay(evnt, cancellationToken);
+        await synchronizationService.Project(evnt, cancellationToken);
       }
     }
     catch (Exception ex)

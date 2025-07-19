@@ -1,7 +1,5 @@
-﻿
-using Core.Infrastructure;
-using Core.Infrastructure.Roles;
-using Core.Tanks;
+﻿using Core.Infrastructure.Roles;
+using Core.Tanks.Projections;
 
 namespace Api.ClubMembership;
 

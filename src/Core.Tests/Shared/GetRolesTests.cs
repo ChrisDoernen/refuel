@@ -1,5 +1,6 @@
 ﻿using Core.ClubMembership;
 using Core.Roles;
+using Core.Roles.Queries;
 using FluentAssertions;
 using MediatR;
 using Xunit;

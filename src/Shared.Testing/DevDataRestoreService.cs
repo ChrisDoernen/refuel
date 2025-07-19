@@ -1,11 +1,9 @@
 ﻿using Core.ClubMembership;
-using Core.ClubMembership.AssigningClubRoles;
-using Core.ClubMembership.AssigningTankRoles;
-using Core.ClubMembership.Joining;
-using Core.Clubs.Creation;
+using Core.ClubMembership.Commands;
+using Core.Clubs.Commands;
 using Core.Tanks;
-using Core.Tanks.Registration;
-using Core.Users.SignUp;
+using Core.Tanks.Commands;
+using Core.Users.Commands;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

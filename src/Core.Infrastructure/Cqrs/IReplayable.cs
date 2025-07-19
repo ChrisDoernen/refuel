@@ -1,4 +1,4 @@
-﻿using Core.Infrastructure.ReadModels;
+﻿using Core.Infrastructure.Projections;
 using EventSourcing;
 
 namespace Core.Infrastructure.Cqrs;
@@ -19,7 +19,7 @@ public static class ReplayableExtensions
       replayable.Apply(evnt.Data)
     );
 
-  public static ReadModelChange<T> GetInitialReadModelChange<T>(
+  public static ProjectionChange<T> GetInitialReadModelChange<T>(
     this IReplayable<T> replayable,
     Event evnt
   ) where T : IReplayable<T>, new()

@@ -1,5 +1,6 @@
 ﻿using Core.Users;
-using Core.Users.SignUp;
+using Core.Users.Commands;
+using Core.Users.Queries;
 using FluentAssertions;
 using MediatR;
 using Xunit;

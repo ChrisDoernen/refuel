@@ -1,5 +1,7 @@
 ﻿using Api.GraphQL;
 using Core.Clubs;
+using Core.Clubs.Models;
+using Core.Clubs.Queries;
 using MediatR;
 
 namespace Api.Clubs;

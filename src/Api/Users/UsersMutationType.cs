@@ -1,6 +1,6 @@
 ﻿using Api.GraphQL;
 using Core.Users;
-using Core.Users.SignUp;
+using Core.Users.Commands;
 using MediatR;
 
 namespace Api.Users;

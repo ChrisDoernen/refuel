@@ -3,7 +3,7 @@ using System.Text.Json;
 using Core.Infrastructure.Authorization;
 using Core.Infrastructure.Caching;
 using Core.Infrastructure.Cqrs;
-using Core.Infrastructure.ReadModels;
+using Core.Infrastructure.Projections;
 using Core.Infrastructure.Roles;
 using Core.Infrastructure.Serialization;
 using EventSourcing;
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
     services.AddMediatorAuthorization(assembly);
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
 
-    services.AddTransient(typeof(IAuditTrailReplayService<>), typeof(AuditTrailReplayService<>));
+    services.AddTransient(typeof(IReplayService<>), typeof(ReplayService<>));
 
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     services.AddSingleton<EventStoreSubscriptionService>();
@@ -113,7 +113,7 @@ public static class ServiceCollectionExtensions
       (IServiceProvider sp) => syncServiceFactoryMethod.Invoke(null, [sp, type, eventTypes, idSelector]);
 
     services.AddScoped(
-      typeof(IReadModelSynchronizationService),
+      typeof(IProjector),
       syncServiceFactory!
     );
 
@@ -124,7 +124,7 @@ public static class ServiceCollectionExtensions
     var repoFactory =
       (IServiceProvider sp) => repoFactoryMethod.Invoke(null, [sp, cacheKey]);
 
-    var genericRepo = typeof(IIdentifiedReadModelRepository<>).MakeGenericType(type);
+    var genericRepo = typeof(IIdentifiedProjectionRepository<>).MakeGenericType(type);
 
     services.AddScoped(
       genericRepo,
@@ -134,30 +134,30 @@ public static class ServiceCollectionExtensions
 
   private static class ReadModelSynchronizationServiceFactory
   {
-    public static IdentifiedReadModelSynchronizationService<T> Get<T>(
+    public static IdentifiedProjector<T> Get<T>(
       IServiceProvider serviceProvider,
       Type type,
       IEnumerable<Type> eventTypes,
       Func<Subject, Guid> idSelector
-    ) where T : IReplayable<T>, IIdentifiedReadModel, new()
+    ) where T : IReplayable<T>, IIdentifiedProjection, new()
     {
-      var genericType = typeof(IIdentifiedReadModelRepository<>).MakeGenericType(type);
-      var repo = (IIdentifiedReadModelRepository<T>)serviceProvider.GetRequiredService(genericType);
+      var genericType = typeof(IIdentifiedProjectionRepository<>).MakeGenericType(type);
+      var repo = (IIdentifiedProjectionRepository<T>)serviceProvider.GetRequiredService(genericType);
 
-      return new IdentifiedReadModelSynchronizationService<T>(repo, eventTypes, idSelector);
+      return new IdentifiedProjector<T>(repo, eventTypes, idSelector);
     }
   }
 
   private static class ReadModelRepositoryFactory
   {
-    public static IdentifiedReadModelRepository<T> Get<T>(
+    public static IdentifiedProjectionRepository<T> Get<T>(
       IServiceProvider serviceProvider,
       CacheKey cacheKey
-    ) where T : IReplayable<T>, IIdentifiedReadModel, new()
+    ) where T : IReplayable<T>, IIdentifiedProjection, new()
     {
       var cache = serviceProvider.GetRequiredService<HybridCache>();
 
-      return new IdentifiedReadModelRepository<T>(cache, cacheKey);
+      return new IdentifiedProjectionRepository<T>(cache, cacheKey);
     }
   }
 }

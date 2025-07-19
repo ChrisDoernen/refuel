@@ -1,5 +1,7 @@
 ﻿using Api.GraphQL;
 using Core.Users;
+using Core.Users.Models;
+using Core.Users.Queries;
 using MediatR;
 
 namespace Api.Users;

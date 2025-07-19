@@ -1,12 +1,13 @@
 ﻿using Api.Shared;
-
-using Core.ClubMembership;
-using Core.Clubs;
-using Core.Infrastructure;
+using Core.ClubMembership.Projections;
+using Core.ClubMembership.Queries;
+using Core.Clubs.Models;
+using Core.Clubs.Queries;
 using Core.Infrastructure.Roles;
-using Core.Roles;
-using Core.Tanks;
-using Core.Users;
+using Core.Roles.Queries;
+using Core.Tanks.Queries;
+using Core.Users.Models;
+using Core.Users.Queries;
 using MediatR;
 
 namespace Api.ClubMembership;
@@ -21,10 +22,8 @@ public class ClubMemberType : ObjectType<ClubMember>
       .ImplementsNode()
       .ResolveNode<ClubCompoundId>(async (context, id) =>
         {
-          var query = new GetClubMemberAuditTrailQuery(id.ClubId, id.Id);
-          var clubMember = await context.Service<IMediator>().Send(query, context.RequestAborted);
-
-          return clubMember.CurrentState;
+          var query = new GetClubMemberQuery(id.Id);
+          return await context.Service<IMediator>().Send(query, context.RequestAborted);
         }
       );
 
@@ -42,7 +41,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
           foreach (var assignment in member.TankRoleAssignments)
           {
-            var query = new GetTankAuditTrailQuery(member.ClubId, assignment.Key);
+            var query = new GetTankQuery(assignment.Key);
 
             var tank = await context.Service<IMediator>().Send(query, cancellationToken);
 
@@ -50,7 +49,7 @@ public class ClubMemberType : ObjectType<ClubMember>
 
             var tankRoleAssignments = new TankRoleAssignments
             {
-              Tank = tank.CurrentState,
+              Tank = tank,
               Roles = assignedRoles
             };
             assignments.Add(tankRoleAssignments);
