@@ -1,11 +1,8 @@
 ﻿using Core.ClubMembership.Events;
 using Core.Infrastructure.Cqrs;
-using Core.Users;
 using Core.Users.Queries;
 using EventSourcing;
-using EventSourcingDb.Types;
 using MediatR;
-using EventCandidate = EventSourcing.EventCandidate;
 
 namespace Core.ClubMembership.Commands;
 
@@ -41,7 +38,7 @@ public class JoinClubCommandHandler(
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [Precondition.IsSubjectPristinePrecondition(candidate.Subject)],
+        [new IsSubjectPristinePrecondition(candidate.Subject)],
         cancellationToken
       );
   }

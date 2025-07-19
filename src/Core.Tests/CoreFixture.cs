@@ -18,6 +18,7 @@ namespace Core.Tests;
 public class CoreFixture : TestBedFixture, IAsyncLifetime
 {
   private readonly IEnumerable<TestContainer> _testContainers;
+  private EventStoreObserver? _observer;
 
   public CoreFixture(IMessageSink _)
   {
@@ -31,6 +32,17 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
   }
 
   public async ValueTask InitializeAsync() => await _testContainers.Start();
+
+  public async Task StartObserver(
+    ITestOutputHelper testOutputHelper,
+    CancellationToken cancellationToken
+  )
+  {
+    _observer = Get<EventStoreObserver>(testOutputHelper);
+    await _observer.StartAsync(cancellationToken);
+  }
+
+  public async Task WaitForProjections() => await Task.Delay(2000);
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");
@@ -57,5 +69,13 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
     yield return new TestAppSettings { Filename = "appsettings.json", IsOptional = false };
   }
 
-  protected override async ValueTask DisposeAsyncCore() => await _testContainers.Dispose();
+  protected override async ValueTask DisposeAsyncCore()
+  {
+    await _testContainers.Dispose();
+
+    if (_observer is not null)
+    {
+      await _observer.StopAsync(CancellationToken.None);
+    }
+  }
 }

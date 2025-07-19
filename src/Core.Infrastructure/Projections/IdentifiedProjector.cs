@@ -9,7 +9,7 @@ public interface IProjector
 }
 
 /// <summary>
-///   Projects events to identified readmodels, usually replayed from the event store.
+///   Projects events to identified projections, usually replayed from the event store.
 /// </summary>
 public class IdentifiedProjector<T>(
   IIdentifiedProjectionRepository<T> repository,

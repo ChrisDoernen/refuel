@@ -1,13 +1,8 @@
-﻿using Core.ClubMembership;
-using Core.ClubMembership.Commands;
-using Core.ClubMembership.Models;
-using Core.Clubs;
+﻿using Core.ClubMembership.Projections;
 using Core.Clubs.Models;
 using Core.Infrastructure;
 using Core.Infrastructure.Caching;
-using Core.Tanks;
 using Core.Tanks.Projections;
-using Core.Users;
 using Core.Users.Models;
 using EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +16,7 @@ public static class ServiceCollectionExtensions
     string CollectionName
   );
 
-  private record IdentifiedReadModelDefinition(
+  private record IdentifiedProjectionDefinition(
     Type Type,
     CacheKey CacheKey,
     Func<Subject, Guid> IdSelector
@@ -39,8 +34,8 @@ public static class ServiceCollectionExtensions
 
   private static void AddReadModels(IServiceCollection services)
   {
-    IEnumerable<IdentifiedReadModelDefinition> readModels =
-      new List<IdentifiedReadModelDefinition>
+    IEnumerable<IdentifiedProjectionDefinition> readModels =
+      new List<IdentifiedProjectionDefinition>
       {
         new(
           typeof(ClubMember),

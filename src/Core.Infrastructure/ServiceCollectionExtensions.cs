@@ -10,6 +10,7 @@ using EventSourcing;
 using MediatR;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MongoDB;
 using MongoDB.Driver;
 
@@ -37,7 +38,9 @@ public static class ServiceCollectionExtensions
     services.AddTransient(typeof(IReplayService<>), typeof(ReplayService<>));
 
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
-    services.AddSingleton<EventStoreSubscriptionService>();
+    
+    services.AddSingleton<EventStoreObserver>();
+    services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<EventStoreObserver>());
 
     services.AddSingleton<IRoleProvider>(new RoleProvider(assembly));
 
@@ -47,7 +50,7 @@ public static class ServiceCollectionExtensions
 
     services.AddHybridCache(options =>
       {
-        options.MaximumPayloadBytes = 1024 * 1024;
+        options.MaximumPayloadBytes = 10 + 1024 * 1024;
         options.MaximumKeyLength = 1024;
         options.DefaultEntryOptions = new HybridCacheEntryOptions
         {

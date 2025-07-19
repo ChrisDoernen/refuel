@@ -39,6 +39,8 @@ public class WorkflowTests(
     );
     var clubId = await _mediator.Send(createClubCommand);
 
+    await _fixture.StartObserver(testOutputHelper, TestContext.Current.CancellationToken);
+
     var joinClubCommand = new JoinClubCommand(
       UserId: userId,
       ClubId: clubId
@@ -52,6 +54,11 @@ public class WorkflowTests(
     );
     await _mediator.Send(assignClubRoleCommand);
 
+    await _fixture.WaitForProjections();
+    var clubMembers = await _mediator.Send(new GetClubMembersReadModelQuery(clubId));
+
+    clubMembers.Count().Should().Be(1);
+
     var registerTankCommand = new RegisterTankCommand(
       Name: "Benzintank H4",
       ClubId: clubId,
@@ -62,6 +69,9 @@ public class WorkflowTests(
     var tankId = await _mediator.Send(registerTankCommand);
 
     var getTankQuery = new GetTankQuery(tankId);
+
+    // await _fixture.WaitForProjections();
+    await Task.Delay(20000);
     var tank = await _mediator.Send(getTankQuery);
 
     tank.Should().BeOfType<Tank>();
@@ -74,6 +84,7 @@ public class WorkflowTests(
     );
     await _mediator.Send(initializeMeterCommand);
 
+    await _fixture.WaitForProjections();
     tank = await _mediator.Send(getTankQuery);
 
     tank.Meter!.Value.Should().Be(0);
@@ -91,6 +102,7 @@ public class WorkflowTests(
     await _mediator.Send(logFuelExtractedCommand);
     await _mediator.Send(logMeterReadCommand);
 
+    await _fixture.WaitForProjections();
     tank = await _mediator.Send(getTankQuery);
 
     tank.FuelLevel.Should().Be(100);
@@ -102,6 +114,7 @@ public class WorkflowTests(
     );
     await _mediator.Send(logRefillRequested);
 
+    await _fixture.WaitForProjections();
     tank = await _mediator.Send(getTankQuery);
 
     tank.FuelLevel.Should().Be(100);
@@ -114,6 +127,7 @@ public class WorkflowTests(
     );
     await _mediator.Send(logRefilledCommand);
 
+    await _fixture.WaitForProjections();
     tank = await _mediator.Send(getTankQuery);
 
     tank.FuelLevel.Should().Be(200);
@@ -127,16 +141,5 @@ public class WorkflowTests(
     var logTooMuchExtracted = () => _mediator.Send(logTooMuchFuelExtractedCommand);
 
     await logTooMuchExtracted.Should().ThrowAsync<Exception>();
-
-
-    var eventStoreSubscriptionService = _fixture.Get<EventStoreSubscriptionService>(testOutputHelper);
-    await eventStoreSubscriptionService.StartAsync(CancellationToken.None);
-
-    await Task.Delay(5000);
-
-    var rmr = await _mediator.Send(new GetClubMembersReadModelQuery(clubId));
-
-    rmr.Count().Should().Be(1);
-    // change.State.Id.Should().Be(tankId);
   }
 }

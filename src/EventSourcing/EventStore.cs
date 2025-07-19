@@ -37,8 +37,9 @@ public class EventStore(
           Source: options.Value.Source
         )
       );
+    var conditions = preconditions?.Select(p => p.Map());
 
-    var events = await client.WriteEventsAsync(candidates, preconditions, cancellationToken);
+    var events = await client.WriteEventsAsync(candidates, conditions, cancellationToken);
 
     return events.Select(converter.Convert).ToList();
   }
@@ -68,8 +69,8 @@ public class EventStore(
       }
     }
   }
-  
-  
+
+
   public async IAsyncEnumerable<Event> ObserveEvents(
     Subject subject,
     ObserveEventsOptions? observeEventsOptions = null,

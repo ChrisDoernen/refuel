@@ -1,10 +1,7 @@
 using EventSourcing;
-using EventSourcingDb.Types;
 using FluentAssertions;
 using Xunit;
-
 using Xunit.Microsoft.DependencyInjection.Abstracts;
-using EventCandidate = EventSourcing.EventCandidate;
 
 namespace EventSourcingDB.Tests;
 
@@ -31,7 +28,7 @@ public class WriteEventsTests(
       .ForTenant("tenant1")
       .StoreEvents(
         [eventCandidate],
-        [Precondition.IsSubjectPristinePrecondition(eventCandidate.Subject)]
+        [new IsSubjectPristinePrecondition(eventCandidate.Subject)]
       );
 
     events.Count.Should().Be(1);

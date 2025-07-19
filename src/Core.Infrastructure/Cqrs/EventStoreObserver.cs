@@ -1,5 +1,4 @@
 ﻿using EventSourcing;
-using EventSourcingDb.Types;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Core.Infrastructure.Cqrs;
 
-public class EventStoreSubscriptionService(
-  ILogger<EventStoreSubscriptionService> logger,
+public class EventStoreObserver(
+  ILogger<EventStoreObserver> logger,
   IEventStoreProvider eventStoreProvider,
   IServiceProvider serviceProvider
 ) : IHostedService, IDisposable

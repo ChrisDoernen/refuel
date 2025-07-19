@@ -2,9 +2,7 @@
 using Core.Infrastructure.Cqrs;
 using Core.Tanks.Events;
 using EventSourcing;
-using EventSourcingDb.Types;
 using MediatR;
-using EventCandidate = EventSourcing.EventCandidate;
 
 namespace Core.Tanks.Commands;
 
@@ -43,7 +41,7 @@ public class RegisterTankCommandHandler(
       .ForClub(command.ClubId)
       .StoreEvents(
         [candidate],
-        [Precondition.IsSubjectPristinePrecondition(candidate.Subject)],
+        [new IsSubjectPristinePrecondition(candidate.Subject)],
         cancellationToken
       );
 

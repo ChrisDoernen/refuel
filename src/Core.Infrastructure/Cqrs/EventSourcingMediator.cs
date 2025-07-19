@@ -8,7 +8,7 @@ namespace Core.Infrastructure.Cqrs;
 public class EventSourcingMediator(
   IServiceProvider serviceProvider,
   ILogger<EventSourcingMediator> logger,
-  IEnumerable<IProjector> readModelSynchronizationServices
+  IEnumerable<IProjector> projectors
 ) : Mediator(serviceProvider)
 {
   protected override async Task PublishCore(
@@ -23,14 +23,14 @@ public class EventSourcingMediator(
 
     try
     {
-      foreach (var synchronizationService in readModelSynchronizationServices)
+      foreach (var projector in projectors)
       {
-        await synchronizationService.Project(evnt, cancellationToken);
+        await projector.Project(evnt, cancellationToken);
       }
     }
     catch (Exception ex)
     {
-      logger.LogError("Error while synchronizing read models: {Message}", ex.Message);
+      logger.LogError("Error while projecting: {Message}", ex.Message);
       // ToDo ??
     }
 

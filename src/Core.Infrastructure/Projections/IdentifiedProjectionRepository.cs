@@ -63,7 +63,7 @@ public class IdentifiedProjectionRepository<T>(
       .Map(s => Maybe<T>
         .ForValue(s.ReadModels.GetValueOrDefault(id))
         .Map(m => new ProjectionChange<T>(s.Metadata, m))
-        .ReduceThrow(new KeyNotFoundException("Read model not found"))
+        .ReduceThrow(new KeyNotFoundException($"Projection with id {id} not found in {key.Key}"))
       ).ReduceThrow(new ProjectionInconsistencyException(key));
   }
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Globalization;
-using EventSourcingDb.Types;
+using EventSourcing;
 
 namespace Core.Infrastructure.Cqrs;
 
@@ -43,9 +42,9 @@ public static class AuditTrailExtensions
     auditTrail.EnsureNotPristine();
     var lastChange = auditTrail.Last().ProcessedEvent;
 
-    return Precondition.IsSubjectOnEventIdPrecondition(
-      lastChange.Subject.ToString(),
-      lastChange.Id.ToString(CultureInfo.InvariantCulture)
+    return new IsSubjectOnEventIdPrecondition(
+      lastChange.Subject,
+      lastChange.Id
     );
   }
 
