@@ -10,13 +10,11 @@ public class EventStoreObserver(
   ILogger<EventStoreObserver> logger,
   IEventStoreProvider eventStoreProvider,
   IServiceProvider serviceProvider
-) : BackgroundService, IDisposable
+) : BackgroundService
 {
-  private readonly CancellationTokenSource _cancellationTokenSource = new();
-
   protected override Task ExecuteAsync(CancellationToken cancellationToken)
   {
-    logger.LogInformation("Starting event observation");
+    logger.LogDebug("Starting event observation");
 
     foreach (var eventStore in eventStoreProvider.All())
     {
@@ -28,14 +26,14 @@ public class EventStoreObserver(
             // ToDo: Persist the last processed event id for each event store and start from there when restarting
             var events = eventStore.ObserveEvents(
               new Subject("/"),
-              cancellationToken: _cancellationTokenSource.Token
+              cancellationToken: cancellationToken
             );
             await foreach (var evnt in events)
             {
               using var scope = serviceProvider.CreateScope();
               var mediator = scope.ServiceProvider.GetService<IMediator>()!;
 
-              await mediator.Publish(evnt, _cancellationTokenSource.Token);
+              await mediator.Publish(evnt, cancellationToken);
             }
           }
           catch (Exception ex)
@@ -50,10 +48,5 @@ public class EventStoreObserver(
     }
 
     return Task.CompletedTask;
-  }
-
-  public void Dispose()
-  {
-    _cancellationTokenSource.Dispose();
   }
 }

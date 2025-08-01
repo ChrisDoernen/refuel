@@ -1,5 +1,4 @@
-﻿using Api.Shared;
-using Core.ClubMembership.Projections;
+﻿using Core.ClubMembership.Projections;
 using Core.ClubMembership.Queries;
 using Core.Clubs.Models;
 using Core.Clubs.Queries;
@@ -20,9 +19,10 @@ public class ClubMemberType : ObjectType<ClubMember>
 
     descriptor
       .ImplementsNode()
-      .ResolveNode<ClubCompoundId>(async (context, id) =>
+      .ResolveNode<Guid>(async (context, id) =>
         {
-          var query = new GetClubMemberQuery(id.Id);
+          var query = new GetClubMemberQuery(id);
+
           return await context.Service<IMediator>().Send(query, context.RequestAborted);
         }
       );
@@ -94,11 +94,4 @@ public class ClubMemberType : ObjectType<ClubMember>
         }
       );
   }
-}
-
-[ExtendObjectType(typeof(ClubMember))]
-public class ClubMemberExtensions
-{
-  [ID<ClubMember>]
-  public ClubCompoundId GetId([Parent] ClubMember member) => new(member.ClubId, member.Id);
 }

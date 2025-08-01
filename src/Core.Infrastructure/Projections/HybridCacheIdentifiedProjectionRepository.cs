@@ -52,7 +52,7 @@ public class HybridCacheIdentifiedProjectionRepository<T>(
         .Where(m => predicate(m.Value))
         .Select(m => new ProjectionChange<T>(s.Metadata, m.Value))
       )
-      .ReduceThrow(new ProjectionInconsistencyException(key));
+      .Reduce([]);
   }
 
   public async Task<IEnumerable<ProjectionChange<T>>> GetManyById(

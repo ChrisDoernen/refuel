@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         c.MediatorImplementationType = typeof(EventSourcingMediator);
       }
     );
+    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
     services.AddAuthorizersFromAssembly(assembly);
 
@@ -38,7 +39,7 @@ public static class ServiceCollectionExtensions
     services.AddTransient(typeof(IReplayService<>), typeof(ReplayService<>));
 
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
-    
+
     services.AddSingleton<EventStoreObserver>();
     services.AddHostedService(sp => sp.GetRequiredService<EventStoreObserver>());
 

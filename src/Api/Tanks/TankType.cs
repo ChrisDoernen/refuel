@@ -32,18 +32,12 @@ public class TankType : ObjectType<Tank>
 
     descriptor
       .ImplementsNode()
-      .ResolveNode<ClubCompoundId>(async (context, id) =>
+      .ResolveNode<Guid>(async (context, id) =>
         {
-          var query = new GetTankQuery(id.Id);
+          var query = new GetTankQuery(id);
+
           return await context.Service<IMediator>().Send(query, context.RequestAborted);
         }
       );
   }
-}
-
-[ExtendObjectType(typeof(Tank))]
-public class TankExtensions
-{
-  [ID<Tank>]
-  public ClubCompoundId GetId([Parent] Tank tank) => new(tank.ClubId, tank.Id);
 }

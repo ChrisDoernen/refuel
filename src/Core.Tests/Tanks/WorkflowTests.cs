@@ -67,7 +67,6 @@ public class WorkflowTests(
     );
     var tankId = await _mediator.Send(registerTankCommand);
 
-
     await _fixture.WaitForProjections();
     
     var getTankQuery = new GetTankQuery(tankId);

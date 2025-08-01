@@ -53,7 +53,7 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
   )
   {
     services.AddCore();
-    services.AddCoreInfrastructure(typeof(Core.ServiceCollectionExtensions).Assembly);
+    services.AddCoreInfrastructure(typeof(ServiceCollectionExtensions).Assembly);
     services.AddEventSourcingDb(
       configuration!,
       connections => connections.ConfigureFromContainers(_testContainers)

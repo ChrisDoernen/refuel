@@ -46,14 +46,17 @@ builder.Services
   .AddType<UserType>()
   .AddType<TankType>()
   .AddType<SignUpCommandInputType>()
-  .AddTypeConverter<string, ClubCompoundId>(ClubCompoundId.Parse)
-  .AddTypeConverter<ClubCompoundId, string>(x => x.ToString())
   .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddGraphQL();
 builder.Services.AddErrorFilter<ErrorFilter>();
 
+if (builder.Environment.IsDevelopment())
+{
+  builder.Services.AddTesting();
+}
 
+builder.Services.AddCore();
 builder.Services.AddCoreInfrastructure(typeof(Core.ServiceCollectionExtensions).Assembly);
 builder.Services.AddEventSourcingDb(builder.Configuration);
 builder.Services.AddMongoDb(builder.Configuration);
@@ -62,31 +65,22 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationMiddleware>();
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
-if (builder.Environment.IsDevelopment())
-{
-  builder.Services.AddTesting();
-}
-
-builder.Services.AddCore();
-
-
 #if DEBUG
 
 builder.Services
   .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddJwtBearer(
-    options =>
-      options.TokenValidationParameters = new TokenValidationParameters
-      {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateIssuerSigningKey = false,
-        SignatureValidator = (token, _) => new JsonWebToken(token),
-        RequireExpirationTime = false,
-        ValidateLifetime = false,
-        ClockSkew = TimeSpan.Zero,
-        RequireSignedTokens = false,
-      }
+  .AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+      ValidateIssuer = false,
+      ValidateAudience = false,
+      ValidateIssuerSigningKey = false,
+      SignatureValidator = (token, _) => new JsonWebToken(token),
+      RequireExpirationTime = false,
+      ValidateLifetime = false,
+      ClockSkew = TimeSpan.Zero,
+      RequireSignedTokens = false,
+    }
   );
 
 #endif

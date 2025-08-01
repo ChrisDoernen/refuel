@@ -1,4 +1,5 @@
-﻿using Core.Infrastructure.Cqrs;
+﻿using System.Linq.Expressions;
+using Core.Infrastructure.Projections;
 using Core.Tanks.Projections;
 using MediatR;
 
@@ -9,8 +10,7 @@ public record GetTanksOfClubQuery(
 ) : IRequest<IEnumerable<Tank>>;
 
 public class GetTanksOfClubQueryHandler(
-  IEventStoreProvider eventStoreProvider,
-  IMediator mediator
+  IIdentifiedProjectionRepository<Tank> repository
 ) : IRequestHandler<GetTanksOfClubQuery, IEnumerable<Tank>>
 {
   public async Task<IEnumerable<Tank>> Handle(
@@ -18,6 +18,10 @@ public class GetTanksOfClubQueryHandler(
     CancellationToken cancellationToken
   )
   {
-    return new List<Tank>();
+    Expression<Func<Tank, bool>> filter = t => t.ClubId == query.ClubId;
+
+    var changes = await repository.Filter(filter, cancellationToken);
+
+    return changes.Select(c => c.State);
   }
 }

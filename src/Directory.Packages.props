@@ -9,6 +9,7 @@
     <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.5" />
     <PackageVersion Include="HotChocolate.AspNetCore.Authorization" Version="15.1.7" />
     <PackageVersion Include="HotChocolate.AspNetCore.CommandLine" Version="15.1.5" />
+    <PackageVersion Include="HotChocolate.Types.Scalars" Version="15.1.8" />
     <PackageVersion Include="MediatR" Version="12.2.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="EventSourcingDb" Version="0.8.1" />

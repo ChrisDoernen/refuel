@@ -19,6 +19,7 @@
     <PackageReference Include="HotChocolate.AspNetCore" />
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
     <PackageReference Include="HotChocolate.AspNetCore.CommandLine" />
+    <PackageReference Include="HotChocolate.Types.Scalars" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
