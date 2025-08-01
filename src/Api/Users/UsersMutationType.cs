@@ -11,10 +11,10 @@ public class UsersMutationType : ObjectTypeExtension<Mutation>
   {
     descriptor
       .Field("signUp")
-      .Argument("input", a => a.Type<SignUpCommandInputType>())
+      .Argument("command", a => a.Type<SignUpCommandInputType>())
       .Resolve(async (context, cancellationToken) =>
         {
-          var command = context.ArgumentValue<SignUpCommand>("input");
+          var command = context.ArgumentValue<SignUpCommand>("command");
 
           return await context.Service<IMediator>().Send(command, cancellationToken);
         }

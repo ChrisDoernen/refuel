@@ -2,11 +2,9 @@
 
 public class ErrorFilter : IErrorFilter
 {
-  public IError OnError(IError error)
-  {
-    return ErrorBuilder
+  public IError OnError(IError error) =>
+    ErrorBuilder
       .FromError(error)
       .SetMessage(error.Message)
       .Build();
-  }
 }

@@ -1,4 +1,3 @@
-using Api;
 using Api.Auth;
 using Api.ClubMembership;
 using Api.Clubs;
@@ -9,8 +8,6 @@ using Api.Users;
 using Core;
 using Core.Infrastructure;
 using Core.Infrastructure.Cqrs;
-using Core.Tanks;
-using Core.Tanks.Projections;
 using dotenv.net;
 using EventSourcing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,7 +15,6 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB;
 using Shared.Testing;
-using EventType = Api.Shared.EventType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,23 +29,15 @@ builder.Services
   .AddGlobalObjectIdentification()
   .AddQueryType<Query>()
   .AddMutationType<Mutation>()
-  .AddTypeExtension<UsersMutationType>()
-  .AddTypeExtension<ClubsQueryType>()
-  .AddTypeExtension<UsersQueryType>()
-  .AddTypeExtension<SharedQueryType>()
-  .AddType<EventType>()
-  .AddType<StateChangeType<TankType, Tank>>()
-  .AddType<RoleType>()
-  .AddType<ClubMemberType>()
-  .AddType<TankRoleAssignmentsType>()
-  .AddType<ClubType>()
-  .AddType<UserType>()
-  .AddType<TankType>()
-  .AddType<SignUpCommandInputType>()
+  .AddShared()
+  .AddUsers()
+  .AddClubs()
+  .AddClubMembership()
+  .AddTanks()
   .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddGraphQL();
-builder.Services.AddErrorFilter<ErrorFilter>();
+// builder.Services.AddErrorFilter<ErrorFilter>();
 
 if (builder.Environment.IsDevelopment())
 {

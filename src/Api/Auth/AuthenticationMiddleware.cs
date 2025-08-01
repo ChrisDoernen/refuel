@@ -21,6 +21,8 @@ public class AuthenticationMiddleware(
       logger.LogWarning($"Unauthenticated request on path {context.Request.Path}");
 
       await next(context);
+
+      return;
     }
 
     try
