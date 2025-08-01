@@ -42,7 +42,7 @@ public class CoreFixture : TestBedFixture, IAsyncLifetime
     await _observer.StartAsync(cancellationToken);
   }
 
-  public async Task WaitForProjections() => await Task.Delay(2000);
+  public Task WaitForProjections() => Task.Delay(10);
 
   public T Get<T>(ITestOutputHelper testOutputHelper)
     => GetService<T>(testOutputHelper) ?? throw new Exception($"Service missing: {typeof(T).Name}");

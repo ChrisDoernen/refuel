@@ -2,8 +2,6 @@
 using Core.ClubMembership.Commands;
 using Core.ClubMembership.Queries;
 using Core.Clubs.Commands;
-using Core.Infrastructure.Cqrs;
-using Core.Tanks;
 using Core.Tanks.Commands;
 using Core.Tanks.Projections;
 using Core.Tanks.Queries;
@@ -55,9 +53,10 @@ public class WorkflowTests(
     await _mediator.Send(assignClubRoleCommand);
 
     await _fixture.WaitForProjections();
-    var clubMembers = await _mediator.Send(new GetClubMembersReadModelQuery(clubId));
+    var clubMembers = await _mediator.Send(new GetClubMembersQuery(clubId));
 
     clubMembers.Count().Should().Be(1);
+    clubMembers.First().RoleIds.Should().HaveCount(1);
 
     var registerTankCommand = new RegisterTankCommand(
       Name: "Benzintank H4",
@@ -68,10 +67,10 @@ public class WorkflowTests(
     );
     var tankId = await _mediator.Send(registerTankCommand);
 
-    var getTankQuery = new GetTankQuery(tankId);
 
-    // await _fixture.WaitForProjections();
-    await Task.Delay(20000);
+    await _fixture.WaitForProjections();
+    
+    var getTankQuery = new GetTankQuery(tankId);
     var tank = await _mediator.Send(getTankQuery);
 
     tank.Should().BeOfType<Tank>();
@@ -126,7 +125,6 @@ public class WorkflowTests(
       NewFuelLevel: 200
     );
     await _mediator.Send(logRefilledCommand);
-
     await _fixture.WaitForProjections();
     tank = await _mediator.Send(getTankQuery);
 

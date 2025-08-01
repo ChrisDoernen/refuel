@@ -5,35 +5,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Core.Infrastructure.Projections;
 
-public interface IIdentifiedProjectionRepository<T> where T : IIdentifiedProjection, IReplayable<T>, new()
-{
-  Task<Maybe<ProjectionChange<T>>> MaybeGetById(
-    Guid id,
-    CancellationToken cancellationToken = default
-  );
-
-  Task<ProjectionChange<T>> GetById(
-    Guid id,
-    CancellationToken cancellationToken = default
-  );
-
-  Task<IEnumerable<ProjectionChange<T>>> Filter(
-    Expression<Func<T, bool>> filter,
-    CancellationToken cancellationToken = default
-  );
-
-  Task<IEnumerable<ProjectionChange<T>>> GetManyById(
-    IEnumerable<Guid> ids,
-    CancellationToken cancellationToken = default
-  );
-
-  Task Upsert(
-    ProjectionChange<T> change,
-    CancellationToken cancellationToken = default
-  );
-}
-
-public class IdentifiedProjectionRepository<T>(
+public class HybridCacheIdentifiedProjectionRepository<T>(
   HybridCache cache,
   CacheKey key
 ) : IIdentifiedProjectionRepository<T> where T : IReplayable<T>, IIdentifiedProjection, new()
@@ -47,7 +19,7 @@ public class IdentifiedProjectionRepository<T>(
 
     return maybeState
       .Map(s => Maybe<T>
-        .ForValue(s.ReadModels.GetValueOrDefault(id))
+        .ForValue(s.Projections.GetValueOrDefault(id))
         .Map(m => new ProjectionChange<T>(s.Metadata, m))
       );
   }
@@ -61,7 +33,7 @@ public class IdentifiedProjectionRepository<T>(
 
     return maybeState
       .Map(s => Maybe<T>
-        .ForValue(s.ReadModels.GetValueOrDefault(id))
+        .ForValue(s.Projections.GetValueOrDefault(id))
         .Map(m => new ProjectionChange<T>(s.Metadata, m))
         .ReduceThrow(new KeyNotFoundException($"Projection with id {id} not found in {key.Key}"))
       ).ReduceThrow(new ProjectionInconsistencyException(key));
@@ -76,7 +48,7 @@ public class IdentifiedProjectionRepository<T>(
     var predicate = filter.Compile();
 
     return maybeState
-      .Map(s => s.ReadModels
+      .Map(s => s.Projections
         .Where(m => predicate(m.Value))
         .Select(m => new ProjectionChange<T>(s.Metadata, m.Value))
       )
@@ -91,7 +63,7 @@ public class IdentifiedProjectionRepository<T>(
     var maybeState = await cache.GetEntry<IdentifiedProjectionState<T>>(key, cancellationToken);
 
     return maybeState
-      .Map(s => s.ReadModels
+      .Map(s => s.Projections
         .Where(m => ids.Contains(m.Key))
         .Select(m => new ProjectionChange<T>(s.Metadata, m.Value))
       )
@@ -109,7 +81,7 @@ public class IdentifiedProjectionRepository<T>(
       .Map(s => new IdentifiedProjectionState<T>
         {
           Metadata = change.EventMetadata,
-          ReadModels = new Dictionary<Guid, T>(s.ReadModels)
+          Projections = new Dictionary<Guid, T>(s.Projections)
           {
             [change.State.Id] = change.State
           }
@@ -119,7 +91,7 @@ public class IdentifiedProjectionRepository<T>(
         new IdentifiedProjectionState<T>
         {
           Metadata = change.EventMetadata,
-          ReadModels = new Dictionary<Guid, T>
+          Projections = new Dictionary<Guid, T>
           {
             [change.State.Id] = change.State
           }

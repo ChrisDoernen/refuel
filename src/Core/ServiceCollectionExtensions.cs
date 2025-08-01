@@ -29,12 +29,12 @@ public static class ServiceCollectionExtensions
     services.AddHostedService<EventStoreProviderInitService>();
 
     AddDocuments(services);
-    AddReadModels(services);
+    AddProjections(services);
   }
 
-  private static void AddReadModels(IServiceCollection services)
+  private static void AddProjections(IServiceCollection services)
   {
-    IEnumerable<IdentifiedProjectionDefinition> readModels =
+    IEnumerable<IdentifiedProjectionDefinition> projections =
       new List<IdentifiedProjectionDefinition>
       {
         new(
@@ -48,9 +48,9 @@ public static class ServiceCollectionExtensions
           Subject.FromLevel(1)
         )
       };
-    foreach (var readModel in readModels)
+    foreach (var projection in projections)
     {
-      services.AddIdentifiedReadModel(readModel.Type, readModel.CacheKey, readModel.IdSelector);
+      services.AddIdentifiedProjection(projection.Type, projection.CacheKey, projection.IdSelector);
     }
   }
 

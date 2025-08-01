@@ -10,13 +10,13 @@ public class EventStoreObserver(
   ILogger<EventStoreObserver> logger,
   IEventStoreProvider eventStoreProvider,
   IServiceProvider serviceProvider
-) : IHostedService, IDisposable
+) : BackgroundService, IDisposable
 {
   private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-  public Task StartAsync(CancellationToken cancellationToken)
+  protected override Task ExecuteAsync(CancellationToken cancellationToken)
   {
-    logger.LogInformation("Starting EventStore subscriptions");
+    logger.LogInformation("Starting event observation");
 
     foreach (var eventStore in eventStoreProvider.All())
     {
@@ -41,18 +41,13 @@ public class EventStoreObserver(
           catch (Exception ex)
           {
             logger.LogError("Error while processing events: {Message}", ex.Message);
+
+            throw;
           }
         },
         cancellationToken
       );
     }
-
-    return Task.CompletedTask;
-  }
-
-  public Task StopAsync(CancellationToken cancellationToken)
-  {
-    _cancellationTokenSource.Cancel();
 
     return Task.CompletedTask;
   }

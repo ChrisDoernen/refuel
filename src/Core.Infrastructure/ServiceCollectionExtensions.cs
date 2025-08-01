@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
     services.AddSingleton<IEventStoreProvider, EventStoreProvider>();
     
     services.AddSingleton<EventStoreObserver>();
-    services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<EventStoreObserver>());
+    services.AddHostedService(sp => sp.GetRequiredService<EventStoreObserver>());
 
     services.AddSingleton<IRoleProvider>(new RoleProvider(assembly));
 
@@ -93,7 +93,7 @@ public static class ServiceCollectionExtensions
     }
   }
 
-  public static void AddIdentifiedReadModel(
+  public static void AddIdentifiedProjection(
     this IServiceCollection services,
     Type type,
     CacheKey cacheKey,
@@ -108,8 +108,8 @@ public static class ServiceCollectionExtensions
       .Distinct()
       .ToList();
 
-    var syncServiceFactoryMethod = typeof(ReadModelSynchronizationServiceFactory)
-      .GetMethod(nameof(ReadModelSynchronizationServiceFactory.Get))!
+    var syncServiceFactoryMethod = typeof(ProjectorFactory)
+      .GetMethod(nameof(ProjectorFactory.Get))!
       .MakeGenericMethod(type);
 
     var syncServiceFactory =
@@ -120,8 +120,8 @@ public static class ServiceCollectionExtensions
       syncServiceFactory!
     );
 
-    var repoFactoryMethod = typeof(ReadModelRepositoryFactory)
-      .GetMethod(nameof(ReadModelRepositoryFactory.Get))!
+    var repoFactoryMethod = typeof(ProjectionRepositoryFactory)
+      .GetMethod(nameof(ProjectionRepositoryFactory.Get))!
       .MakeGenericMethod(type);
 
     var repoFactory =
@@ -135,7 +135,7 @@ public static class ServiceCollectionExtensions
     );
   }
 
-  private static class ReadModelSynchronizationServiceFactory
+  private static class ProjectorFactory
   {
     public static IdentifiedProjector<T> Get<T>(
       IServiceProvider serviceProvider,
@@ -151,16 +151,16 @@ public static class ServiceCollectionExtensions
     }
   }
 
-  private static class ReadModelRepositoryFactory
+  private static class ProjectionRepositoryFactory
   {
-    public static IdentifiedProjectionRepository<T> Get<T>(
+    public static HybridCacheIdentifiedProjectionRepository<T> Get<T>(
       IServiceProvider serviceProvider,
       CacheKey cacheKey
     ) where T : IReplayable<T>, IIdentifiedProjection, new()
     {
       var cache = serviceProvider.GetRequiredService<HybridCache>();
 
-      return new IdentifiedProjectionRepository<T>(cache, cacheKey);
+      return new HybridCacheIdentifiedProjectionRepository<T>(cache, cacheKey);
     }
   }
 }

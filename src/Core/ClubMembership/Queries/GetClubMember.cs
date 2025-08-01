@@ -8,7 +8,7 @@ public record GetClubMemberQuery(
   Guid MemberId
 ) : IRequest<ClubMember>;
 
-public class GetClubMemberReadModelQueryHandler(
+public class GetClubMemberQueryHandler(
   IIdentifiedProjectionRepository<ClubMember> repository
 ) : IRequestHandler<GetClubMemberQuery, ClubMember>
 {

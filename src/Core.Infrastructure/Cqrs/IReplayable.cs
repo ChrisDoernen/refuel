@@ -14,17 +14,11 @@ public static class ReplayableExtensions
     this IReplayable<T> replayable,
     Event evnt
   ) where T : IReplayable<T>, new()
-    => new(
-      evnt,
-      replayable.Apply(evnt.Data)
-    );
+    => new(evnt, replayable.Apply(evnt.Data));
 
-  public static ProjectionChange<T> GetInitialReadModelChange<T>(
+  public static ProjectionChange<T> GetInitialProjectionChange<T>(
     this IReplayable<T> replayable,
     Event evnt
   ) where T : IReplayable<T>, new()
-    => new(
-      evnt,
-      replayable.Apply(evnt.Data)
-    );
+    => new(evnt, replayable.Apply(evnt.Data));
 }

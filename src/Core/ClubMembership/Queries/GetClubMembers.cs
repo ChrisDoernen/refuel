@@ -5,16 +5,16 @@ using MediatR;
 
 namespace Core.ClubMembership.Queries;
 
-public record GetClubMembersReadModelQuery(
+public record GetClubMembersQuery(
   Guid ClubId
 ) : IRequest<IEnumerable<ClubMember>>;
 
 public class GetClubMembersQueryHandler(
   IIdentifiedProjectionRepository<ClubMember> repository
-) : IRequestHandler<GetClubMembersReadModelQuery, IEnumerable<ClubMember>>
+) : IRequestHandler<GetClubMembersQuery, IEnumerable<ClubMember>>
 {
   public async Task<IEnumerable<ClubMember>> Handle(
-    GetClubMembersReadModelQuery query,
+    GetClubMembersQuery query,
     CancellationToken cancellationToken
   )
   {

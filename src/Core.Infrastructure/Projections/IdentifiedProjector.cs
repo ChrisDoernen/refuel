@@ -30,7 +30,7 @@ public class IdentifiedProjector<T>(
 
     var newChange = maybeLastChange
       .Map(change => change.Apply(evnt))
-      .Reduce(() => new T().GetInitialReadModelChange(evnt));
+      .Reduce(() => new T().GetInitialProjectionChange(evnt));
 
     await repository.Upsert(newChange, cancellationToken);
   }

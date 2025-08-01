@@ -40,7 +40,7 @@ public class ClubType : ObjectType<Club>
       .Resolve<IEnumerable<ClubMember>>(async (context, cancellationToken) =>
         {
           var id = context.Parent<Club>().Id;
-          var query = new GetClubMembersReadModelQuery(id);
+          var query = new GetClubMembersQuery(id);
 
           return await context.Service<IMediator>().Send(query, cancellationToken);
         }
