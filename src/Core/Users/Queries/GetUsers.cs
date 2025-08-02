@@ -21,10 +21,10 @@ public class GetUsersQueryHandler(
   }
 }
 
-public class GetUsersQueryAuthorizer : Authorizer<GetUsersQuery>
-{
-  public override async Task BuildPolicy(GetUsersQuery _)
-  {
-    UsePolicy(new UserHasRolePolicy(UserRoles.GlobalAdmin));
-  }
-}
+// public class GetUsersQueryAuthorizer : Authorizer<GetUsersQuery>
+// {
+//   public override async Task BuildPolicy(GetUsersQuery _)
+//   {
+//     UsePolicy(new UserHasRolePolicy(UserRoles.GlobalAdmin));
+//   }
+// }
