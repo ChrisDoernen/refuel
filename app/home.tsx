@@ -1,11 +1,11 @@
-import { type AppQuery } from "./__generated__/AppQuery.graphql.ts";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import User from "./user.tsx";
+import User from "./User.tsx";
+import type { HomeQuery } from "./__generated__/HomeQuery.graphql.ts";
 
 export default function Home() {
-  const data = useLazyLoadQuery<AppQuery>(
+  const data = useLazyLoadQuery<HomeQuery>(
     graphql`
-      query AppQuery {
+      query HomeQuery {
         getUsers {
           id
           ...User_item
@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Star Wars Films</h1>
+      <h1>Users</h1>
       {users?.map((user) => (
         <User key={user.id} user={user} />
       ))}

@@ -4,9 +4,10 @@ import "./index.css";
 import { RelayEnvironmentProvider } from "react-relay";
 import { Environment, Network, type FetchFunction } from "relay-runtime";
 import { BrowserRouter, Route, Routes } from 'react-router';
-import Home from "./home.tsx";
-import Signup from "./signup.tsx";
-import AuthLayout from "./authLayout.tsx";
+import Home from "./Home.tsx";
+import Signup from "./Signup.tsx";
+import AuthLayout from "./AuthLayout.tsx";
+import Clubs from "./Clubs.tsx";
 
 const HTTP_ENDPOINT = "/api/graphql/";
 
@@ -36,6 +37,7 @@ createRoot(document.getElementById("root")!).render(
             <Route element={<AuthLayout />}>
               <Route path="/signup" element={<Signup />} />
             </Route>
+              <Route path="/clubs" element={<Clubs />} />
           </Routes>
         </BrowserRouter>
       </Suspense>
