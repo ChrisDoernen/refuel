@@ -1,8 +1,8 @@
-import { type AppQuery } from "./__generated__/AppQuery.graphql";
+import { type AppQuery } from "./__generated__/AppQuery.graphql.ts";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import User from "./User.tsx";
+import User from "./user.tsx";
 
-export default function App() {
+export default function Home() {
   const data = useLazyLoadQuery<AppQuery>(
     graphql`
       query AppQuery {

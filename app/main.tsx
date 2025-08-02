@@ -1,9 +1,12 @@
 import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
 import { RelayEnvironmentProvider } from "react-relay";
 import { Environment, Network, type FetchFunction } from "relay-runtime";
+import { BrowserRouter, Route, Routes } from 'react-router';
+import Home from "./home.tsx";
+import Signup from "./signup.tsx";
+import AuthLayout from "./authLayout.tsx";
 
 const HTTP_ENDPOINT = "/api/graphql/";
 
@@ -27,7 +30,14 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RelayEnvironmentProvider environment={environment}>
       <Suspense fallback="Loading...">
-        <App />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route element={<AuthLayout />}>
+              <Route path="/signup" element={<Signup />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </Suspense>
     </RelayEnvironmentProvider>
   </StrictMode>
