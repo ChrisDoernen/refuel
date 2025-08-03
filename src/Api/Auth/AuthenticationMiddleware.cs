@@ -15,7 +15,7 @@ public class AuthenticationMiddleware(
 {
   public async Task InvokeAsync(HttpContext context, RequestDelegate next)
   {
-    if (context.Request.Path.StartsWithSegments("/graphql"))
+    if (!context.Request.Path.StartsWithSegments("/graphql"))
     {
       await next(context);
 
