@@ -23,4 +23,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AppFiles Include="..\..\dist\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopySpaDist" AfterTargets="Build">
+    <Copy SourceFiles="@(AppFiles)" DestinationFolder="wwwroot\%(RecursiveDir)" />
+  </Target>
+
 </Project>

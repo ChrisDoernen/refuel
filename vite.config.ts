@@ -9,9 +9,8 @@ export default defineConfig({
       usePolling: true
     },
     proxy: {
-      "/api": {
+      "/graphql": {
         target: "http://localhost:5150",
-        rewrite: (path) => path.replace(/^\/api/, ""),
       }
     }
   }

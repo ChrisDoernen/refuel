@@ -9,7 +9,7 @@ import Signup from "./Signup.tsx";
 import AuthLayout from "./AuthLayout.tsx";
 import Clubs from "./Clubs.tsx";
 
-const HTTP_ENDPOINT = "/api/graphql/";
+const HTTP_ENDPOINT = "/graphql";
 
 const fetchGraphQL: FetchFunction = async (request, variables) => {
   const resp = await fetch(HTTP_ENDPOINT, {

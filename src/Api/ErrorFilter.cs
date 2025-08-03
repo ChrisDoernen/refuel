@@ -1,4 +1,6 @@
-﻿namespace Api;
+﻿using HotChocolate;
+
+namespace Api;
 
 public class ErrorFilter : IErrorFilter
 {

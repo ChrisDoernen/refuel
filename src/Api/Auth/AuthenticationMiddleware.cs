@@ -15,6 +15,13 @@ public class AuthenticationMiddleware(
 {
   public async Task InvokeAsync(HttpContext context, RequestDelegate next)
   {
+    if (context.Request.Path.StartsWithSegments("/graphql"))
+    {
+      await next(context);
+
+      return;
+    }
+
     var identity = context.User.Identity;
     if (identity is null || !identity.IsAuthenticated)
     {

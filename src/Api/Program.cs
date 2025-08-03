@@ -1,3 +1,4 @@
+using Api;
 using Api.Auth;
 using Api.ClubMembership;
 using Api.Clubs;
@@ -37,7 +38,7 @@ builder.Services
   .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddGraphQL();
-// builder.Services.AddErrorFilter<ErrorFilter>();
+builder.Services.AddErrorFilter<ErrorFilter>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -82,5 +83,9 @@ app.MapGraphQL();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<AuthenticationMiddleware>();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseMiddleware<FallbackMiddleware>();
 
 app.RunWithGraphQLCommands(args);
